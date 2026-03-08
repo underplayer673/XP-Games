@@ -1,0 +1,676 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Cell Overload: XP Legacy Edition</title>
+    <style type="text/css">
+        /* === БАЗОВЫЕ СТИЛИ ДЛЯ IE6/XP === */
+        body {
+            background-color: #3A6EA5; /* Стандартный синий фон XP */
+            color: #000;
+            font-family: "Tahoma", "Verdana", sans-serif; /* Шрифт системы XP */
+            font-size: 11px;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            scrollbar-face-color: #C7D4F7;
+            scrollbar-shadow-color: #3A6EA5;
+            scrollbar-highlight-color: #FFFFFF;
+            scrollbar-3dlight-color: #C7D4F7;
+            scrollbar-darkshadow-color: #3A6EA5;
+            scrollbar-track-color: #FFFFFF;
+            scrollbar-arrow-color: #000000;
+        }
+
+        /* Главное окно в стиле XP */
+        #gameWindow {
+            width: 580px;
+            margin: 20px auto;
+            background: #ECE9D8; /* Цвет диалоговых окон XP */
+            border: 1px solid #003C74;
+            text-align: left;
+            position: relative;
+        }
+
+        /* Заголовок окна (Синяя полоса) */
+        .title-bar {
+            background: #0058EE;
+            filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr='#0058EE', EndColorStr='#3A93FF');
+            height: 30px;
+            line-height: 30px;
+            padding-left: 10px;
+            color: #fff;
+            font-weight: bold;
+            font-size: 13px;
+            border-bottom: 1px solid #003C74;
+            cursor: default;
+        }
+        
+        /* Кнопки управления окном (справа) */
+        .window-controls {
+            float: right;
+            margin-top: 5px;
+            margin-right: 5px;
+        }
+        .win-btn {
+            background: #E53E30;
+            border: 1px solid #fff;
+            color: #fff;
+            font-weight: bold;
+            font-family: Arial;
+            font-size: 12px;
+            width: 20px;
+            height: 20px;
+            line-height: 18px;
+            text-align: center;
+            cursor: hand;
+            display: inline;
+            margin-left: 2px;
+        }
+
+        /* Панель инструментов */
+        .toolbar {
+            background: #ECE9D8;
+            border-bottom: 1px solid #ACA899;
+            padding: 5px;
+            height: 30px;
+        }
+
+        /* Кнопки XP стиля */
+        .xp-btn {
+            background: #F3F3F3;
+            border: 1px solid #003C74;
+            color: #000;
+            cursor: hand;
+            font-family: Tahoma;
+            font-size: 11px;
+            padding: 3px 8px;
+            margin-right: 5px;
+        }
+        .xp-btn:hover {
+            background: #FFD686; /* Оранжевый при наведении */
+            border-color: #E68B2C;
+        }
+
+        /* Игровое поле */
+        .game-area {
+            background: #fff;
+            border: 2px inset #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        /* Таблица (Сетка) */
+        table.grid {
+            margin: 0 auto;
+            border-collapse: separate;
+            border-spacing: 2px;
+            background: #ACA899;
+        }
+
+        td.cell {
+            width: 50px;
+            height: 50px;
+            background: #ECE9D8;
+            border: 2px outset #fff; /* Эффект выпуклости */
+            text-align: center;
+            vertical-align: middle;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: hand;
+            cursor: pointer;
+            color: #333;
+            font-family: "Arial Black", Arial, sans-serif;
+        }
+
+        /* Цвета игроков */
+        td.p-blue {
+            background: #6D9AFF; /* Мягкий синий */
+            color: #000080;
+            border-color: #8EB6FF;
+        }
+        td.p-red {
+            background: #FF7878; /* Мягкий красный */
+            color: #800000;
+            border-color: #FFAAAA;
+        }
+        
+        /* Взрыв (белый) */
+        td.flash {
+            background: #FFFFFF !important;
+            border: 2px solid #FFFF00 !important;
+        }
+
+        /* Статус бар внизу */
+        .status-bar {
+            border-top: 1px solid #ACA899;
+            background: #ECE9D8;
+            padding: 3px 5px;
+            font-size: 11px;
+            color: #333;
+        }
+        
+        .score-box {
+            border: 1px inset #fff;
+            background: #fff;
+            padding: 2px 5px;
+            margin: 0 5px;
+            width: 30px;
+            display: inline-block;
+            text-align: right;
+        }
+
+        /* Меню (Оверлей) - имитация диалогового окна */
+        #menuOverlay {
+            position: absolute;
+            top: 60px;
+            left: 140px;
+            width: 300px;
+            background: #ECE9D8;
+            border: 2px outset #fff;
+            padding: 2px;
+            z-index: 100;
+            display: none;
+            filter: progid:DXImageTransform.Microsoft.Shadow(color='#666666', Direction=135, Strength=5);
+        }
+        
+        .menu-header {
+            background: #0058EE;
+            color: #fff;
+            padding: 5px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .menu-content {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .menu-btn-large {
+            width: 200px;
+            height: 30px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        /* Настройки сложности */
+        .diff-selector span {
+            display: inline-block;
+            padding: 2px 5px;
+            border: 1px solid #ACA899;
+            margin: 1px;
+            cursor: hand;
+            background: #fff;
+        }
+        .diff-selector span.active {
+            background: #0058EE;
+            color: #fff;
+            border-color: #000080;
+        }
+
+    </style>
+    <!--[if lte IE 7]>
+    <style type="text/css">
+        /* IE6/7 need hasLayout for inline-block-like behavior */
+        .score-box,
+        .diff-selector span {
+            display: inline;
+            zoom: 1;
+        }
+    </style>
+    <![endif]-->
+</head>
+<body>
+
+<div id="gameWindow">
+    <!-- Заголовок -->
+    <div class="title-bar">
+        Cell Overload - XP Pro
+        <div class="window-controls">
+            <span class="win-btn" onclick="alert('Нельзя закрыть в демо-режиме!');">X</span>
+        </div>
+    </div>
+
+    <!-- Панель -->
+    <div class="toolbar">
+        <button class="xp-btn" onclick="openMenu()">Файл</button>
+        <button class="xp-btn" onclick="startGame('pve')">Новая игра (CPU)</button>
+        <button class="xp-btn" onclick="toggleLang()" id="btnLang">EN/RU</button>
+        <span style="float:right; margin-top:4px; margin-right:10px; font-weight:bold; color:#444;">ELO: <span id="eloDisplay">1200</span></span>
+    </div>
+
+    <!-- Поле -->
+    <div class="game-area" id="gridContainer">
+        <!-- Таблица генерируется JS -->
+    </div>
+
+    <!-- Статус бар -->
+    <div class="status-bar">
+        <span id="turnText">Ожидание...</span>
+        <span style="margin-left:20px;">Синие:</span> <span id="scoreBlue" class="score-box">0</span>
+        <span>Красные:</span> <span id="scoreRed" class="score-box">0</span>
+        <span style="float:right;" id="diffText">Сложность: Норма</span>
+    </div>
+
+    <!-- Меню -->
+    <div id="menuOverlay">
+        <div class="menu-header">Главное меню</div>
+        <div class="menu-content">
+            <button class="xp-btn menu-btn-large" onclick="startGame('pve')">Играть с ПК</button><br/>
+            <button class="xp-btn menu-btn-large" onclick="startGame('pvp')">Играть вдвоем</button><br/>
+            
+            <div style="margin-top:10px; border-top:1px solid #ACA899; padding-top:5px;">
+                <div style="margin-bottom:5px;">Уровень CPU:</div>
+                <div class="diff-selector" id="diffSelect">
+                    <!-- JS заполнит -->
+                </div>
+            </div>
+            
+            <br/>
+            <button class="xp-btn" onclick="closeMenu()">Отмена</button>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    /* 
+       === LEGACY JS FOR IE6 COMPATIBILITY ===
+       Никаких const/let, стрелочных функций.
+       Оптимизация под слабые процессоры.
+    */
+
+    var SIZE = 6;
+    var board = [];     // Данные: {m: масса, o: владелец}
+    var cells = [];     // Кэш DOM элементов (для скорости)
+    var currentPlayer = 'blue';
+    var gameMode = 'pve';
+    var isProcessing = false; // Блокировка ввода во время анимации
+    var difficulty = 2; // 0..4
+    var playerElo = 1200;
+    var lang = 'ru';
+
+    // Тексты
+    var TEXTS = {
+        ru: { turn: "Ход: ", blue: "СИНИЕ", red: "КРАСНЫЕ", win: " ПОБЕДИЛИ!", cpu: "Думает..." },
+        en: { turn: "Turn: ", blue: "BLUE", red: "RED", win: " WINS!", cpu: "Thinking..." }
+    };
+
+    var DIFF_NAMES = ["Easy", "Normal", "Hard", "Expert", "Insane"];
+    window.onerror = function () { return true; };
+
+    // Инициализация при загрузке (аналог DOMContentLoaded для старых IE)
+    window.onload = function() {
+        // Загрузка ELO из куки
+        playerElo = parseInt(getCookie("elo"), 10);
+        if (isNaN(playerElo) || playerElo < 0) playerElo = 1200;
+        updateEloUI();
+        
+        initDiffUI();
+        initGrid();
+        startGame('pve');
+    };
+
+    function initGrid() {
+        var container = document.getElementById('gridContainer');
+        var html = '<table class="grid" cellspacing="0" cellpadding="0">';
+        
+        cells = []; // Очистка кэша
+        
+        for (var r = 0; r < SIZE; r++) {
+            html += '<tr>';
+            cells[r] = [];
+            for (var c = 0; c < SIZE; c++) {
+                // Используем onclick строкой для надежности в старых браузерах
+                html += '<td id="cell_' + r + '_' + c + '" class="cell" onclick="cellClick(' + r + ',' + c + ')"></td>';
+            }
+            html += '</tr>';
+        }
+        html += '</table>';
+        container.innerHTML = html;
+
+        // Кэшируем ссылки на элементы, чтобы не искать их каждый раз через getElementById
+        // Это критично для производительности на Pentium 3/4
+        for (var r = 0; r < SIZE; r++) {
+            for (var c = 0; c < SIZE; c++) {
+                cells[r][c] = document.getElementById('cell_' + r + '_' + c);
+            }
+        }
+    }
+
+    function initDiffUI() {
+        var div = document.getElementById('diffSelect');
+        var html = '';
+        for(var i=0; i<5; i++) {
+            html += '<span id="dbtn_'+i+'" onclick="setDifficulty('+i+')">'+(i+1)+'</span>';
+        }
+        div.innerHTML = html;
+        setDifficulty(2);
+    }
+
+    function setDifficulty(d) {
+        difficulty = d;
+        for(var i=0; i<5; i++) {
+            var btn = document.getElementById('dbtn_'+i);
+            btn.className = (i === d) ? 'active' : '';
+        }
+        document.getElementById('diffText').innerHTML = (lang === 'ru' ? 'Сложн: ' : 'Diff: ') + DIFF_NAMES[d];
+    }
+
+    function startGame(mode) {
+        gameMode = mode;
+        closeMenu();
+        
+        // Сброс данных
+        board = [];
+        for (var r = 0; r < SIZE; r++) {
+            board[r] = [];
+            for (var c = 0; c < SIZE; c++) {
+                board[r][c] = { m: 0, o: null };
+            }
+        }
+        
+        currentPlayer = 'blue';
+        isProcessing = false;
+        
+        renderBoard();
+        updateStatus();
+    }
+
+    function cellClick(r, c) {
+        if (isProcessing) return;
+        
+        // Проверка правил
+        if (gameMode === 'pve' && currentPlayer === 'red') return; // Ход компьютера
+        
+        var cell = board[r][c];
+        if (cell.o !== null && cell.o !== currentPlayer) return; // Чужая клетка
+
+        makeMove(r, c, currentPlayer);
+    }
+
+    function makeMove(r, c, player) {
+        isProcessing = true; // Блокируем ввод
+        
+        board[r][c].m++;
+        board[r][c].o = player;
+        
+        renderCell(r, c); // Отрисовка только одной клетки
+        
+        // Запуск проверки взрывов с небольшой задержкой для анимации
+        setTimeout(function() { checkExplosions(player); }, 100);
+    }
+
+    // Рекурсивная проверка взрывов (через цикл while для избежания переполнения стека на старых JS движках)
+    function checkExplosions(player) {
+        var unstable = [];
+        
+        // Находим нестабильные клетки
+        for (var r = 0; r < SIZE; r++) {
+            for (var c = 0; c < SIZE; c++) {
+                if (board[r][c].m >= 4) {
+                    unstable.push({r: r, c: c});
+                }
+            }
+        }
+
+        if (unstable.length === 0) {
+            // Взрывов нет, ход закончен
+            endTurn();
+            return;
+        }
+
+        // Визуализация "вспышки"
+        for (var i = 0; i < unstable.length; i++) {
+            var u = unstable[i];
+            var el = cells[u.r][u.c];
+            el.className = "cell flash"; 
+        }
+
+        // Задержка перед следующим тактом реакции
+        setTimeout(function() {
+            for (var i = 0; i < unstable.length; i++) {
+                var u = unstable[i];
+                var r = u.r; 
+                var c = u.c;
+                
+                // Взрыв: масса -4, владелец остается если масса > 0
+                board[r][c].m -= 4;
+                if (board[r][c].m === 0) board[r][c].o = null;
+                else board[r][c].o = player;
+
+                // Разлет частиц соседям
+                addMass(r-1, c, player);
+                addMass(r+1, c, player);
+                addMass(r, c-1, player);
+                addMass(r, c+1, player);
+            }
+            
+            renderBoard(); // Полная перерисовка кадра
+            checkExplosions(player); // Следующий шаг цепной реакции
+
+        }, 150); // Скорость анимации
+    }
+
+    function addMass(r, c, player) {
+        if (r >= 0 && r < SIZE && c >= 0 && c < SIZE) {
+            board[r][c].m++;
+            board[r][c].o = player;
+        }
+    }
+
+    function endTurn() {
+        // Проверка победы
+        var stats = getStats();
+        
+        // Если у кого-то 0 очков, а игра уже шла (сумма > 2)
+        if (stats.total > 2) {
+            if (stats.red === 0) { gameOver('blue'); return; }
+            if (stats.blue === 0) { gameOver('red'); return; }
+        }
+
+        // Смена хода
+        currentPlayer = (currentPlayer === 'blue') ? 'red' : 'blue';
+        isProcessing = false;
+        updateStatus();
+
+        // Если режим против ПК и ход красных
+        if (gameMode === 'pve' && currentPlayer === 'red') {
+            isProcessing = true;
+            setTimeout(aiMove, 500); // Даем время подумать
+        }
+    }
+
+    // --- Отрисовка ---
+    
+    function renderBoard() {
+        for (var r = 0; r < SIZE; r++) {
+            for (var c = 0; c < SIZE; c++) {
+                renderCell(r, c);
+            }
+        }
+        var s = getStats();
+        document.getElementById('scoreBlue').innerHTML = s.blue;
+        document.getElementById('scoreRed').innerHTML = s.red;
+    }
+
+    function renderCell(r, c) {
+        var d = board[r][c];
+        var el = cells[r][c]; // Берем из кэша
+        
+        // Формируем className строкой (classList нет в IE6)
+        var cls = "cell";
+        if (d.o === 'blue') cls += " p-blue";
+        if (d.o === 'red') cls += " p-red";
+        
+        // Меняем DOM только если нужно (оптимизация рефлоу)
+        if (el.className !== cls) el.className = cls;
+        
+        var txt = (d.m > 0) ? d.m : "";
+        if (el.innerHTML != txt) el.innerHTML = txt;
+    }
+
+    function updateStatus() {
+        var t = TEXTS[lang];
+        var el = document.getElementById('turnText');
+        var name = (currentPlayer === 'blue') ? t.blue : t.red;
+        
+        if (currentPlayer === 'red' && gameMode === 'pve') name = t.cpu;
+        
+        el.innerHTML = t.turn + "<b>" + name + "</b>";
+        el.style.color = (currentPlayer === 'blue') ? "blue" : "red";
+    }
+
+    function getStats() {
+        var b = 0, r = 0, t = 0;
+        for (var i = 0; i < SIZE; i++) {
+            for (var j = 0; j < SIZE; j++) {
+                if (board[i][j].o === 'blue') b++;
+                if (board[i][j].o === 'red') r++;
+                if (board[i][j].m > 0) t++;
+            }
+        }
+        return {blue: b, red: r, total: t};
+    }
+
+    // --- AI (Искусственный Интеллект для старых ПК) ---
+    // Minimax слишком тяжелый для глубины > 2 на старом JS движке.
+    // Используем эвристику + жадный алгоритм.
+
+    function aiMove() {
+        var moves = [];
+        // Находим все возможные ходы
+        for (var r = 0; r < SIZE; r++) {
+            for (var c = 0; c < SIZE; c++) {
+                if (board[r][c].o === 'red' || board[r][c].o === null) {
+                    var score = evaluateMove(r, c);
+                    moves.push({r: r, c: c, s: score});
+                }
+            }
+        }
+
+        if (moves.length === 0) return; // Пат (не должно случаться)
+
+        // Сортировка по очкам
+        moves.sort(function(a, b) { return b.s - a.s; });
+
+        // Выбор хода в зависимости от сложности
+        // Ошибка на низких сложностях - берем не самый лучший, а случайный из топ-N
+        var topN = 1;
+        if (difficulty === 0) topN = moves.length; // Рандом
+        else if (difficulty === 1) topN = 5;
+        else if (difficulty === 2) topN = 3;
+        else topN = 1; // Лучший ход
+
+        if (topN > moves.length) topN = moves.length;
+        
+        var idx = Math.floor(Math.random() * topN);
+        var move = moves[idx];
+        
+        makeMove(move.r, move.c, 'red');
+    }
+
+    function evaluateMove(r, c) {
+        var cell = board[r][c];
+        var score = 0;
+
+        // 1. Приоритет своим клеткам, близким к взрыву
+        if (cell.o === 'red') {
+            score += 10;
+            if (cell.m === 3) score += 50; // ВЗРЫВ! Это хорошо.
+        } else {
+            score += 1; // Пустая клетка тоже ок
+        }
+
+        // 2. Близость к врагу (жадность)
+        var neighbors = [[r-1,c], [r+1,c], [r,c-1], [r,c+1]];
+        for(var i=0; i<neighbors.length; i++) {
+            var nr = neighbors[i][0];
+            var nc = neighbors[i][1];
+            if(nr>=0 && nr<SIZE && nc>=0 && nc<SIZE) {
+                var n = board[nr][nc];
+                if (n.o === 'blue') {
+                    score += 5; // Атакуем
+                    if (cell.m === 3) score += 100; // Взрыв захватит врага
+                }
+                // Опасность: не ставить рядом с синим, у которого 3 массы
+                if (n.o === 'blue' && n.m === 3 && cell.m < 3) {
+                    score -= 50; // ОПАСНОСТЬ
+                }
+            }
+        }
+
+        // 3. Углы (стратегически важны)
+        if ((r===0 || r===SIZE-1) && (c===0 || c===SIZE-1)) score += 5;
+
+        // Рандомизация для "человечности"
+        score += Math.random() * 2;
+        
+        return score;
+    }
+
+    // --- Меню и UI ---
+    
+    function openMenu() {
+        document.getElementById('menuOverlay').style.display = 'block';
+    }
+    
+    function closeMenu() {
+        document.getElementById('menuOverlay').style.display = 'none';
+    }
+
+    function gameOver(winner) {
+        var t = TEXTS[lang];
+        var msg = (winner === 'blue' ? t.blue : t.red) + t.win;
+        alert(msg); // В IE6 alert выглядит нативно и блокирует поток, что нам и нужно
+        
+        // ELO расчет
+        if (gameMode === 'pve') {
+            if (winner === 'blue') playerElo += (10 + difficulty * 5);
+            else playerElo -= 10;
+            
+            if (playerElo < 0) playerElo = 0;
+            
+            setCookie("elo", playerElo, 365);
+            updateEloUI();
+        }
+        
+        openMenu();
+    }
+
+    function toggleLang() {
+        lang = (lang === 'ru') ? 'en' : 'ru';
+        updateStatus();
+        document.getElementById('diffText').innerHTML = (lang === 'ru' ? 'Сложн: ' : 'Diff: ') + DIFF_NAMES[difficulty];
+    }
+    
+    function updateEloUI() {
+        document.getElementById('eloDisplay').innerHTML = playerElo;
+    }
+
+    // --- Cookies (для сохранения прогресса в IE6) ---
+    function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            expires = "; expires=" + (date.toUTCString ? date.toUTCString() : date.toGMTString());
+        }
+        document.cookie = name + "=" + value + expires + "; path=/";
+    }
+
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return parseInt(c.substring(nameEQ.length,c.length));
+        }
+        return null;
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,224 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>S.E.R.G.E.Y. - Farming V10</title>
+
+    <!-- IE8 Conditional Comments for Polyfills -->
+    <!-- IE8 Conditional Comments for Polyfills -->
+    <!--[if lt IE 9]>
+    <script src="./ie8-polyfills.js"></script>
+    <![endif]-->
+
+    <!-- Google Fonts removed for offline compatibility -->
+    <link rel="stylesheet" href="style.css">
+
+    <!--[if IE]>
+    <style>
+        /* IE-specific fixes */
+        .stat-group { display: inline-block; zoom: 1; vertical-align: top; }
+        .plot { display: inline-block; zoom: 1; }
+        .item-card { zoom: 1; }
+        .btn { zoom: 1; }
+        .modal-tab { display: inline-block; zoom: 1; }
+    </style>
+    <![endif]-->
+
+    <!--[if lt IE 8]>
+    <style>
+        /* IE7 and below fixes */
+        .game-layout { overflow: hidden; }
+        .panel { float: left; }
+        .garden-center { float: left; }
+    </style>
+    <![endif]-->
+</head>
+
+<body id="body">
+
+    <!-- HEADER -->
+    <div class="stats-header">
+        <!-- LANG BUTTON -->
+        <button class="btn" id="lang-btn" onclick="toggleLanguage()"
+            style="padding: 5px 10px; font-size: 12px; margin-right: 10px;">EN</button>
+
+        <div class="stat-group">
+            <div class="stat-label" id="lbl-money">Coins</div>
+            <div id="money" class="stat-value">0</div>
+        </div>
+        <!-- PORTAL HIDDEN BY DEFAULT -->
+        <div class="stat-group pointer" id="btn-portal" title="Portal" style="display: none;">
+            <div class="stat-label" id="lbl-portal">[*] PORTAL</div>
+            <div class="stat-value small">INFO</div>
+        </div>
+        <div class="stat-group pointer" id="btn-encyclopedia" title="Encyclopedia">
+            <div class="stat-label" id="lbl-species">[i] SPECIES</div>
+            <div id="encyclopedia-count" class="stat-value small">0/0</div>
+        </div>
+        <div class="stat-group">
+            <div class="stat-label" id="lbl-level">Level</div>
+            <div id="level" class="stat-value">1</div>
+        </div>
+        <div class="stat-group">
+            <div class="stat-label" id="lbl-hp">Health</div>
+            <div id="hp" class="stat-value">100/100</div>
+        </div>
+        <div class="stat-group" id="combo-box" style="opacity:0">
+            <div class="stat-label accent">Combo</div>
+            <div id="combo" class="stat-value">x1.0</div>
+        </div>
+        <button class="btn pause-btn" id="pause-btn">[||]</button>
+    </div>
+
+    <!-- GAME LAYOUT -->
+    <div class="game-layout">
+
+        <table width="1200" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed; margin: 0 auto;">
+            <tr>
+                <!-- INVENTORY -->
+                <td width="280" valign="top">
+                    <div class="panel" id="inventory-panel" style="width: 240px; margin: 0 auto; float: none;">
+                        <h3 id="hdr-inventory">[bag] Storage</h3>
+                        <div id="inventory" class="scroll-area"></div>
+                    </div>
+                </td>
+
+                <!-- GARDEN -->
+                <td valign="top" align="center">
+                    <div class="garden-center" style="margin: 0; min-width: 0; width: 100%;">
+                        <div class="garden-nav" style="margin-bottom: 20px;">
+                            <button class="btn" id="prev-page">[<]</button>
+                            <div class="page-indicator"><span id="lbl-plot">PLOT</span> <span id="garden-page">1</span>
+                            </div>
+                            <button class="btn" id="next-page">[>]</button>
+                        </div>
+
+                        <div class="grid" id="garden" style="width: 640px; margin: 0 auto; text-align: left;"></div>
+
+                        <div style="margin-top: 20px;">
+                            <button class="btn primary-btn" id="plot-btn"><span id="btn-new-plot">[new] New Bed</span>
+                                [<span id="plot-cost">50k</span>]</button>
+                        </div>
+
+                        <div class="xp-container" style="margin-top: 30px;">
+                            <div class="stat-label">XP Progress</div>
+                            <div class="xp-bar-bg">
+                                <div id="xp-fill" class="xp-bar-fill"></div>
+                            </div>
+                            <div id="xp-text" class="xp-text">0/100</div>
+                        </div>
+                    </div>
+                </td>
+
+                <!-- SHOP -->
+                <td width="280" valign="top">
+                    <div class="panel" id="shop-panel" style="width: 240px; margin: 0 auto; float: none;">
+                        <h3 id="hdr-shop">[shop] Shop</h3>
+                        <div class="shop-tabs">
+                            <button data-tab="seeds" class="tab-btn active">[S]</button>
+                            <button data-tab="upgrades" class="tab-btn">[^]</button>
+                            <button data-tab="rare" class="tab-btn">[*]</button>
+                            <button data-tab="lab" class="tab-btn">[~]</button>
+                        </div>
+                        <div id="shop" class="scroll-area"></div>
+                        <div style="margin-top: 10px;">
+                            <button class="btn danger-btn full-width" id="btn-reset" onclick="resetGame()">[del] RESET
+                                GAME</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- CANVAS & OVERLAYS -->
+    <!--[if IE]>
+    <div id="rain-canvas" style="display:none;"></div>
+    <![endif]-->
+    <!--[if !IE]>-->
+    <canvas id="rain-canvas"></canvas>
+    <!--<![endif]-->
+    <div id="weather-banner" class="weather-banner" style="display:none">[rain] <span id="txt-rain">RAIN! Growth x2</span>
+        (<span id="rain-timer">0</span>s)</div>
+    <div id="toast" class="toast"></div>
+
+    <!-- ADMIN PANEL -->
+    <div id="admin-menu" class="admin-panel">
+        <h2 class="accent-text">[adm] ADMIN (A+D+M)</h2>
+        <button class="btn full-width gradient-btn" onclick="godMode()">[!] GOD MODE</button>
+        <button class="btn full-width gradient-btn" onclick="addTriadL3Set()">[*] +39 L3 SOVEREIGNS</button>
+        <hr class="divider">
+        <div class="btn-group">
+            <button class="btn" onclick="addMoney(1000000)">+1M</button>
+            <button class="btn" onclick="addMoney(1000000000)">+1B</button>
+        </div>
+        <button class="btn full-width" id="btn-toggle-enemies">Toggle Enemies</button>
+        <button class="btn full-width" id="btn-toggle-rain">Toggle Rain</button>
+        <button class="btn full-width danger-bg" onclick="toggleAdmin()">Close</button>
+    </div>
+
+    <!-- ENCYCLOPEDIA MODAL -->
+    <div id="encyclopedia-modal" class="enemy-overlay hidden">
+        <div class="panel modal-panel big-modal">
+            <div class="modal-header">
+                <div id="tab-btn-earth" class="modal-tab earth-tab active">
+                    <div><b id="tab-earth">[T] EARTH</b>
+                        <div id="count-earth">0/0</div>
+                    </div>
+                </div>
+                <div id="tab-btn-sovereign" class="modal-tab sov-tab">
+                    <div><b id="tab-sov">[~] SOVEREIGNS</b>
+                        <div id="count-sovereign">0/0</div>
+                    </div>
+                </div>
+                <button class="close-btn" id="btn-close-enc">Close</button>
+            </div>
+            <div id="encyclopedia-content" class="modal-content"></div>
+            <div id="encyclopedia-footer" class="modal-footer"></div>
+        </div>
+    </div>
+
+    <!-- PORTAL MODAL -->
+    <div id="portal-modal" class="enemy-overlay hidden">
+        <div class="panel modal-panel portal-bg">
+            <div class="cosmos-bg"></div>
+            <h2 class="portal-title" id="title-portal">[*] GALACTIC PORTAL</h2>
+            <div class="portal-icon">[o]</div>
+            <p class="accent-text" id="price-galaxy">Price: 10,000,000$ / ea</p>
+
+            <div class="galaxy-stats">
+                <div><span id="lbl-galaxies">Your Galaxies:</span> <span id="portal-galaxy-count"
+                        class="cyan-text">0</span></div>
+                <button class="btn gradient-btn full-width" id="btn-sell-galaxy">SELL ALL ([o] -> $)</button>
+            </div>
+
+            <hr class="divider">
+            <h3 class="gray-text" id="hdr-upgrades">Yggdrasil Upgrades</h3>
+            <div id="ygg-upgrades" class="upgrade-list"></div>
+
+            <hr class="divider">
+            <button class="btn gold-border full-width" id="btn-buy-universe">[K] BUY UNIVERSE (10B$)</button>
+            <button class="btn full-width margin-top" id="btn-close-portal">Close Portal</button>
+        </div>
+    </div>
+
+    <!-- VICTORY MODAL -->
+    <div id="victory-modal" class="enemy-overlay hidden">
+        <div class="panel modal-panel victory-bg">
+            <h1 class="gold-text">[!] VICTORY! [!]</h1>
+            <div class="victory-icon">[K]</div>
+            <p class="victory-text" id="txt-victory">
+                You have accumulated enough wealth to buy this Universe.<br>
+                You are now the Sovereign.
+            </p>
+            <button class="btn gold-btn" onclick="closeVictory()" id="btn-continue">CONTINUE PLAYING</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

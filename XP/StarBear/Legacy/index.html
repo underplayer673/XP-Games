@@ -1,0 +1,1270 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
+    <title>StarBear: XP Legacy Edition</title>
+    <!-- IE Compatibility Polyfills (IE6, IE7, IE8) -->
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="../../ie8-polyfills.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        /* Reset & Base - IE6-8 compatible */
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #05070a;
+            font-family: 'Courier New', monospace;
+            color: white;
+        }
+
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* UI LAYOUT - No Flexbox/Grid for IE6 */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #05070a;
+            z-index: 10;
+            text-align: center;
+            padding-top: 8%;
+        }
+
+        .screen-no-bg {
+            background: transparent !important;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .game-ui {
+            background: transparent;
+            z-index: 5;
+        }
+
+        #game-container {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background-color: #05070a;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #00ffcc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        h2 {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 16px;
+        }
+
+        .currency {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 13px;
+            color: #ffd700;
+            font-weight: bold;
+            border: 1px solid #ffd700;
+            padding: 3px 7px;
+            background: #000;
+        }
+
+        /* BTNS - XP Style */
+        .btn {
+            background: #111;
+            border: 1px solid #555;
+            color: white;
+            padding: 8px 0;
+            width: 180px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            background: #222;
+            border-color: #00ffcc;
+            color: #00ffcc;
+        }
+
+        .btn.primary {
+            border-color: #00ffcc;
+            color: #00ffcc;
+        }
+
+        /* SHOP - IE8 Compatible list */
+        .shop-container {
+            width: 90%;
+            margin: 0 auto;
+            height: 55%;
+            overflow: auto;
+            border: 1px solid #333;
+        }
+
+        .shop-item {
+            border-bottom: 1px solid #333;
+            padding: 10px;
+            text-align: left;
+            background: #0a0a0a;
+            cursor: pointer;
+        }
+
+        .shop-item:hover {
+            background: #1a1a1a;
+        }
+
+        .shop-item.selected {
+            border-left: 4px solid #00ffcc;
+            background: #111;
+        }
+
+        .item-info b {
+            display: block;
+            font-size: 15px;
+        }
+
+        .item-info span {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .item-cost {
+            float: right;
+            font-size: 13px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-top: -20px;
+        }
+
+        /* LEVEL SELECT */
+        .level-card {
+            border: 1px solid #444;
+            padding: 10px;
+            margin: 6px auto;
+            width: 80%;
+            cursor: pointer;
+            text-align: left;
+            background: #0a0a0a;
+        }
+
+        .level-card:hover {
+            border-color: #00ffcc;
+        }
+
+        .level-card h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #eee;
+        }
+
+        .level-meta {
+            font-size: 10px;
+            color: #666;
+        }
+
+        /* HUD */
+        #hud-top {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #energy-bar-container {
+            position: absolute;
+            bottom: 70px;
+            left: 50%;
+            margin-left: -75px;
+            width: 150px;
+            height: 8px;
+            background: #222;
+            border: 1px solid #555;
+        }
+
+        #energy-fill {
+            width: 100%;
+            height: 100%;
+            background: #00ffcc;
+        }
+
+        #sprint-toggle {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #111;
+            border: 2px solid #555;
+            color: #888;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 60px;
+            text-align: center;
+        }
+
+        #sprint-toggle.active {
+            border-color: #00ffcc;
+            color: #00ffcc;
+            background: #0a2a24;
+        }
+
+        .shield-status {
+            position: absolute;
+            bottom: 85px;
+            left: 0;
+            width: 100%;
+            color: #4facfe;
+            font-size: 11px;
+            font-weight: bold;
+            display: none;
+            height: 18px;
+        }
+
+        /* Performance Monitor from Cell Overload */
+        #perf-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 100;
+            background: #000;
+            filter: alpha(opacity=70);
+            padding: 5px;
+            font-size: 10px;
+            color: #00ff00;
+        }
+    </style>
+</head>
+
+<body onload="App.init()">
+
+    <div id="perf-panel">FPS: <span id="fps-val">--</span> | MODE: <span id="perf-mode">AUTO</span></div>
+
+    <!-- MENUS -->
+    <div id="screen-menu" class="screen">
+        <h1>StarBear</h1>
+        <h2>XP Legacy Edition</h2>
+        <div class="currency">DUST: <span id="menu-dust">0</span></div>
+        <button class="btn primary" onclick="App.showLevelSelect()">Start Mission</button><br>
+        <button class="btn" onclick="App.showShop()">Hangar</button><br>
+        <div style="margin-top: 20px;">
+            <button class="btn" id="btn-perf" onclick="App.cyclePerformance()"
+                style="width: 180px; font-size: 10px;">Perf: Auto</button>
+        </div>
+    </div>
+
+    <div id="screen-shop" class="screen hidden">
+        <h1>Bears</h1>
+        <div class="currency">DUST: <span id="shop-dust">0</span></div>
+        <div class="shop-container" id="shop-list"></div>
+        <button class="btn" onclick="App.showMenu()" style="margin-top:20px">Back</button>
+    </div>
+
+    <div id="screen-levels" class="screen hidden">
+        <h1>Select Zone</h1>
+        <div id="level-list"></div>
+        <button class="btn" onclick="App.showMenu()" style="margin-top:20px">Back</button>
+    </div>
+
+    <!-- HUD -->
+    <div id="screen-hud" class="screen screen-no-bg hidden">
+        <div id="hud-top">
+            <span id="hud-timer">00:00</span>
+        </div>
+
+        <div id="hud-shield" class="shield-status">SHIELD ONLINE</div>
+
+        <div id="energy-bar-container">
+            <div id="energy-fill"></div>
+        </div>
+        <div id="sprint-toggle" onclick="App.game.toggleSprint()">SPRINT</div>
+    </div>
+
+    <!-- RESULT -->
+    <div id="screen-result" class="screen hidden" style="background: #000;">
+        <h1 id="res-title">DEAD</h1>
+        <h2 id="res-reason" style="color:#aaa">...</h2>
+        <div id="res-reward" style="font-size:24px; color:#ffd700; margin-bottom:30px"></div>
+        <button class="btn primary" onclick="App.restart()">RETRY</button><br>
+        <button class="btn" onclick="App.showMenu()">MENU</button>
+    </div>
+
+    <div id="game-container"></div>
+
+    <script type="text/javascript">
+        /** XP COMPATIBLE SCRIPT (NO ES6) */
+
+        // === MATH LOOKUP TABLES ===
+        var TRIG_SAMPLES = 360;
+        var SIN_TABLE = new Array(TRIG_SAMPLES);
+        var COS_TABLE = new Array(TRIG_SAMPLES);
+        (function () {
+            for (var i = 0; i < TRIG_SAMPLES; i++) {
+                var rad = (i * Math.PI * 2) / TRIG_SAMPLES;
+                SIN_TABLE[i] = Math.sin(rad);
+                COS_TABLE[i] = Math.cos(rad);
+            }
+        })();
+
+        function getSin(rad) {
+            var deg = ((rad * 57.2957) % 360 + 360) % 360;
+            return SIN_TABLE[deg | 0];
+        }
+
+        function getCos(rad) {
+            var deg = ((rad * 57.2957) % 360 + 360) % 360;
+            return COS_TABLE[deg | 0];
+        }
+
+        // Polyfill for Date.now
+        if (!Date.now) { Date.now = function () { return new Date().getTime(); }; }
+
+        // === SCREEN SIZE ADAPTATION ===
+        function getWH() {
+            var W = 0, H = 0;
+            // Try all methods for max IE6 compatibility
+            if (window.innerWidth) {
+                W = window.innerWidth;
+                H = window.innerHeight;
+            }
+            if (!W && document.documentElement && document.documentElement.clientWidth) {
+                W = document.documentElement.clientWidth;
+                H = document.documentElement.clientHeight;
+            }
+            if (!W && document.body) {
+                W = document.body.clientWidth || document.body.offsetWidth || 0;
+                H = document.body.clientHeight || document.body.offsetHeight || 0;
+            }
+            if (!W) { W = 800; H = 600; }
+            return { w: W, h: H };
+        }
+
+        function doLayout() {
+            var wh = getWH();
+            var W = wh.w;
+            var H = wh.h;
+
+            // padding-top for menu screens
+            var pt = Math.floor(H * 0.07);
+            if (pt < 15) pt = 15;
+            if (pt > 70) pt = 70;
+            var screenIds = ['screen-menu', 'screen-shop', 'screen-levels', 'screen-result'];
+            for (var i = 0; i < screenIds.length; i++) {
+                var el = document.getElementById(screenIds[i]);
+                if (el) el.style.paddingTop = pt + 'px';
+            }
+
+            // menu buttons - adaptive width
+            var btnW = Math.floor(W * 0.22);
+            if (btnW < 110) btnW = 110;
+            if (btnW > 210) btnW = 210;
+            var allBtns = document.getElementsByTagName('button');
+            for (var i = 0; i < allBtns.length; i++) {
+                allBtns[i].style.width = btnW + 'px';
+            }
+
+            // shop container
+            var shop = document.getElementById('shop-list');
+            if (shop) {
+                var shopH = Math.floor(H * 0.50);
+                if (shopH < 150) shopH = 150;
+                var shopW = Math.floor(W * 0.85);
+                if (shopW > 480) shopW = 480;
+                shop.style.height = shopH + 'px';
+                shop.style.width = shopW + 'px';
+            }
+
+            // HUD: energy bar
+            var ebar = document.getElementById('energy-bar-container');
+            if (ebar) {
+                var ebarW = Math.floor(W * 0.22);
+                if (ebarW < 80) ebarW = 80;
+                if (ebarW > 200) ebarW = 200;
+                ebar.style.width = ebarW + 'px';
+                ebar.style.marginLeft = '-' + Math.floor(ebarW / 2) + 'px';
+                ebar.style.bottom = Math.floor(H * 0.13) + 'px';
+            }
+
+            // HUD: sprint button (div, not button - handled separately)
+            var sprint = document.getElementById('sprint-toggle');
+            if (sprint) {
+                var spW = Math.floor(H * 0.10);
+                if (spW < 44) spW = 44;
+                if (spW > 70) spW = 70;
+                sprint.style.width = spW + 'px';
+                sprint.style.height = spW + 'px';
+                sprint.style.lineHeight = spW + 'px';
+                sprint.style.bottom = Math.floor(H * 0.03) + 'px';
+                sprint.style.right = Math.floor(W * 0.025) + 'px';
+                sprint.style.fontSize = Math.floor(spW * 0.17) + 'px';
+                sprint.style.display = 'block';
+            }
+
+            // HUD: shield status
+            var shield = document.getElementById('hud-shield');
+            if (shield && ebar) {
+                shield.style.bottom = (parseInt(ebar.style.bottom, 10) + 22) + 'px';
+            }
+        }
+
+        // resize handler
+        if (window.addEventListener) {
+            window.addEventListener('resize', doLayout, false);
+        } else if (window.attachEvent) {
+            window.attachEvent('onresize', doLayout);
+        }
+
+        window.onerror = function () {
+            return true;
+        };
+
+        var LOW_SPEC_MODE = !!(window.attachEvent && !window.XMLHttpRequest);
+
+        var CONFIG = {
+            bears: {
+                'default': { name: "Standard", cost: 0, desc: "No special abilities.", color: '#eee' },
+                'tank': { name: "Tank Bear", cost: 150, desc: "Shield blocks 1 hit.", color: '#4facfe' },
+                'flow': { name: "Flow Bear", cost: 300, desc: "+25% Move Speed.", color: '#00f260' },
+                'oracle': { name: "Oracle Bear", cost: 500, desc: "Sees Traps & Earlier Alerts.", color: '#b200ff' }
+            },
+            worlds: [
+                { id: 0, name: "Nebula", height: 5000, cometSpeed: 180, cometGap: 250, fakes: false, reward: 30 },
+                { id: 1, name: "Asteroids", height: 7000, cometSpeed: 280, cometGap: 180, fakes: true, reward: 80 },
+                { id: 2, name: "Neon Storm", height: 10000, cometSpeed: 400, cometGap: 140, fakes: true, reward: 200 }
+            ],
+            game: {
+                maxDist: 340,
+                snap: 50,
+                regen: 20,
+                drain: 45
+            }
+        };
+
+        var StorageAdapter = {
+            getItem: function (key) {
+                try {
+                    if (window.localStorage && localStorage.getItem) {
+                        return localStorage.getItem(key);
+                    }
+                } catch (e) { }
+                return this.getCookie('sb_' + key);
+            },
+            setItem: function (key, value) {
+                try {
+                    if (window.localStorage && localStorage.setItem) {
+                        localStorage.setItem(key, value);
+                        return;
+                    }
+                } catch (e) { }
+                this.setCookie('sb_' + key, value, 3650);
+            },
+            setCookie: function (name, value, days) {
+                var expires = '';
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = '; expires=' + (date.toUTCString ? date.toUTCString() : date.toGMTString());
+                }
+                document.cookie = name + '=' + escape(value) + expires + '; path=/';
+            },
+            getCookie: function (name) {
+                var nameEQ = name + '=';
+                var ca = document.cookie.split(';');
+                for (var i = 0; i < ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) === 0) return unescape(c.substring(nameEQ.length, c.length));
+                }
+                return null;
+            }
+        };
+
+        var Data = {
+            dust: 0, unlocked: ['default'], selected: 'default',
+            load: function () {
+                var d = StorageAdapter.getItem('starbear_xp');
+                if (d) {
+                    try {
+                        if (!window.JSON || !JSON.parse) throw new Error('JSON unavailable');
+                        var json = JSON.parse(d);
+                        for (var k in json) { this[k] = json[k]; }
+                    } catch (e) { }
+                } else {
+                    this.dust = 100;
+                }
+            },
+            save: function () {
+                try {
+                    if (!window.JSON || !JSON.stringify) return;
+                    StorageAdapter.setItem('starbear_xp', JSON.stringify(this));
+                } catch (e) { }
+            }
+        };
+
+        var App = {
+            game: null,
+            worldId: 0,
+            perfLevel: 0, // 0: Auto, 1: High, 2: Med, 3: Low, 4: Potato
+            autoQuality: 0, // текущее авто-качество (0-4)
+            autoCheckCount: 0,
+
+            init: function () {
+                Data.load();
+                this.updateUI();
+                this.renderLevels();
+                this.showMenu();
+                doLayout();
+
+                // Performance Monitor + Auto Quality
+                this.lastFrameTime = Date.now();
+                this.frameCount = 0;
+                this.autoCheckCount = 0;
+                setInterval(function () {
+                    var valEl = document.getElementById('fps-val');
+                    if (valEl) valEl.innerHTML = App.frameCount;
+                    // Auto mode: если FPS низкий — снижаем качество
+                    if (App.perfLevel === 0) {
+                        App.autoCheckCount = (App.autoCheckCount || 0) + 1;
+                        if (App.autoCheckCount >= 3) { // ждём 3 секунды для стабилизации
+                            if (App.frameCount < 12 && App.autoQuality < 4) {
+                                App.autoQuality++;
+                                if (App.game) App.game.applyAutoQuality(App.autoQuality);
+                            } else if (App.frameCount > 25 && App.autoQuality > 0) {
+                                App.autoQuality--;
+                                if (App.game) App.game.applyAutoQuality(App.autoQuality);
+                            }
+                        }
+                    }
+                    App.frameCount = 0;
+                }, 1000);
+
+                // Auto-Quality from Launcher
+                var q = location.search.match(/[?&]quality=(\w+)/);
+                var m = q ? q[1].toUpperCase() : (LOW_SPEC_MODE ? 'POTATO' : 'HIGH');
+
+                var modes = ['AUTO', 'HIGH', 'MEDIUM', 'LOW', 'POTATO'];
+                for (var i = 0; i < modes.length; i++) {
+                    if (modes[i].toUpperCase() === m) { this.perfLevel = i; break; }
+                }
+                if (LOW_SPEC_MODE && this.perfLevel === 0) this.autoQuality = 4;
+                var modeName = modes[this.perfLevel];
+                document.getElementById('btn-perf').innerHTML = 'Perf: ' + modeName;
+                document.getElementById('perf-mode').innerHTML = modeName.toUpperCase();
+            },
+
+            updateUI: function () {
+                document.getElementById('menu-dust').innerHTML = Data.dust;
+                document.getElementById('shop-dust').innerHTML = Data.dust;
+                this.renderShop();
+            },
+
+            showScreen: function (id) {
+                var screens = ['screen-menu', 'screen-shop', 'screen-levels', 'screen-hud', 'screen-result'];
+                for (var i = 0; i < screens.length; i++) {
+                    var s = document.getElementById(screens[i]);
+                    if (s) {
+                        s.className = (screens[i] === id) ? (id === 'screen-hud' ? 'screen screen-no-bg' : 'screen') : 'screen hidden';
+                    }
+                }
+
+                if (id !== 'screen-hud' && this.game) {
+                    this.game.destroy();
+                    this.game = null;
+                }
+            },
+
+            showMenu: function () { this.showScreen('screen-menu'); },
+            showShop: function () { this.showScreen('screen-shop'); },
+            showLevelSelect: function () { this.showScreen('screen-levels'); },
+
+            renderShop: function () {
+                var list = document.getElementById('shop-list');
+                list.innerHTML = '';
+                var bears = ['default', 'tank', 'flow', 'oracle'];
+                for (var i = 0; i < bears.length; i++) {
+                    var k = bears[i];
+                    var b = CONFIG.bears[k];
+
+                    var unlocked = false;
+                    for (var j = 0; j < Data.unlocked.length; j++) { if (Data.unlocked[j] === k) unlocked = true; }
+                    var active = (Data.selected === k);
+
+                    var div = document.createElement('div');
+                    div.className = 'shop-item' + (active ? ' selected' : '');
+                    div.innerHTML = '<div class="item-info"><b style="color:' + b.color + '">' + b.name + '</b><span>' + b.desc + '</span></div>' +
+                        '<div class="item-cost">' + (active ? 'EQUIPPED' : (unlocked ? 'SELECT' : b.cost)) + '</div>';
+
+                    // Fix for IE closure
+                    (function (id, isUnlocked, isActive, costVal) {
+                        div.onclick = function () {
+                            if (isActive) return;
+                            if (!isUnlocked) {
+                                if (Data.dust >= costVal) {
+                                    Data.dust -= costVal;
+                                    Data.unlocked.push(id);
+                                    Data.selected = id;
+                                    Data.save();
+                                    App.updateUI();
+                                }
+                            } else {
+                                Data.selected = id;
+                                Data.save();
+                                App.updateUI();
+                            }
+                        };
+                    })(k, unlocked, active, b.cost);
+
+                    list.appendChild(div);
+                }
+            },
+
+            renderLevels: function () {
+                var list = document.getElementById('level-list');
+                list.innerHTML = '';
+                for (var i = 0; i < CONFIG.worlds.length; i++) {
+                    var w = CONFIG.worlds[i];
+                    var div = document.createElement('div');
+                    div.className = 'level-card';
+                    div.innerHTML = '<h3>' + w.name + '</h3><div class="level-meta">Height: ' + w.height + 'px | Traps: ' + (w.fakes ? 'YES' : 'NO') + '</div>';
+                    (function (id) {
+                        div.onclick = function () { App.start(id); };
+                    })(i);
+                    list.appendChild(div);
+                }
+            },
+
+            start: function (wid) {
+                this.worldId = wid;
+                this.showScreen('screen-hud');
+                this.game = new Game(CONFIG.worlds[wid], Data.selected);
+                doLayout(); // адаптируем HUD под размер экрана
+            },
+
+            restart: function () { this.start(this.worldId); },
+
+            cyclePerformance: function () {
+                this.perfLevel = (this.perfLevel + 1) % 5;
+                this.autoQuality = 0; // сброс авто при ручном переключении
+                this.autoCheckCount = 0;
+                var modes = ['Auto', 'High', 'Medium', 'Low', 'Potato'];
+                document.getElementById('btn-perf').innerHTML = 'Perf: ' + modes[this.perfLevel];
+                document.getElementById('perf-mode').innerHTML = modes[this.perfLevel].toUpperCase();
+            },
+
+            endGame: function (win, reason, time) {
+                this.showScreen('screen-result');
+                var t = document.getElementById('res-title');
+                var r = document.getElementById('res-reward');
+
+                if (win) {
+                    t.innerHTML = "MISSION COMPLETE";
+                    t.style.color = "#00ffcc";
+                    var rew = CONFIG.worlds[this.worldId].reward;
+                    r.innerHTML = "+" + rew + " DUST";
+                    Data.dust += rew;
+                    Data.save();
+                    document.getElementById('res-reason').innerHTML = "Time: " + time;
+                } else {
+                    t.innerHTML = "KILLED IN ACTION";
+                    t.style.color = "#ff0055";
+                    r.innerHTML = "";
+                    document.getElementById('res-reason').innerHTML = reason;
+                }
+                this.updateUI();
+            }
+        };
+
+        /** GAME ENGINE (DOM OPTIMIZED FOR IE8) */
+
+        function Game(world, bearKey) {
+            this.container = document.getElementById('game-container');
+            this.container.innerHTML = '';
+
+            // Background Grid (Using DOM)
+            this.bgDiv = document.createElement('div');
+            this.bgDiv.style.position = 'absolute';
+            this.bgDiv.style.width = '100%';
+            this.bgDiv.style.height = '100%';
+            this.bgDiv.style.background = 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkAgMAAAANjH3HAAAADFBMVEUAAAAAAAARERERERERgN3cAAAAAnRSTlMAAQGU/a4AAAAqSURBVEjH7cGBAAAAAMOg+VNf4AhVAQAAAAAAAAAAAAAAAAAAAAB4wQAKDAAB0Y4O9AAAAABJRU5ErkJggg==) repeat';
+            this.container.appendChild(this.bgDiv);
+
+            this.dragDots = [];
+            for (var i = 0; i < 8; i++) {
+                var d = document.createElement('div');
+                d.style.position = 'absolute';
+                d.style.display = 'none';
+                d.style.width = '6px';
+                d.style.height = '6px';
+                d.style.backgroundColor = '#fff';
+                this.container.appendChild(d);
+                this.dragDots.push(d);
+            }
+
+            this.world = world;
+            this.bearKey = bearKey;
+            this.stats = this.getStats(bearKey);
+
+            this.width = window.innerWidth || document.documentElement.clientWidth;
+            this.height = window.innerHeight || document.documentElement.clientHeight;
+
+            this.stars = this.genLevel();
+            for (var i = 0; i < this.stars.length; i++) this.stars[i].initDOM(this.container);
+
+            this.bear = new Bear(this.stars[0], this.stats);
+            this.bear.initDOM(this.container);
+
+            this.comets = this.genComets();
+            for (var i = 0; i < this.comets.length; i++) this.comets[i].initDOM(this.container);
+
+            this.cameraY = 0;
+            this.time = 0;
+            this.running = true;
+            this.lastTime = Date.now();
+
+            this.input = { x: 0, y: 0, down: false, drag: null };
+            this.bindInput();
+
+            document.getElementById('hud-shield').style.display = (this.bear.shieldMax > 0 ? 'block' : 'none');
+            document.getElementById('hud-shield').innerHTML = 'SHIELD ONLINE';
+            document.getElementById('hud-shield').style.color = '#4facfe';
+            document.getElementById('sprint-toggle').className = '';
+
+            var self = this;
+            // Адаптивный интервал в зависимости от уровня производительности:
+            // Auto=50мс(20fps старт), High=33мс(30fps), Med=50мс(20fps), Low=67мс(15fps), Potato=100мс(10fps)
+            var intervals = LOW_SPEC_MODE ? [67, 50, 67, 100, 125] : [50, 33, 50, 67, 100];
+            var loopMs = intervals[App.perfLevel] || 50;
+            this.loopMs = loopMs;
+            this.loopInterval = setInterval(function () { self.loop(); }, loopMs);
+        }
+
+        Game.prototype.getStats = function (k) {
+            var s = { speed: 130, shield: 0, oracle: false, color: '#eee' };
+            if (k === 'flow') { s.speed = 175; s.color = '#00f260'; }
+            if (k === 'tank') { s.shield = 1; s.color = '#4facfe'; }
+            if (k === 'oracle') { s.oracle = true; s.color = '#b200ff'; }
+            return s;
+        };
+
+        Game.prototype.destroy = function () {
+            this.running = false;
+            if (this.loopInterval) clearInterval(this.loopInterval);
+            if (this.container) this.container.innerHTML = '';
+        };
+
+        // Авто-качество: перезапускает loop с новым интервалом
+        Game.prototype.applyAutoQuality = function (q) {
+            var self = this;
+            var intervals = LOW_SPEC_MODE ? [67, 50, 67, 100, 125] : [50, 33, 50, 67, 100];
+            var ms = intervals[q] || 50;
+            if (ms === this.loopMs) return;
+            this.loopMs = ms;
+            clearInterval(this.loopInterval);
+            this.loopInterval = setInterval(function () { self.loop(); }, ms);
+            var modeEl = document.getElementById('perf-mode');
+            var modes = ['AUTO', 'HIGH', 'MEDIUM', 'LOW', 'POTATO'];
+            if (modeEl) modeEl.innerHTML = 'AUTO/' + modes[q];
+        };
+
+        Game.prototype.resize = function () {
+            this.width = window.innerWidth || document.documentElement.clientWidth;
+            this.height = window.innerHeight || document.documentElement.clientHeight;
+        };
+
+        Game.prototype.genLevel = function () {
+            var s = [];
+            var y = this.height - 150;
+            var x = this.width / 2;
+
+            // На слабых машинах увеличиваем шаг между звёздами (меньше объектов)
+            var perfQ = (App.perfLevel === 0) ? App.autoQuality : App.perfLevel;
+            var stepBase = (perfQ >= 3) ? 220 : 150;
+            var stepRand = (perfQ >= 3) ? 60 : 100;
+
+            s.push(new Star(x, y, 'start'));
+
+            while (y > -this.world.height) {
+                y -= (stepBase + Math.random() * stepRand);
+                var range = 250;
+                var nx = Math.max(40, Math.min(this.width - 40, x + (Math.random() - 0.5) * range));
+                x = nx;
+                s.push(new Star(x, y, 'normal'));
+            }
+
+            s.push(new Star(this.width / 2, -this.world.height - 100, 'portal'));
+
+            if (this.world.fakes) {
+                var count = s.length;
+                for (var i = 1; i < count - 1; i++) {
+                    if (Math.random() > 0.3) {
+                        var real = s[i];
+                        var angle = Math.random() * 6.28;
+                        var dist = 80 + Math.random() * 120;
+                        var fx = Math.max(30, Math.min(this.width - 30, real.x + Math.cos(angle) * dist));
+                        var fy = real.y + Math.sin(angle) * dist;
+
+                        var overlap = false;
+                        for (var j = 0; j < s.length; j++) {
+                            var dx = s[j].x - fx;
+                            var dy = s[j].y - fy;
+                            if (dx * dx + dy * dy < 6400) { overlap = true; break; } // 80*80=6400
+                        }
+                        if (!overlap) s.push(new Star(fx, fy, 'fake'));
+                    }
+                }
+            }
+            return s;
+        };
+
+        Game.prototype.genComets = function () {
+            var c = [];
+            var perfQ = (App.perfLevel === 0) ? App.autoQuality : App.perfLevel;
+            // На слабых машинах увеличиваем промежуток между кометами (меньше объектов)
+            var gapMul = [1, 1, 1.5, 2, 3];
+            var gap = Math.floor(this.world.cometGap * (gapMul[perfQ] || 1));
+            var speed = this.world.cometSpeed;
+            for (var y = this.height - 500; y > -this.world.height; y -= gap) {
+                var cy = y + (Math.random() - 0.5) * 50;
+                c.push(new Comet(cy, this.width, speed));
+            }
+            return c;
+        };
+
+        Game.prototype.bindInput = function () {
+            var self = this;
+            var handler = function (e) {
+                if (!self.running) return;
+                var x, y;
+                if (e.touches && e.touches.length) {
+                    x = e.touches[0].clientX;
+                    y = e.touches[0].clientY;
+                } else {
+                    x = e.clientX;
+                    y = e.clientY;
+                }
+
+                self.input.x = x;
+                self.input.y = y + self.cameraY;
+
+                if (e.type === 'mousedown' || e.type === 'touchstart') {
+                    self.input.down = true;
+                    if (self.bear.state === 'IDLE') {
+                        var dx = self.input.x - self.bear.x;
+                        var dy = self.input.y - self.bear.y;
+                        if (dx * dx + dy * dy < 6400) { // 80*80=6400, без Math.sqrt для IE6
+                            self.input.drag = { sx: self.bear.x, sy: self.bear.y, ex: self.input.x, ey: self.input.y };
+                        }
+                    } else if (self.bear.state !== 'DEAD') {
+                        self.bear.wait(true);
+                    }
+                } else if (e.type === 'mouseup' || e.type === 'touchend') {
+                    self.input.down = false;
+                    self.bear.wait(false);
+                    if (self.input.drag) {
+                        self.tryConnect();
+                        self.input.drag = null;
+                    }
+                } else if (self.input.drag) {
+                    self.input.drag.ex = self.input.x;
+                    self.input.drag.ey = self.input.y;
+                }
+            };
+
+            var events = ['mousedown', 'mousemove', 'mouseup', 'touchstart', 'touchmove', 'touchend'];
+            for (var i = 0; i < events.length; i++) {
+                if (document.addEventListener) {
+                    document.addEventListener(events[i], handler, false);
+                } else if (document.attachEvent) {
+                    // IE6/IE7: attachEvent не передаёт event как аргумент — берём из window.event
+                    (function(ev) {
+                        document.attachEvent('on' + ev, function() {
+                            handler(window.event);
+                        });
+                    })(events[i]);
+                }
+            }
+        };
+
+        Game.prototype.tryConnect = function () {
+            var target = null, minDist2 = 50 * 50; // сравниваем квадраты, без Math.sqrt
+            for (var i = 0; i < this.stars.length; i++) {
+                var s = this.stars[i];
+                if (s === this.bear.star) continue;
+                var dx = this.input.drag.ex - s.x;
+                var dy = this.input.drag.ey - s.y;
+                var d2 = dx * dx + dy * dy;
+                if (d2 < minDist2) { minDist2 = d2; target = s; }
+            }
+
+            if (target) {
+                var dx2 = this.bear.star.x - target.x;
+                var dy2 = this.bear.star.y - target.y;
+                if (dx2 * dx2 + dy2 * dy2 <= 340 * 340) { // 115600
+                    this.bear.go(target);
+                }
+            }
+        };
+
+        Game.prototype.toggleSprint = function () {
+            this.bear.sprint = !this.bear.sprint;
+            document.getElementById('sprint-toggle').className = (this.bear.sprint ? 'active' : '');
+        };
+
+        Game.prototype.loop = function () {
+            if (!this.running) return;
+            var now = Date.now();
+            var dt = (now - this.lastTime) / 1000;
+            if (dt > 0.1) dt = 0.1;
+            this.lastTime = now;
+            this.time += dt;
+            App.frameCount++;
+
+            // Update
+            var perfQ = (App.perfLevel === 0) ? App.autoQuality : App.perfLevel;
+            var skipAnim = (perfQ >= 3);
+            var skipEvery2 = (perfQ >= 4); // Potato: обновляем кометы через кадр
+            this.bear.update(dt);
+            for (var i = 0; i < this.stars.length; i++) this.stars[i].update(this.time, skipAnim);
+            if (!skipEvery2 || (App.frameCount % 2 === 0)) {
+                for (var i = 0; i < this.comets.length; i++) this.comets[i].update(dt * (skipEvery2 ? 2 : 1), this.time, this.stats.oracle);
+            }
+
+            // Camera
+            var targetCam = this.bear.y - this.height * 0.7;
+            if (targetCam > 0) targetCam = 0;
+            this.cameraY = this.cameraY + (targetCam - this.cameraY) * 0.1;
+
+            // Collision (без Math.sqrt для скорости на слабых CPU)
+            if (this.bear.active) {
+                for (var i = 0; i < this.comets.length; i++) {
+                    var c = this.comets[i];
+                    if (c.active) {
+                        var dx = this.bear.x - c.x;
+                        var dy = this.bear.y - c.y;
+                        if (dx * dx + dy * dy < 225) { // 15*15 = 225
+                            if (this.bear.curShield > 0) {
+                                this.bear.breakShield();
+                                c.active = false;
+                            } else {
+                                this.bear.die();
+                                App.endGame(false, "VAPORIZED BY COMET", 0);
+                            }
+                        }
+                    }
+                }
+            }
+
+            this.draw();
+        };
+
+        Game.prototype.draw = function () {
+            var cy = this.cameraY;
+            var h = this.height;
+
+            // Parallax Grid
+            this.bgDiv.style.backgroundPosition = '0px ' + Math.floor(-cy) + 'px';
+
+            if (this.input.drag) {
+                var dragX = Math.floor(this.input.drag.ex);
+                var dragY = Math.floor(this.input.drag.ey - cy);
+                var startX = Math.floor(this.bear.x);
+                var startY = Math.floor(this.bear.y - cy);
+                for (var i = 0; i < 8; i++) {
+                    var p = i / 7;
+                    this.dragDots[i].style.display = 'block';
+                    this.dragDots[i].style.left = Math.floor(startX + (dragX - startX) * p - 3) + 'px';
+                    this.dragDots[i].style.top = Math.floor(startY + (dragY - startY) * p - 3) + 'px';
+                }
+            } else {
+                for (var i = 0; i < 8; i++) {
+                    this.dragDots[i].style.display = 'none';
+                }
+            }
+
+            // Render objects - Optimized for XP
+            var perfQ2 = (App.perfLevel === 0) ? App.autoQuality : App.perfLevel;
+            var skipDetail = (perfQ2 >= 2);
+
+            for (var i = 0; i < this.stars.length; i++) {
+                var s = this.stars[i];
+                if (s.y - cy > -50 && s.y - cy < h + 50) s.draw(cy, this.stats.oracle, skipDetail);
+                else s.hide();
+            }
+            for (var i = 0; i < this.comets.length; i++) {
+                var c = this.comets[i];
+                if (c.y - cy > -50 && c.y - cy < h + 50) c.draw(cy, skipDetail);
+                else c.hide();
+            }
+            this.bear.draw(cy, skipDetail);
+
+            document.getElementById('hud-timer').innerHTML = this.time.toFixed(1);
+            document.getElementById('energy-fill').style.width = this.bear.energy + "%";
+        };
+
+        // --- OBJECT CLASSES ---
+
+        function createDiv(container, w, h, bg, radius) {
+            var el = document.createElement('div');
+            el.style.position = 'absolute';
+            el.style.width = w + 'px';
+            el.style.height = h + 'px';
+            el.style.backgroundColor = bg || 'transparent';
+            if (radius) {
+                el.style.borderRadius = radius + 'px';
+                // IE6/IE7 не поддерживают border-radius — эмулируем через фильтр VML
+                try {
+                    el.style.behavior = 'url(#default#VML)';
+                } catch(ex) {}
+            }
+            el.style.display = 'none';
+            container.appendChild(el);
+            return el;
+        }
+
+        function Star(x, y, t) {
+            this.x = x; this.y = y; this.type = t;
+            this.anim = Math.random() * 10;
+        }
+        Star.prototype.initDOM = function (container) {
+            var color = '#555';
+            var r = 6;
+            if (this.type === 'start') { color = '#00aaff'; r = 8; }
+            else if (this.type === 'portal') { color = '#00ffcc'; r = 10; }
+            else if (this.type === 'normal') { color = '#fff'; }
+            else if (this.type === 'fake') { color = '#eee'; r = 6; }
+            this.radius = r;
+            this.color = color;
+            this.el = createDiv(container, r * 2, r * 2, color, r);
+        };
+        Star.prototype.update = function (t, skipAnim) {
+            if (!skipAnim) this.anim += 0.05;
+        };
+        Star.prototype.hide = function () {
+            if (this.el.style.display !== 'none') this.el.style.display = 'none';
+        };
+        Star.prototype.draw = function (cy, isOracle, skipDetail) {
+            var sy = this.y - cy;
+            var r = this.radius;
+            var c = this.color;
+
+            if (this.type === 'fake') {
+                if (isOracle) { c = '#ff0055'; r = 7 + Math.sin(this.anim * 5) * 2; }
+                else { c = '#eee'; r = 6; }
+            }
+
+            this.el.style.display = 'block';
+            this.el.style.width = (r * 2) + 'px';
+            this.el.style.height = (r * 2) + 'px';
+            this.el.style.backgroundColor = c;
+            this.el.style.left = Math.floor(this.x - r) + 'px';
+            this.el.style.top = Math.floor(sy - r) + 'px';
+        };
+
+        function Comet(y, w, spd) {
+            this.y = y; this.w = w; this.speed = spd;
+            this.dir = Math.random() > 0.5 ? 1 : -1;
+            this.x = this.dir === 1 ? -50 : w + 50;
+            this.active = false;
+            this.timer = Math.random() * 5;
+            this.state = 'cd';
+        }
+        Comet.prototype.initDOM = function (container) {
+            this.el = createDiv(container, 16, 16, '#ff2222', 8);
+            this.tail = createDiv(container, 40, 4, '#f60', 0);
+        };
+        Comet.prototype.update = function (dt, t, isOracle) {
+            this.timer += dt;
+            var teleTime = isOracle ? 2.5 : 1.0;
+            var flightTime = this.w / this.speed;
+            var totalTime = teleTime + flightTime + 1.0;
+
+            var p = this.timer % totalTime;
+
+            if (p < teleTime) {
+                this.state = 'tele';
+                this.active = false;
+            } else if (p < teleTime + flightTime) {
+                this.state = 'fly';
+                this.active = true;
+                var flyP = (p - teleTime) / flightTime;
+                var sx = this.dir === 1 ? -50 : this.w + 50;
+                var ex = this.dir === 1 ? this.w + 50 : -50;
+                this.x = sx + (ex - sx) * flyP;
+            } else {
+                this.state = 'cd';
+                this.active = false;
+            }
+        };
+        Comet.prototype.hide = function () {
+            if (this.el.style.display !== 'none') this.el.style.display = 'none';
+            if (this.tail.style.display !== 'none') this.tail.style.display = 'none';
+        }
+        Comet.prototype.draw = function (cy, skipDetail) {
+            var sy = this.y - cy;
+            if (this.state === 'tele') {
+                this.hide();
+                // We'll skip drawing telegraph lines to maximize performance on XP
+            } else if (this.state === 'fly') {
+                this.el.style.display = 'block';
+                this.el.style.left = Math.floor(this.x - 8) + 'px';
+                this.el.style.top = Math.floor(sy - 8) + 'px';
+
+                if (!skipDetail) {
+                    this.tail.style.display = 'block';
+                    var tx = this.dir === 1 ? (this.x - 40) : this.x;
+                    this.tail.style.left = Math.floor(tx) + 'px';
+                    this.tail.style.top = Math.floor(sy - 2) + 'px';
+                } else {
+                    this.tail.style.display = 'none';
+                }
+            } else {
+                this.hide();
+            }
+        };
+
+        function Bear(s, stats) {
+            this.star = s; this.x = s.x; this.y = s.y;
+            this.stats = stats;
+            this.shieldMax = stats.shield;
+            this.curShield = stats.shield;
+
+            this.state = 'IDLE';
+            this.sprint = false;
+            this.active = false;
+            this.energy = 100;
+            this.target = null;
+            this.prog = 0;
+            this.dist = 0;
+        }
+        Bear.prototype.initDOM = function (container) {
+            this.el = createDiv(container, 24, 24, this.stats.color, 12);
+            this.shieldEl = createDiv(container, 32, 32, 'transparent', 16);
+            this.shieldEl.style.border = '2px solid #4facfe';
+        };
+        Bear.prototype.wait = function (on) { if (this.state !== 'IDLE' && this.state !== 'DEAD') this.state = on ? 'WAIT' : 'WALK'; };
+        Bear.prototype.go = function (target) {
+            this.target = target;
+            var dx = this.star.x - target.x;
+            var dy = this.star.y - target.y;
+            this.dist = Math.sqrt(dx * dx + dy * dy); // нужен точный dist для интерполяции движения
+            this.prog = 0;
+            this.state = 'WALK';
+            this.active = true;
+        };
+        Bear.prototype.breakShield = function () {
+            this.curShield = 0;
+            var ui = document.getElementById('hud-shield');
+            ui.innerHTML = "SHIELD BROKEN";
+            ui.style.color = "#ff4444";
+        };
+        Bear.prototype.rechargeShield = function () {
+            if (this.shieldMax > 0 && this.curShield === 0) {
+                this.curShield = this.shieldMax;
+                var ui = document.getElementById('hud-shield');
+                ui.innerHTML = "SHIELD ONLINE";
+                ui.style.color = "#4facfe";
+            }
+        };
+        Bear.prototype.die = function () { this.state = 'DEAD'; this.active = false; };
+        Bear.prototype.update = function (dt) {
+            if (this.state === 'DEAD' || this.state === 'WIN') return;
+            if (this.state === 'IDLE') this.energy = Math.min(100, this.energy + CONFIG.game.regen * dt);
+            if (this.state === 'WAIT') return;
+
+            if (this.target) {
+                var spd = this.stats.speed;
+                if (this.sprint && this.energy > 0) {
+                    spd = 350;
+                    this.state = 'SPRINT';
+                    this.energy -= CONFIG.game.drain * dt;
+                } else {
+                    this.state = 'WALK';
+                }
+
+                if (this.target.type === 'fake' && this.prog > 0.6) {
+                    this.die();
+                    App.endGame(false, "IT WAS A TRAP", 0);
+                    return;
+                }
+
+                this.prog += (spd * dt) / this.dist;
+                if (this.prog >= 1) {
+                    this.x = this.target.x; this.y = this.target.y;
+                    this.star = this.target;
+                    this.target = null;
+                    this.active = false;
+
+                    if (this.star.type === 'portal') {
+                        this.state = 'WIN';
+                        App.endGame(true, "", document.getElementById('hud-timer').innerHTML);
+                    } else {
+                        this.state = 'IDLE';
+                        if (this.star.type === 'normal' || this.star.type === 'start') {
+                            this.rechargeShield();
+                        }
+                    }
+                } else {
+                    var p = this.prog;
+                    this.x = this.star.x + (this.target.x - this.star.x) * p;
+                    this.y = this.star.y + (this.target.y - this.star.y) * p;
+                }
+            }
+        };
+        Bear.prototype.draw = function (cy, skipDetail) {
+            var sy = this.y - cy;
+
+            this.el.style.display = 'block';
+            if (this.state === 'DEAD') this.el.style.backgroundColor = '#444';
+            else if (this.state === 'SPRINT') this.el.style.backgroundColor = '#00ffcc';
+            else if (this.state === 'WAIT') this.el.style.backgroundColor = '#ffaa00';
+            else this.el.style.backgroundColor = this.stats.color;
+
+            this.el.style.left = Math.floor(this.x - 12) + 'px';
+            this.el.style.top = Math.floor(sy - 12) + 'px';
+
+            if (this.curShield > 0) {
+                this.shieldEl.style.display = 'block';
+                this.shieldEl.style.left = Math.floor(this.x - 18) + 'px';
+                this.shieldEl.style.top = Math.floor(sy - 18) + 'px';
+            } else {
+                this.shieldEl.style.display = 'none';
+            }
+        };
+
+    </script>
+</body>
+
+</html>

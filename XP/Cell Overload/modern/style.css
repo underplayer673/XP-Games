@@ -1,0 +1,503 @@
+:root {
+    --bg-color: #050a14;
+    --blue-glow: #00f2ff;
+    --red-glow: #ff0055;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-color: #e0e0e0;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /* Prevent text selection on mobile to avoid popups */
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Rajdhani', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow: hidden;
+    /* Use dvh for mobile browsers to handle address bars correctly */
+    height: 100vh;
+    height: 100dvh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.background-blobs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    filter: blur(80px);
+    /* Slightly reduced blur for performance on mobile */
+}
+
+.blob {
+    position: absolute;
+    width: 40vw;
+    height: 40vw;
+    border-radius: 50%;
+    opacity: 0.2;
+    animation: move 20s infinite alternate;
+}
+
+.blob-1 {
+    background: var(--blue-glow);
+    top: -10%;
+    left: -10%;
+}
+
+.blob-2 {
+    background: var(--red-glow);
+    bottom: -10%;
+    right: -10%;
+    animation-delay: -10s;
+}
+
+@keyframes move {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(20%, 20%);
+    }
+}
+
+.game-container {
+    width: 95%;
+    max-width: 600px;
+    /* Dynamic height handling */
+    max-height: 98vh;
+    max-height: 98dvh;
+    padding: clamp(10px, 3vw, 25px);
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Smooth scrolling for settings */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.8rem, 7vw, 2.5rem);
+    margin-bottom: 10px;
+    letter-spacing: 3px;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    line-height: 1.1;
+}
+
+.status-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.elo-badge {
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #000;
+    padding: 2px 10px;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 0.8rem;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    font-family: 'Orbitron', sans-serif;
+}
+
+.turn-indicator {
+    font-size: clamp(0.9rem, 3.5vw, 1.2rem);
+    font-weight: 700;
+}
+
+.player-name.blue {
+    color: var(--blue-glow);
+    text-shadow: 0 0 10px var(--blue-glow);
+}
+
+.player-name.red {
+    color: var(--red-glow);
+    text-shadow: 0 0 10px var(--red-glow);
+}
+
+.score-board {
+    display: flex;
+    gap: 15px;
+}
+
+.score {
+    font-size: clamp(0.9rem, 3.5vw, 1rem);
+    font-weight: 500;
+}
+
+.score.blue {
+    color: var(--blue-glow);
+}
+
+.score.red {
+    color: var(--red-glow);
+}
+
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 450px;
+    /* Prevent default touch actions on the grid to allow fast tapping */
+    touch-action: manipulation;
+}
+
+.cell {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.2rem, 6vw, 1.6rem);
+    cursor: pointer;
+    transition: background 0.2s, border 0.2s, transform 0.1s;
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.cell:active {
+    transform: scale(0.95);
+}
+
+.cell.owner-blue {
+    border-color: var(--blue-glow);
+    color: var(--blue-glow);
+    background: rgba(0, 242, 255, 0.1);
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.15) inset;
+}
+
+.cell.owner-red {
+    border-color: var(--red-glow);
+    color: var(--red-glow);
+    background: rgba(255, 0, 85, 0.1);
+    box-shadow: 0 0 10px rgba(255, 0, 85, 0.15) inset;
+}
+
+.cell.exploding {
+    background: white;
+    box-shadow: 0 0 30px white;
+    transform: scale(1.1);
+    z-index: 5;
+    animation: flash 0.3s ease-out;
+}
+
+@keyframes flash {
+    0% {
+        filter: brightness(1);
+    }
+
+    50% {
+        filter: brightness(4);
+    }
+
+    100% {
+        filter: brightness(1);
+    }
+}
+
+/* Settings UI Updates */
+.setup-screen {
+    padding: 5px 0;
+    width: 100%;
+}
+
+.setting-group {
+    margin-bottom: 12px;
+}
+
+.setting-group h3 {
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.options-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 5px;
+    flex-wrap: wrap;
+}
+
+.opt-btn {
+    padding: 8px 16px;
+    /* Larger tap targets */
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: #888;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    min-width: 100px;
+}
+
+.opt-btn.active {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--blue-glow);
+    color: var(--blue-glow);
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.15);
+}
+
+.difficulty-options {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.diff-btn {
+    width: 44px;
+    /* Larger touch target */
+    height: 40px;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text-color);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Orbitron';
+    font-size: 1.1rem;
+    transition: all 0.2s;
+}
+
+.diff-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.diff-btn.active {
+    background: var(--blue-glow);
+    color: #000;
+    border-color: var(--blue-glow);
+    box-shadow: 0 0 15px var(--blue-glow);
+}
+
+.diff-desc {
+    margin-top: 5px;
+    font-size: 0.9rem;
+    color: var(--blue-glow);
+    min-height: 1.2em;
+}
+
+.main-btn {
+    padding: 14px 50px;
+    background: linear-gradient(45deg, #00d2ff 0%, #3a7bd5 100%);
+    border: none;
+    border-radius: 30px;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+    transition: all 0.3s;
+    margin-top: 15px;
+    width: 100%;
+    max-width: 280px;
+    /* Prevent zoom on double tap */
+    touch-action: manipulation;
+}
+
+.main-btn:active {
+    transform: scale(0.96);
+}
+
+.settings-panel {
+    position: absolute;
+    /* Changed from fixed to absolute within relative parent or keep fixed if needed */
+    position: fixed;
+    top: max(10px, env(safe-area-inset-top));
+    /* Safe area for iPhone notches */
+    right: max(10px, env(safe-area-inset-right));
+    z-index: 1000;
+    display: flex;
+    gap: 12px;
+}
+
+.icon-btn {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(5px);
+    width: 44px;
+    /* Touch friendly */
+    height: 44px;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+.tutorial-card {
+    background: #0a0f1e;
+    border: 1px solid var(--glass-border);
+    padding: 25px;
+    border-radius: 20px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.tut-content {
+    text-align: left;
+    margin: 15px 0;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.tut-content p {
+    margin-bottom: 12px;
+}
+
+.winner-msg h2 {
+    font-size: clamp(2rem, 8vw, 3rem);
+    margin-bottom: 25px;
+    padding: 0 10px;
+}
+
+/* --- MOBILE SPECIFIC ADAPTATIONS --- */
+
+@media (max-width: 480px) {
+    .game-container {
+        padding: 10px;
+        width: 100%;
+        height: 100dvh;
+        max-height: 100dvh;
+        border-radius: 0;
+        border: none;
+        justify-content: flex-start;
+    }
+
+    /* Make grid fit tightly on small screens */
+    .game-grid {
+        gap: 3px;
+    }
+
+    .cell {
+        border-radius: 4px;
+    }
+
+    h1 {
+        margin-top: 40px;
+        /* Space for settings buttons */
+        margin-bottom: 5px;
+    }
+
+    .settings-panel {
+        top: 10px;
+        right: 10px;
+    }
+
+    .setup-screen {
+        margin-top: 10px;
+        padding-bottom: 20px;
+    }
+}
+
+/* Landscape mode on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .game-container {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        padding: 5px 20px;
+    }
+
+    header {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 30%;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        margin-top: 0;
+    }
+
+    .board-container {
+        height: 90vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .game-grid {
+        width: 80vh;
+        /* Scale grid to fit height */
+        max-width: 400px;
+    }
+
+    .setup-screen {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        height: 100%;
+        justify-content: center;
+    }
+
+    .settings-panel {
+        top: 5px;
+        right: 5px;
+    }
+}

@@ -1,0 +1,789 @@
+:root {
+    --milk-bg: #fdfaf5;
+    --milk-accent: #f0e6d2;
+    --cookie-primary: #3c2a21;
+    --cookie-secondary: #5d4037;
+    --cookie-highlight: #8d6e63;
+    --sugar-white: #ffffff;
+    --danger-red: #e74c3c;
+    --glass-bg: rgba(255, 255, 255, 0.3);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --ui-text: #2c1e18;
+    --shadow-soft: 0 10px 30px rgba(60, 42, 33, 0.15);
+    --shadow-deep: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--milk-bg);
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+    color: var(--ui-text);
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    /* Фикс отскока прокрутки на iOS */
+}
+
+/* Фон с виньеткой и градиентом */
+#game-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background: radial-gradient(circle at center, #fffbf2 0%, #f2e6d8 60%, #e6dfd0 100%);
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
+#ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Затемнение по краям (эффект глубины) */
+#vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: radial-gradient(circle, transparent 30%, rgba(20, 10, 5, 0.4) 100%);
+    z-index: 5;
+    transition: background 1s ease;
+    mix-blend-mode: multiply;
+}
+
+#mint-vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: radial-gradient(circle, transparent 20%, rgba(132, 255, 170, 0.4) 100%);
+    z-index: 6;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+#mint-vignette.active {
+    opacity: 1;
+}
+
+.mint-blur canvas {
+    filter: blur(5px) sepia(0.5) hue-rotate(80deg) contrast(1.1);
+    transition: filter 0.6s ease;
+}
+
+/* --- СТЕКЛЯННЫЕ ПАНЕЛИ (GLASSMORPHISM) --- */
+.overlay-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+
+    /* Эффект матового стекла */
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    /* Для Safari */
+
+    padding: 3rem;
+    border-radius: 40px;
+    border: 2px solid var(--glass-border);
+    box-shadow:
+        inset 0 0 20px rgba(255, 255, 255, 0.5),
+        var(--shadow-deep);
+
+    pointer-events: auto;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+
+    /* Анимация появления */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.hidden {
+    opacity: 0;
+    pointer-events: none !important;
+    display: none !important;
+}
+
+/* --- ТИПОГРАФИКА --- */
+.title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--cookie-primary);
+    font-style: italic;
+    line-height: 1;
+    text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5);
+}
+
+.subtitle {
+    font-weight: 300;
+    letter-spacing: 3px;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+#champion-badge {
+    background: linear-gradient(135deg, #FFD700, #FDB931);
+    color: #fff;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 5px 15px rgba(253, 185, 49, 0.4);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    display: inline-block;
+    animation: pulseBadge 2s infinite;
+}
+
+@keyframes pulseBadge {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 5px 15px rgba(253, 185, 49, 0.4);
+    }
+
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 10px 25px rgba(253, 185, 49, 0.6);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 5px 15px rgba(253, 185, 49, 0.4);
+    }
+}
+
+/* Инструкции */
+.instructions {
+    text-align: left;
+    margin-bottom: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.instruction-item {
+    background: rgba(255, 255, 255, 0.4);
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.key {
+    display: inline-block;
+    background: var(--cookie-primary);
+    color: #fdfaf5;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.instruction-item p {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    opacity: 0.9;
+    color: var(--cookie-secondary);
+}
+
+/* --- КНОПКИ (JUICY BUTTONS) --- */
+button {
+    background: linear-gradient(135deg, var(--cookie-secondary), var(--cookie-primary));
+    color: white;
+    border: none;
+    padding: 1.2rem 2.5rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: auto;
+    touch-action: manipulation;
+
+    /* Тени для объема */
+    box-shadow:
+        0 5px 15px rgba(60, 42, 33, 0.3),
+        inset 0 2px 0 rgba(255, 255, 255, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+button:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow:
+        0 10px 25px rgba(60, 42, 33, 0.4),
+        inset 0 2px 0 rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, var(--cookie-highlight), var(--cookie-secondary));
+}
+
+button:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 2px 5px rgba(60, 42, 33, 0.3);
+}
+
+.setup-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Кнопки Game Over */
+.game-over-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.game-over-buttons button {
+    width: 100%;
+}
+
+#btn-menu {
+    background: transparent;
+    border: 3px solid var(--cookie-primary);
+    color: var(--cookie-primary);
+    box-shadow: none;
+}
+
+#btn-menu:hover {
+    background: var(--cookie-primary);
+    color: white;
+}
+
+.close-x {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--cookie-primary);
+    padding: 5px;
+    line-height: 1;
+    box-shadow: none;
+}
+
+.close-x:hover {
+    transform: rotate(90deg);
+    background: none;
+    box-shadow: none;
+    color: var(--danger-red);
+}
+
+/* --- ВЕРХНИЕ КОНТРОЛЫ --- */
+#top-controls {
+    position: absolute;
+    top: max(25px, env(safe-area-inset-top));
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+    pointer-events: auto;
+    z-index: 100;
+}
+
+.ui-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.6);
+    color: var(--cookie-primary);
+    border: 2px solid var(--cookie-primary);
+    backdrop-filter: blur(10px);
+    font-weight: 800;
+    min-width: 50px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.ui-btn:hover {
+    background: var(--cookie-primary);
+    color: white;
+    box-shadow: 0 6px 15px rgba(60, 42, 33, 0.3);
+}
+
+/* --- HUD (Интерфейс в игре) --- */
+#hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: max(20px, env(safe-area-inset-top)) 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    pointer-events: none;
+}
+
+.depth-meter {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--cookie-primary);
+    text-shadow:
+        0 2px 0 rgba(255, 255, 255, 0.8),
+        0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.status-bars {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.bar-container {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+    height: 20px;
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid var(--cookie-secondary);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.bar {
+    height: 100%;
+    background: linear-gradient(90deg, #8d6e63, #3e2723);
+    width: 100%;
+    transition: width 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.3);
+}
+
+.bar-container span {
+    position: absolute;
+    top: 22px;
+    right: 0;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--cookie-primary);
+    letter-spacing: 1px;
+}
+
+.combo-panel {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: rgba(255, 245, 220, 0.65);
+    border: 2px solid rgba(141, 110, 99, 0.65);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    opacity: 0.35;
+    transform: translateY(4px);
+}
+
+.combo-panel.active {
+    opacity: 1;
+    transform: translateY(0);
+    border-color: rgba(255, 193, 7, 0.95);
+    box-shadow: 0 0 16px rgba(255, 193, 7, 0.35);
+}
+
+#combo-text {
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+    color: #4a3728;
+    text-align: right;
+    text-transform: uppercase;
+}
+
+.combo-timer {
+    margin-top: 6px;
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(70, 50, 35, 0.2);
+}
+
+#combo-timer-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #ffd54f, #ff9800);
+    transition: width 0.08s linear;
+}
+
+/* --- МОБИЛЬНОЕ УПРАВЛЕНИЕ (ЖИРНОЕ) --- */
+#mobile-controls {
+    display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .hidden-desktop {
+        display: block !important;
+    }
+
+    /* Невидимые зоны касания (для удобства) */
+    .touch-zone {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        width: 45%;
+        z-index: 50;
+        pointer-events: auto;
+    }
+
+    #touch-left {
+        left: 0;
+    }
+
+    #touch-right {
+        right: 0;
+    }
+
+    /* Кнопка действия (Сочная) */
+    #touch-action-btn {
+        position: absolute;
+        bottom: max(30px, env(safe-area-inset-bottom));
+        left: 50%;
+        transform: translateX(-50%);
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+
+        /* Стекло + Градиент */
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 4px solid rgba(255, 255, 255, 0.5);
+
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 800;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+        z-index: 60;
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.2),
+            inset 0 0 20px rgba(255, 255, 255, 0.2);
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto;
+        transition: transform 0.1s;
+    }
+
+    #touch-action-btn:active {
+        transform: translateX(-50%) scale(0.9);
+        background: rgba(231, 76, 60, 0.6);
+        border-color: rgba(231, 76, 60, 0.8);
+    }
+
+    /* Адаптация шрифтов для маленьких экранов */
+    .title {
+        font-size: 2.8rem;
+    }
+
+    .overlay-screen {
+        padding: 2rem;
+        width: 95%;
+    }
+}
+
+/* --- НАСТРОЙКИ (ВНИЗУ) --- */
+#bottom-settings {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+
+    padding: 15px 20px;
+    padding-bottom: max(15px, env(safe-area-inset-bottom));
+    pointer-events: auto;
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.settings-row {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 80px;
+    height: 6px;
+    background: rgba(60, 42, 33, 0.2);
+    border-radius: 3px;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--cookie-primary);
+    border: 2px solid white;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* --- ЭФФЕКТЫ --- */
+.damage-flash {
+    animation: flashRed 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes flashRed {
+    0% {
+        background-color: rgba(231, 76, 60, 0.5);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+/* Сетка выбора печенек */
+#cookie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1.2rem;
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+.cookie-card {
+    background: rgba(255, 255, 255, 0.5);
+    border: 2px solid transparent;
+    border-radius: 20px;
+    padding: 1.2rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.cookie-card:hover {
+    background: white;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(60, 42, 33, 0.15);
+    border-color: var(--cookie-highlight);
+}
+
+.cookie-card h3 {
+    color: var(--cookie-primary);
+    margin-bottom: 5px;
+    font-family: 'Playfair Display', serif;
+}
+
+/* Экран победы */
+#victory-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 100;
+    pointer-events: none;
+    width: 100%;
+}
+
+#victory-screen h1 {
+    font-size: 12vw;
+    /* Огромный текст */
+    font-family: 'Playfair Display', serif;
+    color: #fff;
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 165, 0, 0.6);
+    animation: glowFade 3s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    white-space: nowrap;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+@keyframes glowFade {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.3);
+        filter: blur(20px);
+    }
+
+    40% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        filter: blur(0px);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.05);
+        filter: blur(0px);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.4);
+        filter: blur(15px);
+    }
+}
+
+/* --- COMBO EDITION EXTRAS --- */
+.menu-extras {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.ui-btn.small {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+}
+
+.scroll-list {
+    margin-top: 20px;
+    max-height: 50vh;
+    overflow-y: auto;
+    text-align: left;
+    padding-right: 10px;
+}
+
+.achievement-item {
+    background: rgba(255, 255, 255, 0.4);
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    border-left: 5px solid #ccc;
+}
+
+.achievement-item.unlocked {
+    border-left-color: #ffd700;
+    background: rgba(255, 248, 220, 0.6);
+}
+
+.achievement-title {
+    font-weight: bold;
+    font-size: 0.9rem;
+    display: block;
+}
+
+.achievement-desc {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+#buffs-panel {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.buff-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 6px;
+    border: 2px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+.run-stats {
+    text-align: left;
+    background: rgba(255, 255, 255, 0.3);
+    padding: 15px;
+    border-radius: 15px;
+    margin: 15px 0;
+    font-size: 0.85rem;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    border-bottom: 1px dashed rgba(60, 42, 33, 0.1);
+}
+
+.stat-val {
+    font-weight: bold;
+}
+
+.replay-item {
+    background: rgba(255, 255, 255, 0.5);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.replay-info {
+    font-size: 0.85rem;
+}
+
+.replay-btn {
+    padding: 5px 15px;
+    font-size: 0.7rem;
+}

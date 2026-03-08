@@ -1,0 +1,2087 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5 Nights with Kuzibaeva: Hardcore</title>
+    <style>
+        /* --- СТИЛИ --- */
+        :root {
+            --bg: #050505;
+            --green: #33ff00;
+            --yellow: #dddd00;
+            --red: #ff0000;
+        }
+
+        body {
+            background: var(--bg);
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            color: white;
+            user-select: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 900;
+        }
+
+        .scanlines {
+            background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 3px);
+            background-size: 100% 3px;
+        }
+
+        .vignette {
+            background: radial-gradient(circle, transparent 56%, rgba(0, 0, 0, 0.82) 100%);
+        }
+
+        #menu-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .glitch {
+            font-size: 60px;
+            color: var(--red);
+            text-shadow: 2px 2px white;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .level-select {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-level {
+            background: #111;
+            border: 2px solid #555;
+            color: #555;
+            padding: 15px;
+            font-size: 16px;
+            cursor: not-allowed;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .btn-level.unlocked {
+            border-color: var(--green);
+            color: var(--green);
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .btn-level.unlocked:hover {
+            background: var(--green);
+            color: black;
+        }
+
+        /* --- DIFFICULTY SELECTOR --- */
+        .difficulty-select {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        .btn-diff {
+            background: #111;
+            border: 2px solid #555;
+            color: #aaa;
+            padding: 12px 22px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .btn-diff:hover {
+            border-color: var(--yellow);
+            color: var(--yellow);
+        }
+
+        .btn-diff.selected {
+            border-color: var(--green);
+            color: var(--green);
+            background: #1a2a1a;
+            box-shadow: 0 0 8px var(--green);
+        }
+
+        .diff-desc {
+            color: #888;
+            font-size: 13px;
+            margin-top: 6px;
+            max-width: 500px;
+            text-align: center;
+            min-height: 32px;
+        }
+
+        #lang-switcher {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1500;
+            display: flex;
+            gap: 6px;
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 1px solid #555;
+            border-radius: 8px;
+        }
+
+        .lang-btn {
+            min-width: 44px;
+            background: #1a1a1a;
+            color: #ddd;
+            border: 1px solid #666;
+            padding: 6px 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .lang-btn.active {
+            background: var(--green);
+            color: #000;
+            border-color: var(--green);
+        }
+
+        #lang-prompt {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(0, 0, 0, 0.94);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 14px;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #lang-title {
+            font-size: clamp(28px, 5vw, 44px);
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #lang-subtitle {
+            font-size: clamp(16px, 2vw, 20px);
+            color: #bbb;
+            max-width: 520px;
+        }
+
+        .lang-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .lang-choice {
+            min-width: 120px;
+            background: #111;
+            color: #fff;
+            border: 2px solid #666;
+            padding: 12px 18px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .lang-choice:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        #game-screen {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: #111;
+        }
+
+        #office-bg {
+            position: absolute;
+            top: 10%;
+            left: 15%;
+            width: 70%;
+            height: 80%;
+            background: #222;
+            box-shadow: inset 0 0 150px #000;
+        }
+
+        .door-frame {
+            position: absolute;
+            top: 5%;
+            height: 90%;
+            width: 20%;
+            background: #111;
+            border: 4px solid #333;
+            z-index: 10;
+        }
+
+        .left-door {
+            left: 15%;
+        }
+
+        .right-door {
+            right: 15%;
+        }
+
+        .door-void {
+            width: 100%;
+            height: 70%;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .entity-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .door-metal {
+            position: absolute;
+            top: -70%;
+            width: 100%;
+            height: 70%;
+            background: repeating-linear-gradient(45deg, #222, #444 20px);
+            transition: top 0.2s;
+            z-index: 20;
+            border-bottom: 5px solid #555;
+        }
+
+        .door-metal.closed {
+            top: 0;
+        }
+
+        .door-controls {
+            height: 30%;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            padding: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid #555;
+            color: white;
+            transition: 0.1s;
+        }
+
+        .btn-red {
+            background: #400;
+        }
+
+        .btn-red.active {
+            background: #f00;
+            box-shadow: 0 0 10px red;
+        }
+
+        .btn-white {
+            background: #555;
+            color: #ccc;
+        }
+
+        .btn-white:active,
+        .btn-white.lit {
+            background: #fff;
+            color: black;
+            box-shadow: 0 0 15px white;
+        }
+
+        .btn-blue {
+            background: #004;
+        }
+
+        .btn-blue:active {
+            background: #00f;
+        }
+
+        .btn-orange {
+            background: #7a4300;
+            color: #ffe4bd;
+        }
+
+        .btn-orange:active {
+            background: orange;
+            color: black;
+            box-shadow: 0 0 10px orange;
+        }
+
+        /* --- LIQUIDATION BUTTON --- */
+        .btn-liquidate {
+            background: #500;
+            color: #ff4444;
+            border: 2px solid #ff0000;
+            font-size: 13px;
+        }
+
+        .btn-liquidate:hover {
+            background: #900;
+            box-shadow: 0 0 12px red;
+        }
+
+        .btn-liquidate:active {
+            background: #f00;
+            color: #fff;
+        }
+
+        #electric-panel {
+            position: absolute;
+            bottom: 20%;
+            right: 25%;
+            font-size: 40px;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        #electric-panel.sparking {
+            color: yellow;
+            text-shadow: 0 0 10px yellow;
+            animation: flick 0.1s infinite;
+        }
+
+        /* --- ELECTRO KUZI (corner) --- */
+        #electro-kuzi {
+            position: absolute;
+            bottom: 8%;
+            left: 18%;
+            font-size: 50px;
+            cursor: pointer;
+            z-index: 55;
+            filter: brightness(2) hue-rotate(180deg);
+            text-shadow: 0 0 18px cyan, 0 0 40px blue;
+            animation: flick 0.12s infinite;
+        }
+
+        #golden-kuzi {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            z-index: 60;
+            cursor: pointer;
+            filter: sepia(1) saturate(5);
+        }
+
+        /* --- MAXIM FATIGUE BAR (cam4) --- */
+        .fatigue-bar-container {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 220px;
+            height: 18px;
+            background: #222;
+            border: 2px solid #888;
+            z-index: 30;
+            overflow: hidden;
+        }
+
+        .fatigue-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff8800, #ff0000);
+            transition: width 0.3s;
+        }
+
+        .fatigue-label {
+            position: absolute;
+            bottom: 82px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 13px;
+            color: #ff8800;
+            z-index: 31;
+            white-space: nowrap;
+        }
+
+        /* --- LIQUIDATION FLASH OVERLAY --- */
+        #liquidation-flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 800;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.08s;
+        }
+
+        #liquidation-flash.active {
+            opacity: 1;
+        }
+
+        /* --- PANEL BROKEN OVERLAY --- */
+        #panel-broken-warning {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 28px;
+            color: #ff0000;
+            text-shadow: 0 0 10px red;
+            z-index: 70;
+            animation: flick 0.15s infinite;
+            text-align: center;
+        }
+
+        /* --- CUTSCENE OVERLAY --- */
+        #cutscene-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.96);
+            z-index: 7500;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        .cutscene-text {
+            font-size: 28px;
+            color: #fff;
+            max-width: 600px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .cutscene-sub {
+            font-size: 18px;
+            color: #aaa;
+            max-width: 500px;
+            margin-bottom: 30px;
+        }
+
+        .cutscene-emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .btn-cutscene {
+            background: #222;
+            border: 2px solid #fff;
+            color: #fff;
+            padding: 14px 32px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-cutscene:hover {
+            background: var(--green);
+            color: #000;
+            border-color: var(--green);
+        }
+
+        /* --- LIQUIDATION MENU OVERLAY --- */
+        #liquidation-menu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 750;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .liq-title {
+            font-size: 32px;
+            color: #ff0000;
+            text-shadow: 0 0 10px red;
+            margin-bottom: 10px;
+        }
+
+        .liq-cost {
+            color: #ff8800;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .liq-warn {
+            color: #ff4444;
+            font-size: 14px;
+            max-width: 400px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .btn-liq-choice {
+            background: #300;
+            border: 2px solid #f00;
+            color: #ff4444;
+            padding: 14px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            min-width: 200px;
+        }
+
+        .btn-liq-choice:hover {
+            background: #700;
+            box-shadow: 0 0 12px red;
+        }
+
+        .btn-liq-cancel {
+            background: #222;
+            border: 2px solid #888;
+            color: #aaa;
+            padding: 10px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-liq-cancel:hover {
+            border-color: #fff;
+            color: #fff;
+        }
+
+        /* --- BATTERY INDICATOR --- */
+        .battery-indicator {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 40px;
+            cursor: pointer;
+            z-index: 30;
+            text-shadow: 0 0 10px lime;
+        }
+
+        #hud {
+            position: absolute;
+            bottom: 50px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 20px;
+            box-sizing: border-box;
+            pointer-events: none;
+            z-index: 150;
+            font-size: 24px;
+            text-shadow: 0 0 6px rgba(255, 255, 255, 0.55), 0 0 12px rgba(255, 255, 255, 0.22), 2px 2px 0 #000;
+        }
+
+        .hud-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            background: rgba(10, 10, 10, 0.78);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            padding: 8px 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.18), inset 0 0 10px rgba(255, 255, 255, 0.08);
+        }
+
+        .usage-container {
+            font-size: 16px;
+            color: #aaa;
+            margin-top: 10px;
+        }
+
+        .usage-bars {
+            display: inline-block;
+        }
+
+        .u-bar {
+            display: inline-block;
+            width: 15px;
+            height: 10px;
+            background: #333;
+            margin-right: 2px;
+            border: 1px solid #555;
+        }
+
+        .u-bar.on-green {
+            background: var(--green);
+            box-shadow: 0 0 5px var(--green);
+        }
+
+        .u-bar.on-yellow {
+            background: var(--yellow);
+            box-shadow: 0 0 5px var(--yellow);
+        }
+
+        .u-bar.on-red {
+            background: var(--red);
+            box-shadow: 0 0 5px var(--red);
+        }
+
+        #tablet-trigger {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-top: 2px solid #555;
+            text-align: center;
+            line-height: 40px;
+            cursor: pointer;
+            z-index: 100;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        #tablet-trigger:hover {
+            background: var(--green);
+            color: black;
+        }
+
+        #tablet-interface {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #080808;
+            z-index: 200;
+            display: flex;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .cam-container {
+            flex: 3;
+            border: 4px solid #333;
+            background: #000;
+            position: relative;
+            margin-right: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .cam-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            color: white;
+            z-index: 20;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .cam-content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cam-entity-img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .cam-btn-action {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid white;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 30;
+        }
+
+        .map-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+            background: #111;
+            padding: 10px;
+            border: 2px solid #333;
+        }
+
+        .map-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .map-btn {
+            width: 80px;
+            height: 50px;
+            background: #222;
+            border: 1px solid #555;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .map-btn.active {
+            background: var(--green);
+            color: black;
+            border-color: white;
+        }
+
+        .map-btn.broken {
+            color: red;
+            text-decoration: line-through;
+            border-color: red;
+        }
+
+        .you-marker {
+            width: 80px;
+            height: 50px;
+            background: #fff;
+            color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            border-radius: 5px;
+            border: 2px solid gold;
+        }
+
+        .tablet-close-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: #333;
+            color: white;
+            text-align: center;
+            line-height: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            border-top: 2px solid var(--green);
+        }
+
+        #jumpscare {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 9000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #jumpscare img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            animation: shake 0.05s infinite;
+        }
+
+        #end-screen,
+        #win-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 8000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .btn-menu {
+            background: #333;
+            border: 2px solid white;
+            color: white;
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translate(5px, 5px);
+            }
+
+            100% {
+                transform: translate(-5px, -5px);
+            }
+        }
+
+        @keyframes flick {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.2;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay scanlines"></div>
+    <div class="overlay vignette"></div>
+    <div id="lang-switcher" class="hidden">
+        <button type="button" class="lang-btn" id="lang-btn-ru">RU</button>
+        <button type="button" class="lang-btn" id="lang-btn-en">EN</button>
+    </div>
+    <div id="lang-prompt">
+        <div id="lang-title">Choose Language</div>
+        <div id="lang-subtitle">Select RU or EN. You can change it anytime from the top switcher.</div>
+        <div class="lang-actions">
+            <button type="button" class="lang-choice" id="lang-choice-ru">RU</button>
+            <button type="button" class="lang-choice" id="lang-choice-en">EN</button>
+        </div>
+    </div>
+
+    <div id="menu-screen">
+        <h1 class="glitch">5 NIGHTS WITH<br>KUZIBAEVA</h1>
+        <!-- DIFFICULTY SELECTOR -->
+        <div class="difficulty-select" id="diff-select">
+            <button class="btn-diff" data-diff="easy" onclick="Game.setDifficulty('easy')">EASY</button>
+            <button class="btn-diff selected" data-diff="normal" onclick="Game.setDifficulty('normal')">NORMAL</button>
+            <button class="btn-diff" data-diff="hardcore" onclick="Game.setDifficulty('hardcore')">HARDCORE</button>
+        </div>
+        <div class="diff-desc" id="diff-desc">Standard experience. Balanced energy drain and enemy speed.</div>
+        <div class="level-select" id="level-select-container"></div>
+        <button id="reset-btn" onclick="localStorage.clear(); location.reload();"
+            style="margin-top: 50px; background: #300; color: #f00; border: none; padding: 5px; cursor: pointer;">СБРОСИТЬ
+            ПРОГРЕСС</button>
+    </div>
+
+    <div id="game-screen" class="hidden">
+        <div id="office-bg"></div>
+        <div class="door-frame left-door">
+            <div class="door-void"><img src="anya.jpg" id="img-anya-door" class="entity-img hidden"></div>
+            <div class="door-metal" id="door-l"></div>
+            <div class="door-controls">
+                <button class="btn btn-red" id="btn-door-l" onclick="Game.toggleDoor('left')">ДВЕРЬ</button>
+                <button class="btn btn-white" id="btn-light-l" onpointerdown="Game.toggleLight('left', true)"
+                    onpointerup="Game.toggleLight('left', false)" onpointerleave="Game.toggleLight('left', false)"
+                    onpointercancel="Game.toggleLight('left', false)">СВЕТ</button>
+                <button class="btn btn-blue hidden" id="splash-btn" onclick="Game.splashWater()">СМЫВ</button>
+                <button class="btn btn-orange" id="btn-pie-l" onclick="Game.throwPie('left')">ПИРОЖОК</button>
+            </div>
+        </div>
+        <div class="door-frame right-door">
+            <div class="door-void"><img src="kuzi.jpg" id="img-kuzi-door" class="entity-img hidden"></div>
+            <div class="door-metal" id="door-r"></div>
+            <div class="door-controls">
+                <button class="btn btn-red" id="btn-door-r" onclick="Game.toggleDoor('right')">ДВЕРЬ</button>
+                <button class="btn btn-white" id="btn-light-r" onpointerdown="Game.toggleLight('right', true)"
+                    onpointerup="Game.toggleLight('right', false)" onpointerleave="Game.toggleLight('right', false)"
+                    onpointercancel="Game.toggleLight('right', false)">СВЕТ</button>
+                <button class="btn btn-orange" id="btn-pie-r" onclick="Game.throwPie('right')">ПИРОЖОК</button>
+            </div>
+        </div>
+        <div id="electric-panel" onclick="Game.fixPanel()">⚡</div>
+        <!-- ELECTRO KUZI (corner drain) -->
+        <div id="electro-kuzi" class="hidden" onclick="Game.dismissElectroKuzi()">⚡👩</div>
+        <img src="kuzi.jpg" id="golden-kuzi" class="hidden" onclick="Game.banishGolden()">
+
+        <!-- PANEL BROKEN WARNING -->
+        <div id="panel-broken-warning" class="hidden">⚠️ ЩИТОК СЛОМАН! ⚠️<br>ДВЕРИ ЗАКЛИНИЛО!</div>
+
+        <!-- LIQUIDATION FLASH -->
+        <div id="liquidation-flash"></div>
+
+        <!-- LIQUIDATION BUTTON (bottom center) -->
+        <button class="btn btn-liquidate" id="btn-liquidate" onclick="Game.openLiquidationMenu()"
+            style="position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); z-index: 160; pointer-events: auto;">
+            ☠️ ЛИКВИДАЦИЯ
+        </button>
+
+        <div id="hud">
+            <div class="hud-group">
+                <span><span id="energy-label">ЭНЕРГИЯ:</span> <span id="energy-val">100%</span></span>
+                <div class="usage-container">
+                    <div class="usage-bars" id="usage-bars"><span class="u-bar"></span><span class="u-bar"></span><span
+                            class="u-bar"></span><span class="u-bar"></span><span class="u-bar"></span></div>
+                </div>
+            </div>
+            <div class="hud-group" style="text-align: right;">
+                <span id="time-display">12:00 AM</span>
+                <span style="font-size: 16px; color: #aaa;"><span id="pies-label">Пирожки:</span> <span
+                        id="pie-count">3</span></span>
+            </div>
+        </div>
+        <div id="tablet-trigger" onclick="Game.toggleTablet()">▲ ПЛАНШЕТ ▲</div>
+        <button onclick="Game.togglePause()"
+            style="position: absolute; top: 10px; right: 10px; z-index: 200; background: #333; color: white; border: 1px solid white; padding: 5px 10px; cursor: pointer;">⏸</button>
+    </div>
+
+    <div id="tablet-interface" class="hidden">
+        <div class="cam-container">
+            <div class="cam-info" id="cam-name">CAM-1</div>
+            <div class="cam-content">
+                <img src="kuzi.jpg" id="render-kuzi" class="cam-entity-img hidden">
+                <img src="maxim.jpg" id="render-maxim" class="cam-entity-img hidden">
+                <div id="render-radio" class="hidden" style="font-size:80px">📻 🎵</div>
+                <div id="render-shadow" class="hidden"
+                    style="font-size:100px; color:black; text-shadow:0 0 10px purple;">👻</div>
+                <!-- MAXIM FATIGUE BAR -->
+                <div class="fatigue-label hidden" id="fatigue-label">😴 УСТАЛОСТЬ</div>
+                <div class="fatigue-bar-container hidden" id="fatigue-bar-container">
+                    <div class="fatigue-bar-fill" id="fatigue-bar-fill"></div>
+                </div>
+                <!-- BATTERY on cam 8 -->
+                <div class="battery-indicator hidden" id="render-battery" onclick="Game.collectBattery()">🔋</div>
+                <button id="btn-collect" class="cam-btn-action hidden" onclick="Game.collectItem()">ВЗЯТЬ</button>
+                <button id="btn-interact" class="cam-btn-action hidden" onclick="Game.feedMaxim()">КОРМИТЬ</button>
+                <button id="btn-repair" class="cam-btn-action hidden" onclick="Game.repairCam()">ПОЧИНИТЬ</button>
+                <button id="btn-radio" class="cam-btn-action hidden" onclick="Game.stopRadio()">ВЫКЛЮЧИТЬ</button>
+                <button id="btn-flash" class="cam-btn-action hidden" onclick="Game.flashShadow()">ВСПЫШКА</button>
+            </div>
+        </div>
+        <div class="map-container">
+            <div class="map-row"><button class="map-btn active" data-cam="1" onclick="Game.switchCam(1)">CAM
+                    1<br>Калитка</button><button class="map-btn" data-cam="2" onclick="Game.switchCam(2)">CAM
+                    2<br>Грядки</button></div>
+            <div class="map-row"><button class="map-btn" data-cam="6" onclick="Game.switchCam(6)">CAM
+                    6<br>Баня</button><button class="map-btn" data-cam="5" onclick="Game.switchCam(5)">CAM
+                    5<br>Коридор</button><button class="map-btn" data-cam="3" onclick="Game.switchCam(3)">CAM
+                    3<br>Кухня</button></div>
+            <div class="map-row"><button class="map-btn" data-cam="8" onclick="Game.switchCam(8)">CAM
+                    8<br>Подвал</button>
+                <div class="you-marker">ВЫ</div><button class="map-btn" data-cam="4" onclick="Game.switchCam(4)">CAM
+                    4<br>Максим</button>
+            </div>
+            <div class="map-row"><button class="map-btn" data-cam="7" onclick="Game.switchCam(7)">CAM
+                    7<br>Кладовка</button></div>
+        </div>
+        <div class="tablet-close-bar" onclick="Game.toggleTablet()">▼ ЗАКРЫТЬ ▼</div>
+    </div>
+
+    <!-- LIQUIDATION MENU -->
+    <div id="liquidation-menu" class="hidden">
+        <div class="liq-title">☠️ ЛИКВИДАЦИЯ ☠️</div>
+        <div class="liq-cost" id="liq-cost-text">Стоимость: 75% энергии</div>
+        <div class="liq-warn" id="liq-warn-text">Враг исчезнет до конца ночи. Если ликвидировать Кузибаеву — Аня
+            войдёт в ЯРОСТЬ!</div>
+        <button class="btn-liq-choice" id="btn-liq-kuzi" onclick="Game.executeLiquidation('kuzi')">🎯 КУЗИБАЕВА</button>
+        <button class="btn-liq-choice" id="btn-liq-anya" onclick="Game.executeLiquidation('anya')">🎯 АНЯ</button>
+        <button class="btn-liq-cancel" onclick="Game.closeLiquidationMenu()">ОТМЕНА</button>
+    </div>
+
+    <!-- CUTSCENE -->
+    <div id="cutscene-overlay" class="hidden">
+        <div class="cutscene-emoji" id="cutscene-emoji">🏠</div>
+        <div class="cutscene-text" id="cutscene-text">...</div>
+        <div class="cutscene-sub" id="cutscene-sub">...</div>
+        <button class="btn-cutscene" id="cutscene-btn" onclick="Game.closeCutscene()">OK</button>
+    </div>
+
+    <div id="jumpscare" class="hidden"><img id="jumpscare-img" src="screamer.jpg"></div>
+    <div id="end-screen" class="hidden">
+        <h1 style="color:red;font-size:60px;">GAME OVER</h1>
+        <p id="end-reason">...</p><button class="btn-menu" id="restart-btn" onclick="location.reload()">В МЕНЮ</button>
+    </div>
+    <div id="win-screen" class="hidden">
+        <h1 style="color:gold;font-size:80px;">6:00 AM</h1><button class="btn-menu" id="next-level-btn"
+            onclick="location.reload()">В МЕНЮ</button>
+    </div>
+
+    <script>
+        const I18N = {
+            ru: {
+                resetProgress: "СБРОСИТЬ ПРОГРЕСС",
+                door: "ДВЕРЬ",
+                light: "СВЕТ",
+                splash: "СМЫВ",
+                pie: "ПИРОЖОК",
+                tabletOpen: "▲ ПЛАНШЕТ ▲",
+                tabletClose: "▼ ЗАКРЫТЬ ▼",
+                take: "ВЗЯТЬ",
+                feed: "КОРМИТЬ",
+                repair: "ПОЧИНИТЬ",
+                turnOff: "ВЫКЛЮЧИТЬ",
+                flash: "ВСПЫШКА",
+                you: "ВЫ",
+                toMenu: "В МЕНЮ",
+                night: "НОЧЬ",
+                energy: "ЭНЕРГИЯ:",
+                pies: "Пирожки:",
+                paused: "ПАУЗА",
+                ratPenalty: "Крыса! -5%",
+                powerOut: "Электричество кончилось...",
+                goldenKuzi: "Золотая Кузибаева!",
+                kuziLeft: "Кузибаева вошла слева!",
+                kuziRight: "Кузибаева вошла справа!",
+                anyaCaught: "Аня схватила!",
+                camError: "ОШИБКА",
+                takePie: "ВЗЯТЬ ПИРОЖОК",
+                takeCucumber: "ВЗЯТЬ ОГУРЕЦ",
+                liquidation: "☠️ ЛИКВИДАЦИЯ",
+                liqCost: "Стоимость: 75% энергии",
+                liqWarn: "Враг исчезнет до конца ночи. Если ликвидировать Кузибаеву — Аня войдёт в ЯРОСТЬ!",
+                liqKuzi: "🎯 КУЗИБАЕВА",
+                liqAnya: "🎯 АНЯ",
+                liqCancel: "ОТМЕНА",
+                liqNoEnergy: "Недостаточно энергии!",
+                fatigue: "😴 УСТАЛОСТЬ",
+                panelBroken: "⚠️ ЩИТОК СЛОМАН! ⚠️\nДВЕРИ ЗАКЛИНИЛО!",
+                batteryFound: "🔋 +15% энергии!",
+                diffEasy: "ЛЕГКО",
+                diffNormal: "ОБЫЧНЫЙ",
+                diffHardcore: "ХАРДКОР",
+                diffDescEasy: "Расслабленный режим. Энергия тает медленно, враги неторопливые, Максим почти не устаёт.",
+                diffDescNormal: "Стандартный баланс. Умеренный расход энергии и скорость врагов.",
+                diffDescHardcore: "Ад на земле. Энергия тает быстро, враги агрессивные, Максим устаёт мгновенно.",
+                cutGoodEmoji: "🌅",
+                cutGoodTitle: "ВЫ ВЫЖИЛИ!",
+                cutGoodSub: "Солнце встало. Кузибаева ушла. Вы в безопасности... пока.",
+                cutBadEmoji: "💀",
+                cutBadTitle: "ПЛОХОЙ КОНЕЦ",
+                cutBadSub: "Тьма поглотила вас. Кузибаева победила.",
+                cutBtn: "ПРОДОЛЖИТЬ",
+                cams: { 1: "Калитка", 2: "Грядки", 3: "Кухня", 4: "Максим", 5: "Коридор", 6: "Баня", 7: "Кладовка", 8: "Подвал" }
+            },
+            en: {
+                resetProgress: "RESET PROGRESS",
+                door: "DOOR",
+                light: "LIGHT",
+                splash: "FLUSH",
+                pie: "PIE",
+                tabletOpen: "▲ TABLET ▲",
+                tabletClose: "▼ CLOSE ▼",
+                take: "TAKE",
+                feed: "FEED",
+                repair: "REPAIR",
+                turnOff: "TURN OFF",
+                flash: "FLASH",
+                you: "YOU",
+                toMenu: "TO MENU",
+                night: "NIGHT",
+                energy: "ENERGY:",
+                pies: "Pies:",
+                paused: "PAUSED",
+                ratPenalty: "Rat! -5%",
+                powerOut: "Power is out...",
+                goldenKuzi: "Golden Kuzibaeva!",
+                kuziLeft: "Kuzibaeva entered from the left!",
+                kuziRight: "Kuzibaeva entered from the right!",
+                anyaCaught: "Anya got you!",
+                camError: "ERROR",
+                takePie: "TAKE PIE",
+                takeCucumber: "TAKE CUCUMBER",
+                liquidation: "☠️ LIQUIDATION",
+                liqCost: "Cost: 75% energy",
+                liqWarn: "Enemy disappears for the rest of the night. If you liquidate Kuzibaeva — Anya enters RAGE!",
+                liqKuzi: "🎯 KUZIBAEVA",
+                liqAnya: "🎯 ANYA",
+                liqCancel: "CANCEL",
+                liqNoEnergy: "Not enough energy!",
+                fatigue: "😴 FATIGUE",
+                panelBroken: "⚠️ PANEL BROKEN! ⚠️\nDOORS JAMMED!",
+                batteryFound: "🔋 +15% energy!",
+                diffEasy: "EASY",
+                diffNormal: "NORMAL",
+                diffHardcore: "HARDCORE",
+                diffDescEasy: "Relaxed mode. Energy drains slowly, enemies are sluggish, Maxim barely gets tired.",
+                diffDescNormal: "Standard experience. Balanced energy drain and enemy speed.",
+                diffDescHardcore: "Hell on earth. Energy melts fast, enemies are ultra-aggressive, Maxim exhausts instantly.",
+                cutGoodEmoji: "🌅",
+                cutGoodTitle: "YOU SURVIVED!",
+                cutGoodSub: "The sun has risen. Kuzibaeva is gone. You are safe... for now.",
+                cutBadEmoji: "💀",
+                cutBadTitle: "BAD ENDING",
+                cutBadSub: "Darkness consumed you. Kuzibaeva won.",
+                cutBtn: "CONTINUE",
+                cams: { 1: "Gate", 2: "Garden", 3: "Kitchen", 4: "Maxim", 5: "Corridor", 6: "Bathhouse", 7: "Storage", 8: "Basement" }
+            }
+        };
+
+        const Language = {
+            current: "en",
+            storageKey: "kuzibaeva_lang",
+            t: function (key) {
+                return (I18N[this.current] && I18N[this.current][key]) || (I18N.en && I18N.en[key]) || key;
+            },
+            getCookie: function (name) {
+                var prefix = name + "=";
+                var parts = document.cookie ? document.cookie.split(";") : [];
+                for (var i = 0; i < parts.length; i++) {
+                    var item = parts[i].replace(/^\s+/, "");
+                    if (item.indexOf(prefix) === 0) return decodeURIComponent(item.substring(prefix.length));
+                }
+                return null;
+            },
+            setCookie: function (name, value) {
+                var expires = new Date();
+                expires.setFullYear(expires.getFullYear() + 5);
+                document.cookie = name + "=" + encodeURIComponent(value) + "; expires=" + expires.toUTCString() + "; path=/";
+            },
+            loadSaved: function () {
+                try {
+                    if (window.localStorage && localStorage.getItem) {
+                        var saved = localStorage.getItem(this.storageKey);
+                        if (saved) return saved;
+                    }
+                } catch (e) { }
+                return this.getCookie(this.storageKey);
+            },
+            save: function (lang) {
+                try {
+                    if (window.localStorage && localStorage.setItem) {
+                        localStorage.setItem(this.storageKey, lang);
+                    }
+                } catch (e) { }
+                this.setCookie(this.storageKey, lang);
+            },
+            camName: function (camId) {
+                const cams = (I18N[this.current] && I18N[this.current].cams) || I18N.en.cams;
+                return cams[camId] || ("CAM " + camId);
+            },
+            syncButtons: function () {
+                var self = this;
+                var setText = function (id, key) { var el = document.getElementById(id); if (el) el.textContent = self.t(key); };
+                setText("reset-btn", "resetProgress");
+                setText("btn-door-l", "door");
+                setText("btn-door-r", "door");
+                setText("btn-light-l", "light");
+                setText("btn-light-r", "light");
+                setText("splash-btn", "splash");
+                setText("btn-pie-l", "pie");
+                setText("btn-pie-r", "pie");
+                setText("tablet-trigger", "tabletOpen");
+                var closeBar = document.querySelector(".tablet-close-bar");
+                if (closeBar) closeBar.textContent = this.t("tabletClose");
+                setText("btn-collect", "take");
+                setText("btn-interact", "feed");
+                setText("btn-repair", "repair");
+                setText("btn-radio", "turnOff");
+                setText("btn-flash", "flash");
+                setText("restart-btn", "toMenu");
+                setText("next-level-btn", "toMenu");
+                setText("energy-label", "energy");
+                setText("pies-label", "pies");
+                setText("btn-liquidate", "liquidation");
+                setText("liq-cost-text", "liqCost");
+                setText("liq-warn-text", "liqWarn");
+                setText("btn-liq-kuzi", "liqKuzi");
+                setText("btn-liq-anya", "liqAnya");
+                setText("fatigue-label", "fatigue");
+                var youMarker = document.querySelector(".you-marker");
+                if (youMarker) youMarker.textContent = this.t("you");
+                document.querySelectorAll(".map-btn").forEach(function (btn) {
+                    var camId = parseInt(btn.dataset.cam, 10);
+                    if (isFinite(camId)) btn.innerHTML = "CAM " + camId + "<br>" + self.camName(camId);
+                });
+                // Difficulty buttons
+                var diffBtns = document.querySelectorAll('.btn-diff');
+                diffBtns.forEach(function (b) {
+                    var d = b.dataset.diff;
+                    if (d === 'easy') b.textContent = self.t('diffEasy');
+                    if (d === 'normal') b.textContent = self.t('diffNormal');
+                    if (d === 'hardcore') b.textContent = self.t('diffHardcore');
+                });
+                // Update diff desc
+                if (window.Game && Game.difficulty) {
+                    var descKey = 'diffDesc' + Game.difficulty.charAt(0).toUpperCase() + Game.difficulty.slice(1);
+                    var descEl = document.getElementById('diff-desc');
+                    if (descEl) descEl.textContent = self.t(descKey);
+                }
+                // Liq cancel
+                var liqCancelBtn = document.querySelector('.btn-liq-cancel');
+                if (liqCancelBtn) liqCancelBtn.textContent = this.t('liqCancel');
+            },
+            syncSwitcher: function () {
+                var ru = document.getElementById("lang-btn-ru");
+                var en = document.getElementById("lang-btn-en");
+                if (ru) ru.classList.toggle("active", this.current === "ru");
+                if (en) en.classList.toggle("active", this.current === "en");
+            },
+            apply: function () {
+                document.documentElement.lang = this.current;
+                this.syncSwitcher();
+                this.syncButtons();
+                if (window.Game) {
+                    if (typeof Game.renderMenu === "function") Game.renderMenu();
+                    if (Game.state && Game.state.camOpen && typeof Game.updateCam === "function") Game.updateCam();
+                    if (Game.lastGameOverReasonKey) {
+                        var endReason = document.getElementById("end-reason");
+                        if (endReason) endReason.textContent = this.t(Game.lastGameOverReasonKey);
+                    }
+                }
+            },
+            switchTo: function (lang) {
+                if (!I18N[lang]) return;
+                this.current = lang;
+                this.save(lang);
+                this.apply();
+            },
+            chooseFromPrompt: function (lang) {
+                this.switchTo(lang);
+                var prompt = document.getElementById("lang-prompt");
+                var switcher = document.getElementById("lang-switcher");
+                if (prompt) prompt.classList.add("hidden");
+                if (switcher) switcher.classList.remove("hidden");
+            },
+            init: function () {
+                var self = this;
+                var bind = function (id, fn) { var el = document.getElementById(id); if (el) el.addEventListener("click", fn); };
+                bind("lang-choice-ru", function () { self.chooseFromPrompt("ru"); });
+                bind("lang-choice-en", function () { self.chooseFromPrompt("en"); });
+                bind("lang-btn-ru", function () { self.switchTo("ru"); });
+                bind("lang-btn-en", function () { self.switchTo("en"); });
+                var saved = this.loadSaved();
+                var prompt = document.getElementById("lang-prompt");
+                var switcher = document.getElementById("lang-switcher");
+                if (saved && I18N[saved]) {
+                    this.switchTo(saved);
+                    if (prompt) prompt.classList.add("hidden");
+                    if (switcher) switcher.classList.remove("hidden");
+                } else {
+                    this.current = "en";
+                    this.apply();
+                    if (prompt) prompt.classList.remove("hidden");
+                    if (switcher) switcher.classList.add("hidden");
+                }
+            }
+        };
+
+        var AudioSys = {
+            ctx: null, radioNode: null,
+            init: function () { window.AudioContext = window.AudioContext || window.webkitAudioContext; this.ctx = new AudioContext(); },
+            playTone: function (type) {
+                if (!this.ctx) this.init();
+                if (Game.state.radioActive && (type === 'step' || type === 'step_far' || type === 'breath')) return;
+                var osc = this.ctx.createOscillator(); var gain = this.ctx.createGain();
+                var filter = this.ctx.createBiquadFilter(); filter.type = "lowpass"; filter.frequency.value = 1000;
+                osc.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
+                var t = this.ctx.currentTime;
+                if (type === 'step') { osc.type = 'triangle'; osc.frequency.setValueAtTime(80, t); osc.frequency.exponentialRampToValueAtTime(10, t + 0.2); gain.gain.setValueAtTime(0.5, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.25); osc.start(t); osc.stop(t + 0.3); }
+                else if (type === 'ambience') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(50, t); gain.gain.setValueAtTime(0.02, t); gain.gain.linearRampToValueAtTime(0, t + 2); filter.frequency.value = 200; osc.start(t); osc.stop(t + 2); }
+                else if (type === 'radio') { osc.type = 'square'; osc.frequency.setValueAtTime(200, t); var lfo = this.ctx.createOscillator(); lfo.frequency.value = 5; lfo.connect(gain.gain); lfo.start(t); gain.gain.value = 0.1; filter.frequency.value = 800; osc.start(t); this.radioNode = { osc: osc, lfo: lfo, gain: gain }; }
+                else if (type === 'door_breath') { var bS = this.ctx.sampleRate; var b = this.ctx.createBuffer(1, bS, this.ctx.sampleRate); var d = b.getChannelData(0); for (var i = 0; i < bS; i++) d[i] = Math.random() * 2 - 1; var n = this.ctx.createBufferSource(); n.buffer = b; var f = this.ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 140; var g = this.ctx.createGain(); g.gain.setValueAtTime(0.006, t); g.gain.linearRampToValueAtTime(0, t + 0.35); n.connect(f); f.connect(g); g.connect(this.ctx.destination); n.start(t); }
+                else if (type === 'scare') { osc.type = 'sawtooth'; filter.frequency.value = 5000; osc.frequency.linearRampToValueAtTime(1000, t + 0.5); gain.gain.setValueAtTime(0.5, t); osc.start(t); osc.stop(t + 1); }
+                else if (type === 'panel_break') { osc.type = 'square'; osc.frequency.setValueAtTime(120, t); osc.frequency.exponentialRampToValueAtTime(30, t + 0.5); gain.gain.setValueAtTime(0.4, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.6); filter.frequency.value = 400; osc.start(t); osc.stop(t + 0.7); }
+                else if (type === 'electric_hum') { osc.type = 'sine'; osc.frequency.setValueAtTime(60, t); gain.gain.setValueAtTime(0.03, t); gain.gain.linearRampToValueAtTime(0, t + 1.5); osc.start(t); osc.stop(t + 1.5); }
+            },
+            stopRadio: function () { if (this.radioNode) { try { this.radioNode.osc.stop(); this.radioNode.lfo.stop(); } catch (e) { } this.radioNode = null; } }
+        };
+
+        /* =====================================================
+           DIFFICULTY PROFILES
+           ===================================================== */
+        var DifficultyProfiles = {
+            easy: {
+                energyMult: 0.5,        // energy drain multiplier
+                aiInterval: function (n) { return Math.max(2000, 7000 - n * 600); },
+                aiChance: function (n) { return (n + 1) / 10; },  // lower chance
+                anyaChance: 0.18,
+                anyaAttackChance: 0.10,
+                fatigueFillRate: 0.4,    // per second when giving energy
+                fatigueCooldown: 5000,   // ms sleep
+                electroKuziDrain: 0.15,  // per second
+                electroKuziChance: 0.005,
+                lightCost: 0.3,          // energy per light toggle
+                panelBreakChance: 0.02,
+                camBreakChance: 0.04,
+                basementBreakMult: 0.15  // basement breaks much less
+            },
+            normal: {
+                energyMult: 1.0,
+                aiInterval: function (n) { return Math.max(1000, 5000 - n * 800); },
+                aiChance: function (n) { return (n + 3) / 10; },
+                anyaChance: 0.35,
+                anyaAttackChance: 0.20,
+                fatigueFillRate: 1.0,
+                fatigueCooldown: 12000,
+                electroKuziDrain: 0.3,
+                electroKuziChance: 0.012,
+                lightCost: 0.8,
+                panelBreakChance: 0.05,
+                camBreakChance: 0.10,
+                basementBreakMult: 0.25
+            },
+            hardcore: {
+                energyMult: 1.6,
+                aiInterval: function (n) { return Math.max(600, 3500 - n * 700); },
+                aiChance: function (n) { return (n + 5) / 10; },
+                anyaChance: 0.50,
+                anyaAttackChance: 0.35,
+                fatigueFillRate: 2.0,
+                fatigueCooldown: 20000,
+                electroKuziDrain: 0.6,
+                electroKuziChance: 0.025,
+                lightCost: 1.5,
+                panelBreakChance: 0.10,
+                camBreakChance: 0.15,
+                basementBreakMult: 0.35
+            }
+        };
+
+        var Game = {
+            state: {
+                active: false, night: 1, energy: 100, time: 0, camOpen: false, currentCam: 1,
+                doors: { left: false, right: false }, lights: { left: false, right: false },
+                kuzi: { loc: 1, atDoor: false, side: 'none', attackPanel: false },
+                anya: { stage: 0, wet: false },
+                pies: 3, hasCuc: false, spawnPie: false, spawnCuc: false,
+                brokenCams: [], maximFed: false, radioActive: false, shadowActive: false,
+                // NEW STATE
+                electroKuziActive: false,
+                maximFatigue: 0,       // 0-100
+                maximSleeping: false,
+                panelBroken: false,
+                doorsJammed: false,
+                batteryAvailable: false,
+                liquidatedEnemy: null,  // null | 'kuzi' | 'anya'
+                anyaBerserk: false,
+                cutsceneType: null      // 'good' | 'bad' | null
+            },
+            maxNight: 1,
+            timers: [],
+            paused: false,
+            lastGameOverReasonKey: null,
+            difficulty: 'normal',
+            cutsceneCallback: null,
+
+            getDiff: function () {
+                return DifficultyProfiles[this.difficulty] || DifficultyProfiles.normal;
+            },
+
+            setDifficulty: function (d) {
+                this.difficulty = d;
+                document.querySelectorAll('.btn-diff').forEach(function (b) {
+                    b.classList.toggle('selected', b.dataset.diff === d);
+                });
+                var descKey = 'diffDesc' + d.charAt(0).toUpperCase() + d.slice(1);
+                var descEl = document.getElementById('diff-desc');
+                if (descEl) descEl.textContent = Language.t(descKey);
+            },
+
+            init: function () {
+                var s = localStorage.getItem('kuzibaeva_progress');
+                this.maxNight = s ? parseInt(s) : 1;
+                this.renderMenu();
+                var self = this;
+                var forceLightOff = function () { self.toggleLight('left', false); self.toggleLight('right', false); };
+                window.addEventListener('pointerup', forceLightOff);
+                window.addEventListener('pointercancel', forceLightOff);
+                window.addEventListener('blur', forceLightOff);
+            },
+
+            renderMenu: function () {
+                var c = document.getElementById('level-select-container');
+                c.innerHTML = '';
+                for (var i = 1; i <= 5; i++) {
+                    var b = document.createElement('button');
+                    b.className = 'btn-level ' + (i <= this.maxNight ? 'unlocked' : '');
+                    b.innerText = Language.t('night') + ' ' + i;
+                    if (i <= this.maxNight) {
+                        (function (night) {
+                            b.onclick = function () { Game.startNight(night); };
+                        })(i);
+                    }
+                    c.appendChild(b);
+                }
+            },
+
+            startNight: function (n) {
+                AudioSys.init(); AudioSys.stopRadio();
+                this.state = {
+                    active: true, night: n, energy: 100, time: 0, camOpen: false, currentCam: 1,
+                    doors: { left: false, right: false }, lights: { left: false, right: false },
+                    kuzi: { loc: 1, atDoor: false, side: 'none', attackPanel: false },
+                    anya: { stage: 0, wet: false },
+                    pies: 3, hasCuc: false, spawnPie: false, spawnCuc: false,
+                    brokenCams: [], maximFed: false, radioActive: false, shadowActive: false,
+                    // NEW
+                    electroKuziActive: false,
+                    maximFatigue: 0,
+                    maximSleeping: false,
+                    panelBroken: false,
+                    doorsJammed: false,
+                    batteryAvailable: false,
+                    liquidatedEnemy: null,
+                    anyaBerserk: false,
+                    cutsceneType: null
+                };
+                this.lastGameOverReasonKey = null;
+                document.getElementById('menu-screen').classList.add('hidden');
+                document.getElementById('game-screen').classList.remove('hidden');
+                document.getElementById('splash-btn').classList.toggle('hidden', n < 3);
+                document.getElementById('btn-light-l').classList.remove('lit');
+                document.getElementById('btn-light-r').classList.remove('lit');
+                document.getElementById('img-anya-door').classList.add('hidden');
+                document.getElementById('img-kuzi-door').classList.add('hidden');
+                document.getElementById('electro-kuzi').classList.add('hidden');
+                document.getElementById('panel-broken-warning').classList.add('hidden');
+                document.getElementById('golden-kuzi').classList.add('hidden');
+                document.getElementById('door-l').classList.remove('closed');
+                document.getElementById('door-r').classList.remove('closed');
+                document.getElementById('btn-door-l').classList.remove('active');
+                document.getElementById('btn-door-r').classList.remove('active');
+                document.getElementById('electric-panel').classList.remove('sparking');
+                document.getElementById('liquidation-flash').classList.remove('active');
+                document.getElementById('cutscene-overlay').classList.add('hidden');
+                document.getElementById('liquidation-menu').classList.add('hidden');
+                // Show/hide liquidation button (available from night 2+)
+                document.getElementById('btn-liquidate').classList.toggle('hidden', n < 2);
+                this.updateHUD();
+                this.timers.forEach(clearInterval);
+                var diff = this.getDiff();
+                var self = this;
+                this.timers = [
+                    setInterval(function () { self.gameLoop(); }, 1000),
+                    setInterval(function () { self.aiLoop(); }, diff.aiInterval(n)),
+                    setInterval(function () { AudioSys.playTone('ambience'); }, 8000)
+                ];
+            },
+
+            gameLoop: function () {
+                if (!this.state.active) return;
+                var diff = this.getDiff();
+                this.state.time++;
+                var h = Math.floor(this.state.time / 45);
+                document.getElementById('time-display').innerText = (h === 0 ? 12 : h) + ":00 AM";
+                if (h >= 6) { this.victory(); return; }
+
+                // === USAGE CALCULATION ===
+                var usage = 1;
+                if (this.state.doors.left) usage++;
+                if (this.state.doors.right) usage++;
+                if (this.state.camOpen) usage++;
+                if (this.state.lights.left || this.state.lights.right) usage++;
+                document.querySelectorAll('.u-bar').forEach(function (b, i) {
+                    b.className = 'u-bar';
+                    if (i < usage) {
+                        if (usage <= 2) b.classList.add('on-green');
+                        else if (usage <= 3) b.classList.add('on-yellow');
+                        else b.classList.add('on-red');
+                    }
+                });
+
+                // === ENERGY DRAIN ===
+                var drain = usage * 0.15 * diff.energyMult;
+                if (this.state.maximFed && !this.state.maximSleeping) drain -= 0.3;
+                if (this.state.shadowActive) drain += 0.5;
+                // Electro Kuzi drain
+                if (this.state.electroKuziActive) drain += diff.electroKuziDrain;
+                // Panel broken extra drain
+                if (this.state.panelBroken) drain += 0.2 * diff.energyMult;
+
+                this.state.energy -= drain;
+                if (this.state.energy > 100) this.state.energy = 100;
+                if (this.state.energy <= 0) { this.state.energy = 0; this.gameOver("powerOut", "kuzi"); return; }
+
+                // === MAXIM FATIGUE ===
+                if (this.state.maximFed && !this.state.maximSleeping) {
+                    this.state.maximFatigue += diff.fatigueFillRate;
+                    if (this.state.maximFatigue >= 100) {
+                        this.state.maximFatigue = 100;
+                        this.state.maximSleeping = true;
+                        this.state.maximFed = false;
+                        var self = this;
+                        setTimeout(function () {
+                            self.state.maximSleeping = false;
+                            self.state.maximFatigue = 0;
+                        }, diff.fatigueCooldown);
+                    }
+                }
+
+                // === SPAWNS ===
+                if (this.state.time % 45 === 0) this.state.spawnPie = true;
+                if (this.state.night >= 3 && this.state.time % 30 === 0) this.state.spawnCuc = true;
+
+                // === BATTERY SPAWN (cam 8 area, near panel) ===
+                if (this.state.time % 60 === 30 && !this.state.batteryAvailable) {
+                    this.state.batteryAvailable = true;
+                }
+
+                // === GOLDEN KUZIBAEVA ===
+                if (this.state.night >= 4 && Math.random() < 0.015 && !this.state.camOpen) {
+                    document.getElementById('golden-kuzi').classList.remove('hidden');
+                    var self2 = this;
+                    setTimeout(function () {
+                        if (!document.getElementById('golden-kuzi').classList.contains('hidden'))
+                            self2.gameOver("goldenKuzi", "golden");
+                    }, 3000);
+                }
+
+                // === RADIO ===
+                if (this.state.night >= 2 && !this.state.radioActive && Math.random() < 0.01) {
+                    this.state.radioActive = true; AudioSys.playTone('radio');
+                }
+
+                // === SHADOW ===
+                if (this.state.night >= 3 && !this.state.shadowActive && Math.random() < 0.01) {
+                    this.state.shadowActive = true;
+                }
+
+                // === ELECTRO KUZI (appears in corner, drains energy until clicked) ===
+                if (!this.state.electroKuziActive && this.state.liquidatedEnemy !== 'kuzi' && Math.random() < diff.electroKuziChance) {
+                    this.state.electroKuziActive = true;
+                    document.getElementById('electro-kuzi').classList.remove('hidden');
+                    AudioSys.playTone('electric_hum');
+                }
+
+                // === PANEL BREAKDOWN ===
+                if (!this.state.panelBroken && this.state.night >= 3 && Math.random() < diff.panelBreakChance * (this.state.night - 2) / 3) {
+                    this.state.panelBroken = true;
+                    this.state.doorsJammed = true;
+                    // Force doors open
+                    this.state.doors.left = false;
+                    this.state.doors.right = false;
+                    document.getElementById('door-l').classList.remove('closed');
+                    document.getElementById('door-r').classList.remove('closed');
+                    document.getElementById('btn-door-l').classList.remove('active');
+                    document.getElementById('btn-door-r').classList.remove('active');
+                    document.getElementById('panel-broken-warning').classList.remove('hidden');
+                    document.getElementById('electric-panel').classList.add('sparking');
+                    AudioSys.playTone('panel_break');
+                }
+
+                this.updateHUD();
+            },
+
+            aiLoop: function () {
+                if (!this.state.active) return;
+                var diff = this.getDiff();
+                var n = this.state.night;
+
+                // === KUZIBAEVA AI ===
+                if (this.state.liquidatedEnemy !== 'kuzi') {
+                    if (Math.random() < diff.aiChance(n)) {
+                        if (this.state.kuzi.attackPanel) {
+                            // Attack panel mode (night 5 legacy)
+                            // handled by fixPanel
+                        } else if (this.state.kuzi.atDoor) {
+                            var s = this.state.kuzi.side;
+                            if (!this.state.doors[s] || this.state.doorsJammed) {
+                                if (this.state.night === 5 && !this.state.kuzi.attackPanel) {
+                                    this.state.kuzi.atDoor = false;
+                                    this.state.kuzi.attackPanel = true;
+                                    document.getElementById('electric-panel').classList.add('sparking');
+                                } else {
+                                    this.gameOver(s === 'left' ? 'kuziLeft' : 'kuziRight', "kuzi");
+                                }
+                            } else {
+                                this.state.kuzi.atDoor = false;
+                                this.state.kuzi.loc = 1;
+                                this.state.kuzi.side = 'none';
+                                AudioSys.playTone('step');
+                            }
+                        } else {
+                            var old = this.state.kuzi.loc;
+                            if (this.state.kuzi.loc === 1) {
+                                if (Math.random() < 0.15) this.state.kuzi.loc = 5;
+                                else this.state.kuzi.loc = 2;
+                            } else if (this.state.kuzi.loc === 2) {
+                                this.state.kuzi.loc = 5;
+                            } else if (this.state.kuzi.loc === 5) {
+                                this.state.kuzi.loc = 99;
+                                this.state.kuzi.atDoor = true;
+                                this.state.kuzi.side = Math.random() > 0.5 ? 'left' : 'right';
+                                if (Math.random() < 0.08) AudioSys.playTone('door_breath');
+                            }
+                            if (old !== this.state.kuzi.loc) AudioSys.playTone('step');
+                        }
+                    }
+                }
+
+                // === ANYA AI ===
+                if (this.state.night >= 2 && this.state.liquidatedEnemy !== 'anya') {
+                    var anyaChance = this.state.anyaBerserk ? Math.min(diff.anyaChance * 2.5, 0.95) : diff.anyaChance;
+                    if (Math.random() < anyaChance) {
+                        if (this.state.anya.stage === 0) {
+                            this.state.anya.stage = 1;
+                        } else if (this.state.anya.stage === 1) {
+                            this.state.anya.stage = 2;
+                            if (this.state.anyaBerserk) {
+                                this.state.anya.wet = Math.random() < 0.90;
+                            } else {
+                                this.state.anya.wet = this.state.night >= 3 && Math.random() < 0.45;
+                            }
+                            AudioSys.playTone('step');
+                        } else if (this.state.anya.stage === 2) {
+                            // Berserk Anya attacks from BOTH doors
+                            if (this.state.anyaBerserk) {
+                                var anyaSide = Math.random() > 0.5 ? 'left' : 'right';
+                                if ((!this.state.doors[anyaSide] || this.state.doorsJammed) && Math.random() < diff.anyaAttackChance * 1.5) {
+                                    this.gameOver("anyaCaught", "anya");
+                                } else if (this.state.doors[anyaSide] && !this.state.doorsJammed) {
+                                    this.state.anya.stage = 0;
+                                    this.state.anya.wet = false;
+                                    AudioSys.playTone('step');
+                                }
+                            } else {
+                                // Normal: only left door
+                                if ((!this.state.doors.left || this.state.doorsJammed) && Math.random() < diff.anyaAttackChance) {
+                                    this.gameOver("anyaCaught", "anya");
+                                } else if (this.state.doors.left && !this.state.doorsJammed) {
+                                    this.state.anya.stage = 0;
+                                    this.state.anya.wet = false;
+                                    AudioSys.playTone('step');
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // === CAMERA BREAKS ===
+                if (this.state.night >= 3 && Math.random() < diff.camBreakChance) {
+                    var c = Math.floor(Math.random() * 8) + 1;
+                    // Basement (cam 8) breaks much less
+                    if (c === 8 && Math.random() > diff.basementBreakMult) {
+                        // don't break basement
+                    } else {
+                        if (this.state.brokenCams.indexOf(c) === -1) this.state.brokenCams.push(c);
+                    }
+                }
+
+                if (this.state.camOpen) this.updateCam();
+            },
+
+            togglePause: function () {
+                this.paused = !this.paused;
+                if (this.paused) {
+                    this.timers.forEach(clearInterval);
+                    AudioSys.stopRadio();
+                    document.body.style.opacity = "0.5";
+                    alert(Language.t("paused"));
+                    document.body.style.opacity = "1";
+                    this.paused = false;
+                    var diff = this.getDiff();
+                    var self = this;
+                    this.timers = [
+                        setInterval(function () { self.gameLoop(); }, 1000),
+                        setInterval(function () { self.aiLoop(); }, diff.aiInterval(self.state.night)),
+                        setInterval(function () { AudioSys.playTone('ambience'); }, 8000)
+                    ];
+                    if (this.state.radioActive) AudioSys.playTone('radio');
+                }
+            },
+
+            // === CUTSCENE SYSTEM ===
+            showCutscene: function (type, callback) {
+                var overlay = document.getElementById('cutscene-overlay');
+                var emoji = document.getElementById('cutscene-emoji');
+                var text = document.getElementById('cutscene-text');
+                var sub = document.getElementById('cutscene-sub');
+                var btn = document.getElementById('cutscene-btn');
+                if (type === 'good') {
+                    emoji.textContent = Language.t('cutGoodEmoji');
+                    text.textContent = Language.t('cutGoodTitle');
+                    sub.textContent = Language.t('cutGoodSub');
+                } else {
+                    emoji.textContent = Language.t('cutBadEmoji');
+                    text.textContent = Language.t('cutBadTitle');
+                    sub.textContent = Language.t('cutBadSub');
+                }
+                btn.textContent = Language.t('cutBtn');
+                this.cutsceneCallback = callback;
+                overlay.classList.remove('hidden');
+            },
+
+            closeCutscene: function () {
+                document.getElementById('cutscene-overlay').classList.add('hidden');
+                if (this.cutsceneCallback) {
+                    this.cutsceneCallback();
+                    this.cutsceneCallback = null;
+                }
+            },
+
+            victory: function () {
+                this.state.active = false;
+                this.timers.forEach(clearInterval);
+                AudioSys.stopRadio();
+                if (this.state.night >= this.maxNight) localStorage.setItem('kuzibaeva_progress', this.state.night + 1);
+                var self = this;
+                // Good cutscene first, then win screen
+                this.showCutscene('good', function () {
+                    document.getElementById('game-screen').classList.add('hidden');
+                    document.getElementById('win-screen').classList.remove('hidden');
+                });
+            },
+
+            gameOver: function (reasonKey, type) {
+                this.state.active = false;
+                this.timers.forEach(clearInterval);
+                AudioSys.stopRadio();
+                AudioSys.playTone('scare');
+                this.lastGameOverReasonKey = reasonKey;
+                var img = document.querySelector('#jumpscare img');
+                if (type === 'anya') img.src = 'anya.jpg';
+                else if (type === 'golden') img.src = 'kuzi.jpg';
+                else img.src = 'screamer.jpg';
+                var self = this;
+                document.getElementById('jumpscare').classList.remove('hidden');
+                setTimeout(function () {
+                    document.getElementById('jumpscare').classList.add('hidden');
+                    // Bad cutscene, then game over screen
+                    self.showCutscene('bad', function () {
+                        document.getElementById('game-screen').classList.add('hidden');
+                        document.getElementById('end-screen').classList.remove('hidden');
+                        document.getElementById('end-reason').innerText = Language.t(reasonKey);
+                    });
+                }, 2000);
+            },
+
+            toggleDoor: function (s) {
+                // If panel broken / doors jammed — can't close
+                if (this.state.doorsJammed) return;
+                if (this.state.energy > 0) {
+                    this.state.doors[s] = !this.state.doors[s];
+                    document.getElementById('door-' + (s === 'left' ? 'l' : 'r')).classList.toggle('closed', this.state.doors[s]);
+                    document.getElementById('btn-door-' + (s === 'left' ? 'l' : 'r')).classList.toggle('active', this.state.doors[s]);
+                }
+            },
+
+            toggleLight: function (s, on) {
+                if (this.state.energy <= 0 && on) return;
+                var diff = this.getDiff();
+                // Flashlight cost on each turn-on
+                if (on && !this.state.lights[s]) {
+                    this.state.energy -= diff.lightCost;
+                    if (this.state.energy < 0) this.state.energy = 0;
+                    this.updateHUD();
+                }
+                this.state.lights[s] = on;
+                document.getElementById('btn-light-' + (s === 'left' ? 'l' : 'r')).classList.toggle('lit', on);
+                var img = document.getElementById(s === 'left' ? 'img-anya-door' : 'img-kuzi-door');
+                if (s === 'left') {
+                    if (on) {
+                        // Berserk Anya can also appear at right, but left light shows left side entities
+                        if (this.state.kuzi.atDoor && this.state.kuzi.side === 'left') {
+                            img.src = "kuzi.jpg"; img.classList.remove('hidden');
+                        } else if (this.state.anya.stage === 2) {
+                            img.src = "anya.jpg"; img.classList.remove('hidden');
+                            if (!this.state.anya.wet) {
+                                var self = this;
+                                setTimeout(function () {
+                                    if (self.state.anya.stage === 2 && !self.state.anya.wet) {
+                                        self.state.anya.stage = 0;
+                                        self.state.anya.wet = false;
+                                        img.classList.add('hidden');
+                                        AudioSys.playTone('step');
+                                    }
+                                }, 500);
+                            }
+                        } else img.classList.add('hidden');
+                    } else img.classList.add('hidden');
+                } else {
+                    if (on) {
+                        if (this.state.kuzi.atDoor && this.state.kuzi.side === 'right') {
+                            img.classList.remove('hidden');
+                        } else if (this.state.anyaBerserk && this.state.anya.stage === 2) {
+                            // Berserk Anya can appear at right door too
+                            img.src = "anya.jpg";
+                            img.classList.remove('hidden');
+                        } else {
+                            img.classList.add('hidden');
+                        }
+                    } else img.classList.add('hidden');
+                }
+                this.updateHUD();
+            },
+
+            toggleTablet: function () {
+                if (this.state.energy > 0) {
+                    this.state.camOpen = !this.state.camOpen;
+                    document.getElementById('tablet-interface').classList.toggle('hidden', !this.state.camOpen);
+                    if (this.state.camOpen) this.updateCam();
+                }
+            },
+
+            switchCam: function (n) { this.state.currentCam = n; this.updateCam(); },
+
+            updateCam: function () {
+                if (!this.state.camOpen) return;
+                var cam = this.state.currentCam;
+                document.getElementById('cam-name').innerText =
+                    'CAM-' + cam + ': ' + Language.camName(cam) +
+                    (this.state.brokenCams.indexOf(cam) !== -1 ? ' (' + Language.t('camError') + ')' : "");
+                document.querySelectorAll('.map-btn').forEach(function (b) {
+                    var camId = parseInt(b.dataset.cam, 10);
+                    b.classList.toggle('active', camId === cam);
+                    b.classList.toggle('broken', Game.state.brokenCams.indexOf(camId) !== -1);
+                });
+                var hideIds = ['render-kuzi', 'render-maxim', 'render-radio', 'render-shadow', 'btn-collect', 'btn-interact', 'btn-repair', 'btn-radio', 'btn-flash', 'fatigue-label', 'fatigue-bar-container', 'render-battery'];
+                hideIds.forEach(function (id) { document.getElementById(id).classList.add('hidden'); });
+
+                if (this.state.brokenCams.indexOf(cam) !== -1) {
+                    if (this.state.hasCuc) document.getElementById('btn-repair').classList.remove('hidden');
+                    return;
+                }
+
+                if (this.state.kuzi.loc === cam && this.state.liquidatedEnemy !== 'kuzi') {
+                    document.getElementById('render-kuzi').classList.remove('hidden');
+                }
+                if (cam === 3 && this.state.spawnPie) {
+                    var b = document.getElementById('btn-collect');
+                    b.innerText = Language.t('takePie');
+                    b.classList.remove('hidden');
+                }
+                if (cam === 8 && this.state.spawnCuc) {
+                    var b2 = document.getElementById('btn-collect');
+                    b2.innerText = Language.t('takeCucumber');
+                    b2.classList.remove('hidden');
+                }
+                // Battery on cam 8
+                if (cam === 8 && this.state.batteryAvailable) {
+                    document.getElementById('render-battery').classList.remove('hidden');
+                }
+                if (cam === 4) {
+                    document.getElementById('render-maxim').classList.remove('hidden');
+                    // Show fatigue bar
+                    document.getElementById('fatigue-label').classList.remove('hidden');
+                    document.getElementById('fatigue-bar-container').classList.remove('hidden');
+                    document.getElementById('fatigue-bar-fill').style.width = this.state.maximFatigue + '%';
+                    // Sleeping sprite change
+                    var maximImg = document.getElementById('render-maxim');
+                    if (this.state.maximSleeping) {
+                        maximImg.style.filter = 'grayscale(1) brightness(0.5)';
+                        maximImg.style.transform = 'rotate(15deg)';
+                    } else {
+                        maximImg.style.filter = '';
+                        maximImg.style.transform = '';
+                    }
+                    if (!this.state.maximFed && !this.state.maximSleeping) {
+                        document.getElementById('btn-interact').classList.remove('hidden');
+                    }
+                }
+                if (cam === 6 && this.state.radioActive) {
+                    document.getElementById('render-radio').classList.remove('hidden');
+                    document.getElementById('btn-radio').classList.remove('hidden');
+                }
+                if (cam === 7 && this.state.shadowActive) {
+                    document.getElementById('render-shadow').classList.remove('hidden');
+                    document.getElementById('btn-flash').classList.remove('hidden');
+                }
+            },
+
+            collectItem: function () {
+                if (this.state.currentCam === 3) {
+                    this.state.pies++; this.state.spawnPie = false;
+                } else {
+                    if (Math.random() < 0.2) {
+                        this.state.energy -= 5; AudioSys.playTone('scare');
+                        alert(Language.t('ratPenalty'));
+                    }
+                    this.state.hasCuc = true; this.state.spawnCuc = false;
+                }
+                this.updateCam(); this.updateHUD();
+            },
+
+            collectBattery: function () {
+                if (this.state.batteryAvailable) {
+                    this.state.batteryAvailable = false;
+                    this.state.energy += 15;
+                    if (this.state.energy > 100) this.state.energy = 100;
+                    this.updateCam();
+                    this.updateHUD();
+                }
+            },
+
+            feedMaxim: function () {
+                if (this.state.pies > 0 && !this.state.maximSleeping) {
+                    this.state.pies--;
+                    this.state.maximFed = true;
+                    this.state.energy += 3;
+                    var self = this;
+                    setTimeout(function () {
+                        if (!self.state.maximSleeping) self.state.maximFed = false;
+                    }, 15000);
+                    this.updateCam();
+                    this.updateHUD();
+                }
+            },
+
+            repairCam: function () {
+                this.state.brokenCams = this.state.brokenCams.filter(function (c) { return c !== Game.state.currentCam; });
+                this.state.hasCuc = false;
+                this.updateCam();
+            },
+
+            stopRadio: function () { this.state.radioActive = false; AudioSys.stopRadio(); this.updateCam(); },
+
+            flashShadow: function () { this.state.shadowActive = false; this.updateCam(); },
+
+            splashWater: function () {
+                if (this.state.energy >= 10) {
+                    this.state.energy -= 10;
+                    if (this.state.anya.stage === 2 && this.state.anya.wet) {
+                        this.state.anya.stage = 0;
+                        this.state.anya.wet = false;
+                        document.getElementById('img-anya-door').classList.add('hidden');
+                        AudioSys.playTone('step');
+                    }
+                    this.updateHUD();
+                }
+            },
+
+            throwPie: function (side) {
+                if (this.state.pies <= 0) return;
+                this.state.pies--;
+                if (this.state.kuzi.atDoor && this.state.kuzi.side === side) {
+                    this.state.kuzi.atDoor = false;
+                    this.state.kuzi.loc = 1;
+                    this.state.kuzi.side = 'none';
+                    document.getElementById('img-anya-door').classList.add('hidden');
+                    document.getElementById('img-kuzi-door').classList.add('hidden');
+                }
+                AudioSys.playTone('step');
+                this.updateHUD();
+            },
+
+            banishGolden: function () {
+                if (this.state.pies > 0) {
+                    this.state.pies--;
+                    document.getElementById('golden-kuzi').classList.add('hidden');
+                    this.updateHUD();
+                }
+            },
+
+            fixPanel: function () {
+                // Fix attack panel (legacy night 5)
+                if (this.state.kuzi.attackPanel && (this.state.pies > 0 || this.state.hasCuc)) {
+                    if (this.state.pies > 0) this.state.pies--;
+                    else this.state.hasCuc = false;
+                    this.state.kuzi.attackPanel = false;
+                    this.state.kuzi.loc = 1;
+                    document.getElementById('electric-panel').classList.remove('sparking');
+                    this.updateHUD();
+                    return;
+                }
+                // Fix broken panel (new mechanic)
+                if (this.state.panelBroken && (this.state.pies > 0 || this.state.hasCuc)) {
+                    if (this.state.pies > 0) this.state.pies--;
+                    else this.state.hasCuc = false;
+                    this.state.panelBroken = false;
+                    this.state.doorsJammed = false;
+                    document.getElementById('panel-broken-warning').classList.add('hidden');
+                    if (!this.state.kuzi.attackPanel) document.getElementById('electric-panel').classList.remove('sparking');
+                    this.updateHUD();
+                }
+            },
+
+            // === ELECTRO KUZI (click to dismiss) ===
+            dismissElectroKuzi: function () {
+                this.state.electroKuziActive = false;
+                document.getElementById('electro-kuzi').classList.add('hidden');
+            },
+
+            // === LIQUIDATION SYSTEM ===
+            openLiquidationMenu: function () {
+                if (this.state.liquidatedEnemy) return; // already used
+                document.getElementById('liquidation-menu').classList.remove('hidden');
+            },
+
+            closeLiquidationMenu: function () {
+                document.getElementById('liquidation-menu').classList.add('hidden');
+            },
+
+            executeLiquidation: function (target) {
+                if (this.state.energy < 75) {
+                    alert(Language.t('liqNoEnergy'));
+                    return;
+                }
+                this.state.energy -= 75;
+                this.state.liquidatedEnemy = target;
+
+                // Flash effect
+                var flash = document.getElementById('liquidation-flash');
+                flash.classList.add('active');
+                setTimeout(function () { flash.classList.remove('active'); }, 200);
+
+                if (target === 'kuzi') {
+                    // Remove Kuzibaeva
+                    this.state.kuzi.atDoor = false;
+                    this.state.kuzi.loc = -1;
+                    this.state.kuzi.side = 'none';
+                    this.state.kuzi.attackPanel = false;
+                    document.getElementById('img-kuzi-door').classList.add('hidden');
+                    document.getElementById('electric-panel').classList.remove('sparking');
+                    // ANYA BERSERK MODE
+                    this.state.anyaBerserk = true;
+                } else if (target === 'anya') {
+                    // Remove Anya
+                    this.state.anya.stage = 0;
+                    this.state.anya.wet = false;
+                    document.getElementById('img-anya-door').classList.add('hidden');
+                }
+
+                this.closeLiquidationMenu();
+                document.getElementById('btn-liquidate').classList.add('hidden');
+                AudioSys.playTone('scare');
+                this.updateHUD();
+            },
+
+            updateHUD: function () {
+                document.getElementById('energy-val').innerText = Math.floor(this.state.energy) + "%";
+                document.getElementById('pie-count').innerText = this.state.pies;
+            }
+        };
+
+        window.onload = function () { Language.init(); Game.init(); Language.apply(); };
+    </script>
+</body>
+
+</html>

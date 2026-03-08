@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Dollar Tycoon: Legacy Edition (XP/IE6)</title>
+
+    <!--[if IE]>
+    <script>
+        // Polyfills for basic functionality in ancient IE
+        if (!Array.prototype.push) {
+            Array.prototype.push = function(item) {
+                this[this.length] = item;
+                return this.length;
+            };
+        }
+        if (!Date.now) {
+            Date.now = function() { return new Date().getTime(); };
+        }
+    </script>
+    <![endif]-->
+
+    <style>
+        /* --- LEGACY CORE CSS (IE6/XP Safe) --- */
+        body {
+            font-family: Arial, sans-serif; /* Segoe UI removed for XP compat */
+            background-color: #1b1b1b;
+            color: #f5f6fa;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+
+        /* Кнопки управления */
+        .top-controls {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            z-index: 100;
+        }
+
+        .control-btn {
+            background: #353b48;
+            border: 1px solid #7f8fa6;
+            color: #7f8fa6;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 11px;
+            margin-left: 2px;
+        }
+
+        .control-btn:hover, .control-btn.hover {
+            background: #555;
+            color: white;
+            border-color: white;
+        }
+
+        /* Layout Tables for IE6/8 Stability */
+        .main-layout {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding-top: 50px;
+        }
+
+        .layout-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .layout-table td {
+            padding: 5px;
+            vertical-align: top;
+        }
+
+        /* ЛЕВАЯ ПАНЕЛЬ */
+        .clicker-section {
+            background-color: #252525;
+            border: 2px solid #444;
+            padding: 10px;
+            text-align: center;
+            width: 300px;
+        }
+
+        .balance-display {
+            font-size: 24px;
+            color: #4cd137;
+            margin: 5px 0;
+            font-family: "Courier New", monospace;
+            font-weight: bold;
+        }
+
+        .stats-row {
+            color: #7f8fa6;
+            font-size: 11px;
+            margin: 5px 0;
+        }
+
+        /* ЗОНА КЛИКА */
+        .click-area {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        #click-btn {
+            width: 180px;
+            height: 180px;
+            border: 4px solid #4cd137;
+            background: #44bd32;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #click-btn.broken {
+            background: #2f3640;
+            border-color: #7f8fa6;
+            cursor: default; /* not-allowed not supp in IE6 */
+        }
+
+        /* Кнопка "Починить" */
+        #repair-btn {
+            display: none;
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: #00a8ff;
+            color: white;
+            border: 2px solid white;
+            font-weight: bold;
+            font-size: 10px;
+            cursor: pointer;
+            left: 50%;
+            top: 50%;
+            text-align: center;
+            margin-left: -35px;
+            margin-top: -35px;
+            z-index: 50;
+        }
+
+        /* Прогресс перегрева */
+        .heat-bar-container {
+            width: 180px;
+            height: 8px;
+            background: #353b48;
+            margin: 5px auto;
+            border: 1px solid #7f8fa6;
+            overflow: hidden; /* IE6 fix */
+        }
+
+        #heat-bar {
+            width: 0%;
+            height: 100%;
+            background: #e84118;
+            font-size: 0; /* IE6 height fix */
+            line-height: 0;
+        }
+
+        /* ПРАВАЯ ПАНЕЛЬ */
+        .shop-section {
+            background-color: #252525;
+            border: 2px solid #444;
+            padding: 10px;
+        }
+
+        .panel {
+            background: #252525;
+            padding: 5px;
+            border: 1px solid #444;
+            margin: 5px 0;
+        }
+
+        h2 {
+            border-bottom: 1px solid #353b48;
+            padding-bottom: 5px;
+            margin-top: 0;
+            color: #fbc531;
+            font-size: 14px;
+        }
+
+        .shop-item {
+            background: #2f3640;
+            border: 1px solid #555;
+            margin: 4px 0;
+            padding: 5px;
+            cursor: pointer;
+            width: 95%; 
+        }
+
+        .shop-item:hover, .shop-item.hover {
+            border-color: #fbc531;
+            background: #353b48;
+        }
+
+        .shop-item.disabled {
+            color: #555;
+            border-color: #333;
+            cursor: default;
+        }
+
+        .shop-item.purchased {
+            border-color: #4cd137;
+            color: #777;
+        }
+
+        .item-header {
+            font-weight: bold;
+            color: #00a8ff;
+            font-size: 12px;
+        }
+        
+        .item-cost { color: #4cd137; font-size: 11px; }
+        .item-owned { color: #fbc531; font-size: 10px; }
+
+        /* --- КЕЙСЫ (КНОПКИ) --- */
+        .chest-grid {
+            width: 100%;
+            overflow: hidden; /* Clear floats */
+        }
+
+        .chest-btn {
+            padding: 8px 2px;
+            cursor: pointer;
+            border: 1px solid #000;
+            font-weight: bold;
+            font-size: 10px;
+            color: #2f3640;
+            text-align: center;
+            margin: 2px;
+            width: 30%; /* Float layout for IE6 */
+            float: left;
+            display: inline; /* IE6 Double Margin Fix */
+        }
+
+        .chest-btn:hover, .chest-btn.hover {
+            border-color: white;
+            color: black;
+        }
+
+        /* Colors */
+        .c-silver { background: #dcdde1; }
+        .c-gold { background: #fbc531; color: black; }
+        .c-diamond { background: #00d2d3; color: black; }
+        .c-ruby { background: #ff6b6b; color: white; }
+        .c-sapphire { background: #5f27cd; color: white; }
+        .c-emerald { background: #10ac84; color: white; }
+        .c-void { background: #2d3436; color: #a29bfe; }
+        .c-obsidian { background: #000000; color: #e056fd; border: 1px solid #8e44ad; }
+        .c-dragon { background: #c0392b; color: yellow; }
+        .c-nebula { background: #6a0dad; color: white; }
+        .c-titan { background: #7f8c8d; color: white; border: 1px solid gold; }
+        .c-infinity { background: gold; color: black; border: 2px solid #fff; }
+
+        /* Custom Case Style */
+        .c-custom { border: 2px dotted #fff; }
+
+        /* --- МОДАЛЬНЫЕ ОКНА --- */
+        .modal-overlay {
+            display: none;
+            position: absolute; /* Fixed is bad in IE6 */
+            top: 0; left: 0;
+            width: 100%; height: 2000px; /* Hack height */
+            background: #000;
+            z-index: 1000;
+            filter: alpha(opacity=80); /* IE8 */
+            opacity: 0.8;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 150px;
+            left: 50%;
+            width: 300px;
+            margin-left: -150px;
+            background: #252525;
+            border: 2px solid #fbc531;
+            padding: 10px;
+            text-align: center;
+            z-index: 1001;
+        }
+
+        .btn-buy {
+            background: #0097e6;
+            color: white;
+            border: 1px solid #fff;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        /* --- РУЛЕТКА (LEGACY MODE) --- */
+        .roulette-box {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            width: 400px;
+            margin-left: -200px;
+            background: #2f3640;
+            padding: 10px;
+            border: 2px solid #7f8fa6;
+            z-index: 1001;
+        }
+
+        .roulette-window {
+            width: 320px; /* 4 items * 80px */
+            height: 80px;
+            background: #1e2329;
+            overflow: hidden;
+            position: relative;
+            margin: 0 auto 10px auto;
+            border: 2px solid #444;
+        }
+
+        .roulette-center-line {
+            position: absolute;
+            left: 50%;
+            top: 0; bottom: 0;
+            width: 2px;
+            background: #fbc531;
+            z-index: 20;
+            margin-left: -1px;
+        }
+
+        .roulette-tape {
+            position: absolute;
+            top: 0; left: 0;
+            white-space: nowrap;
+            height: 80px;
+        }
+
+        .roulette-item {
+            display: block;
+            float: left;
+            width: 78px; /* 80px total width with margins/borders */
+            height: 70px;
+            margin: 0;
+            padding-top: 10px;
+            background: #353b48;
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            font-size: 11px;
+            border-right: 2px solid #222;
+        }
+
+        /* Item Colors */
+        .r-win { color: #4cd137; background: #1a2e1a; }
+        .r-lose { color: #e84118; background: #2e1a1a; }
+        .r-jackpot { color: #fbc531; background: #3e3215; }
+
+        .clear { clear: both; font-size:0; height:0; line-height:0; }
+
+        /* --- ADMIN PANEL --- */
+        .admin-panel {
+            display: none;
+            position: absolute;
+            top: 50px; left: 50px;
+            width: 250px;
+            background: #000;
+            border: 2px solid red;
+            padding: 10px;
+            z-index: 9999;
+            color: #0f0;
+            font-family: monospace;
+        }
+        .admin-input {
+            width: 90%;
+            background: #111;
+            border: 1px solid #0f0;
+            color: #0f0;
+            margin-bottom: 5px;
+        }
+        .admin-btn {
+            background: #003300;
+            color: #0f0;
+            border: 1px solid #0f0;
+            width: 100%;
+            margin-bottom: 3px;
+            cursor: pointer;
+        }
+        
+        /* --- UIS / CONSTRUCTOR PANEL --- */
+        .uis-panel {
+            display: none;
+            position: absolute;
+            top: 50px; right: 50px;
+            width: 280px;
+            background: #2d3436;
+            border: 2px solid #0984e3;
+            padding: 10px;
+            z-index: 9999;
+            color: white;
+        }
+        .uis-row { margin-bottom: 5px; }
+        .uis-lbl { display: inline-block; width: 80px; font-size: 10px; }
+        .uis-inp { width: 140px; background: #eee; border: 1px solid #aaa; }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-controls">
+        <button class="control-btn" id="sound-btn" onclick="toggleSound()">Sound: ON</button>
+        <button class="control-btn" id="lang-btn" onclick="toggleLanguage()">Language: EN</button>
+        <button class="control-btn" onclick="openModal('modal-authors')">Authors</button>
+    </div>
+
+    <div class="main-layout">
+        <table class="layout-table">
+            <tr>
+                <td style="width: 320px;">
+                    <!-- LEFT COLUMN -->
+                    <div class="clicker-section">
+                        <div style="font-size: 14px; color: #aaa;" id="lbl-balance">YOUR BALANCE</div>
+                        <div class="balance-display">$<span id="money">0</span></div>
+
+                        <div class="stats-row">
+                            <span id="dpc-container">[Click]: $<span id="dpc">1</span></span>
+                            <span style="margin-left: 10px;">[Auto]: $<span id="dps">0</span>/s</span>
+                        </div>
+
+                        <div class="click-area">
+                            <button id="click-btn" onclick="handleClick(event)">CLICK</button>
+                            <button id="repair-btn" onclick="fixButton(event)">COOL<br>DOWN</button>
+                        </div>
+
+                        <div class="heat-bar-container">
+                            <div id="heat-bar"></div>
+                        </div>
+                        <div style="font-size: 10px; color: #7f8fa6;" id="lbl-heat">Overheat</div>
+                    </div>
+                </td>
+
+                <td>
+                    <!-- RIGHT COLUMN -->
+                    <div class="shop-section">
+                        <!-- MINERS -->
+                        <div class="panel">
+                            <h2 id="title-miners">[*] Graphic Cards</h2>
+                            <div id="miners-list"></div>
+                        </div>
+
+                        <!-- UPGRADES -->
+                        <div class="panel">
+                            <h2 id="title-upgrades">[P] Equipment</h2>
+                            <div id="pickaxe-list"></div>
+                        </div>
+
+                        <!-- CASINO -->
+                        <div class="panel">
+                            <h2 id="title-casino">[S] Casino (Cases)</h2>
+                            <div class="chest-grid" id="chest-grid">
+                                <!-- Standard Cases -->
+                                <button class="chest-btn c-silver" onclick="tryOpenChest(100, 'Silver')">Silver<br>$100</button>
+                                <button class="chest-btn c-gold" onclick="tryOpenChest(1000, 'Gold')">Gold<br>$1k</button>
+                                <button class="chest-btn c-diamond" onclick="tryOpenChest(5000, 'Diamond')">Diamond<br>$5k</button>
+                                <button class="chest-btn c-ruby" onclick="tryOpenChest(10000, 'Ruby')">Ruby<br>$10k</button>
+                                <button class="chest-btn c-sapphire" onclick="tryOpenChest(100000, 'Sapphire')">Sapphire<br>$100k</button>
+                                <button class="chest-btn c-emerald" onclick="tryOpenChest(500000, 'Emerald')">Emerald<br>$500k</button>
+                                <button class="chest-btn c-void" onclick="tryOpenChest(1000000, 'VOID')">VOID<br>$1M</button>
+                                <button class="chest-btn c-obsidian" onclick="tryOpenChest(5000000, 'Obsidian')">Obsidian<br>$5M</button>
+                                <button class="chest-btn c-dragon" onclick="tryOpenChest(10000000, 'Dragon')">Dragon<br>$10M</button>
+                                <button class="chest-btn c-nebula" onclick="tryOpenChest(100000000, 'Nebula')">Nebula<br>$100M</button>
+                                <button class="chest-btn c-titan" onclick="tryOpenChest(500000000, 'Titan')">Titan<br>$500M</button>
+                                <button class="chest-btn c-infinity" onclick="tryOpenChest(1000000000, 'INFINITY')">INFINITY<br>$1B</button>
+                                <!-- Custom cases will be appended here -->
+                            </div>
+                            <div class="clear"></div>
+                            <div style="margin-top:5px; font-size:10px; color:#777; text-align:center;">
+                                Legacy Version v1.5 (Optimized)
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- MODAL: AUTHORS -->
+    <div id="modal-authors" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <h3 style="color:white; margin:0;">Developers</h3>
+            <p>UnderPlayer673</p>
+            <p>ГорчицаСМаслом</p>
+            <button class="btn-buy" onclick="closeModal('modal-authors')">Close</button>
+        </div>
+    </div>
+
+    <!-- MODAL: ROULETTE -->
+    <div id="modal-roulette" class="modal-overlay" style="display:none;">
+        <div class="roulette-box">
+            <h3 style="text-align:center; color:white; margin:5px 0;" id="roulette-title">Opening Case...</h3>
+            
+            <div class="roulette-window">
+                <div class="roulette-center-line"></div>
+                <div class="roulette-tape" id="roulette-tape"></div>
+            </div>
+
+            <div id="roulette-result" style="text-align:center; min-height:20px; font-weight:bold; color:#fbc531;"></div>
+            
+            <button id="roulette-close" class="btn-buy" style="display:none;" onclick="closeModal('modal-roulette')">Claim Reward</button>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL (Hidden, Alt+M) -->
+    <div id="admin-panel" class="admin-panel">
+        <div style="text-align:center; border-bottom:1px solid #0f0; margin-bottom:5px;">ADMIN MENU</div>
+        <div>Command:</div>
+        <input type="text" id="admin-cmd" class="admin-input" placeholder="Enter command (e.g. UIS)">
+        <button class="admin-btn" onclick="execAdminCmd()">EXECUTE</button>
+        <hr style="border:0; border-top:1px dashed #0f0">
+        <div>Add Money:</div>
+        <input type="text" id="cheat-money" class="admin-input" value="1000000">
+        <button class="admin-btn" onclick="cheatAddMoney()">ADD $$$</button>
+        <button class="admin-btn" onclick="cheatSetMoney()">SET $$$</button>
+        <hr style="border:0; border-top:1px dashed #0f0">
+        <div>Time Scale:</div>
+        <button class="admin-btn" onclick="setTimeScale(0.5)">x0.5</button>
+        <button class="admin-btn" onclick="setTimeScale(1)">x1.0</button>
+        <button class="admin-btn" onclick="setTimeScale(5)">x5.0</button>
+        <hr style="border:0; border-top:1px dashed #0f0">
+        <button class="admin-btn" onclick="saveCustomConfig()">SAVE CONFIG</button>
+        <button class="admin-btn" onclick="loadCustomConfig()">LOAD CONFIG</button>
+        <button class="admin-btn" onclick="closeAdmin()">CLOSE</button>
+    </div>
+
+    <!-- UIS / CASE CONSTRUCTOR -->
+    <div id="uis-panel" class="uis-panel">
+        <div style="text-align:center; border-bottom:1px solid #0984e3; margin-bottom:10px; color:#0984e3; font-weight:bold;">CASE CONSTRUCTOR</div>
+        
+        <div class="uis-row">
+            <span class="uis-lbl">Name:</span>
+            <input type="text" id="uis-name" class="uis-inp" value="Custom Case">
+        </div>
+        <div class="uis-row">
+            <span class="uis-lbl">Price ($):</span>
+            <input type="text" id="uis-price" class="uis-inp" value="1000">
+        </div>
+        <div class="uis-row">
+            <span class="uis-lbl">Color (Hex):</span>
+            <input type="text" id="uis-color" class="uis-inp" value="#ff00ff">
+        </div>
+        <div class="uis-row">
+            <span class="uis-lbl">Text Color:</span>
+            <input type="text" id="uis-tcolor" class="uis-inp" value="#ffffff">
+        </div>
+        <div class="uis-row">
+            <span class="uis-lbl">Open Time(ms):</span>
+            <input type="text" id="uis-time" class="uis-inp" value="2000">
+        </div>
+
+        <button class="btn-buy" style="background:#0984e3;" onclick="uisCreateCase()">CREATE CASE</button>
+        <button class="btn-buy" style="background:#d63031;" onclick="uisClearCases()">DELETE ALL CUSTOM</button>
+        <button class="btn-buy" style="background:#636e72;" onclick="document.getElementById('uis-panel').style.display='none'">CLOSE</button>
+    </div>
+
+    <script>
+        /* --- GLOBAL VARIABLES --- */
+        var state = {
+            money: 0,
+            pickaxeId: 0,
+            miners: [], // [{count: 0, cost: 100}, ...]
+            customCases: [] // [{name, price, bg, color, time}, ...]
+        };
+
+        var pickaxesData = [
+            { id: "hands", cost: 0, power: 1, name: "Hands" },
+            { id: "oldPc", cost: 100, power: 3, name: "Old PC" },
+            { id: "mouse", cost: 500, power: 10, name: "Gaming Mouse" },
+            { id: "gtx1050", cost: 2500, power: 30, name: "GTX 1050" },
+            { id: "rtx3060", cost: 10000, power: 100, name: "RTX 3060" },
+            { id: "rtx4090", cost: 50000, power: 500, name: "RTX 4090" },
+            { id: "farm", cost: 250000, power: 2500, name: "Mining Farm" },
+            { id: "quantum", cost: 1000000, power: 8000, name: "Quantum PC" },
+            { id: "skynet", cost: 5000000, power: 45000, name: "AI Skynet" }
+        ];
+
+        var minersData = [
+            { id: "kid", baseCost: 200, prod: 1, name: "Schoolboy" },
+            { id: "miner", baseCost: 1500, prod: 5, name: "Miner" },
+            { id: "farmUnit", baseCost: 20000, prod: 100, name: "Farm Unit" },
+            { id: "factory", baseCost: 500000, prod: 1000, name: "Factory" },
+            { id: "datacenter", baseCost: 2000000, prod: 5000, name: "Datacenter" }
+        ];
+
+        var currentLang = 'en';
+        var isBroken = false;
+        var clickHeat = 0;
+        var HEAT_LIMIT = 100; // Lower limit for challenge
+        var soundEnabled = true;
+        var timeScale = 1.0;
+        window.onerror = function () { return true; };
+
+        function setNodeText(idOrEl, value) {
+            var el = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : idOrEl;
+            if (!el) return;
+            if (typeof el.innerText !== 'undefined') el.innerText = value;
+            else el.textContent = value;
+        }
+
+        // Init State Miners
+        for(var i=0; i<minersData.length; i++) {
+            state.miners.push({count: 0, cost: minersData[i].baseCost});
+        }
+
+        /* --- SOUND SYSTEM (SIMPLE) --- */
+        var audioCtx;
+        function initAudio() {
+            try {
+                var AudioContext = window.AudioContext || window.webkitAudioContext;
+                if(AudioContext) audioCtx = new AudioContext();
+            } catch(e) {}
+        }
+        function playSound(type) {
+            if(!soundEnabled || !audioCtx) return;
+            try {
+                var osc = audioCtx.createOscillator();
+                var gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                var now = audioCtx.currentTime;
+                if(type === 'click') {
+                    osc.frequency.value = 600;
+                    gain.gain.value = 0.05;
+                    osc.start(now); osc.stop(now + 0.05);
+                } else if(type === 'win') {
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.linearRampToValueAtTime(800, now + 0.1);
+                    gain.gain.value = 0.1;
+                    osc.start(now); osc.stop(now + 0.2);
+                } else if(type === 'lose') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.value = 150;
+                    gain.gain.value = 0.1;
+                    osc.start(now); osc.stop(now + 0.2);
+                }
+            } catch(e) {}
+        }
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            setNodeText('sound-btn', soundEnabled ? "Sound: ON" : "Sound: OFF");
+        }
+
+        /* --- GAME LOGIC --- */
+        function clampMoney(num) {
+            var n = parseFloat(num);
+            if(isNaN(n) || !isFinite(n)) return 0;
+            if(n < 0) return 0;
+            if(n > 1e200) return 1e200;
+            return n;
+        }
+
+        function trimZeros(str) {
+            str = String(str);
+            str = str.replace(/(\.\d*?[1-9])0+$/, '$1');
+            str = str.replace(/\.0+$/, '');
+            return str;
+        }
+
+        function toCommaDecimal(str) {
+            return String(str).replace('.', ',');
+        }
+
+        function formatMoney(num) {
+            num = clampMoney(num);
+            if(num === 0) return '0';
+
+            if(num >= 1e12) {
+                return toCommaDecimal(num.toExponential(2).replace('e+', 'E+').replace('e-', 'E-'));
+            }
+            if(num >= 1e9) return toCommaDecimal(trimZeros((num/1000000000).toFixed(2))) + ' млрд';
+            if(num >= 1e6) return toCommaDecimal(trimZeros((num/1000000).toFixed(2))) + ' млн';
+            if(num >= 1e3) return toCommaDecimal(trimZeros((num/1000).toFixed(2))) + ' тыс';
+            if(num >= 1) return Math.floor(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            return toCommaDecimal(trimZeros(num.toFixed(2)));
+        }
+
+        function getClickPower() {
+            return pickaxesData[state.pickaxeId].power;
+        }
+
+        function getAutoIncome() {
+            var sum = 0;
+            for(var i=0; i<state.miners.length; i++) {
+                sum += state.miners[i].count * minersData[i].prod;
+            }
+            return sum;
+        }
+
+        function handleClick(e) {
+            if(isBroken) return;
+            
+            clickHeat += 5;
+            updateHeat();
+            if(clickHeat >= HEAT_LIMIT) {
+                isBroken = true;
+                document.getElementById('click-btn').className = 'broken';
+                setNodeText('click-btn', "OVERHEAT");
+                document.getElementById('repair-btn').style.display = 'block';
+                return;
+            }
+
+            var val = getClickPower();
+            state.money = clampMoney(state.money + val);
+            playSound('click');
+            updateUI();
+        }
+
+        function fixButton(e) {
+            if(e && e.stopPropagation) e.stopPropagation();
+            window.event.cancelBubble = true; // IE6
+
+            isBroken = false;
+            clickHeat = 0;
+            updateHeat();
+            document.getElementById('click-btn').className = '';
+            setNodeText('click-btn', "CLICK");
+            document.getElementById('repair-btn').style.display = 'none';
+        }
+
+        function updateHeat() {
+            var pct = (clickHeat / HEAT_LIMIT) * 100;
+            if(pct < 0) pct = 0;
+            if(pct > 100) pct = 100;
+            document.getElementById('heat-bar').style.width = pct + '%';
+        }
+
+        setInterval(function() {
+            if(clickHeat > 0 && !isBroken) {
+                clickHeat -= 2;
+                updateHeat();
+            }
+        }, 150);
+
+        setInterval(function() {
+            var inc = getAutoIncome();
+            if(inc > 0) {
+                state.money = clampMoney(state.money + (inc * timeScale));
+                updateUI();
+            }
+        }, 1000);
+
+        /* --- SHOP LOGIC --- */
+        function updateUI() {
+            setNodeText('money', formatMoney(state.money));
+            setNodeText('dpc', formatMoney(getClickPower()));
+            setNodeText('dps', formatMoney(getAutoIncome()));
+
+            // Render Miners
+            var html = '';
+            for(var i=0; i<minersData.length; i++) {
+                var m = minersData[i];
+                var s = state.miners[i];
+                var canBuy = state.money >= s.cost;
+                var cls = canBuy ? 'shop-item' : 'shop-item disabled';
+                html += '<div class="'+cls+'" onclick="buyMiner('+i+')">';
+                html += '<div class="item-header">'+m.name+' (x'+s.count+')</div>';
+                html += '<div class="item-cost">+$'+formatMoney(m.prod)+'/s</div>';
+                html += '<div class="item-owned">Cost: $'+formatMoney(s.cost)+'</div>';
+                html += '</div>';
+            }
+            document.getElementById('miners-list').innerHTML = html;
+
+            // Render Upgrades
+            html = '';
+            for(var i=1; i<pickaxesData.length; i++) {
+                var p = pickaxesData[i];
+                var bought = state.pickaxeId >= i;
+                var canBuy = state.money >= p.cost;
+                var cls = bought ? 'shop-item purchased' : (canBuy ? 'shop-item' : 'shop-item disabled');
+                var clickFn = bought ? '' : 'onclick="buyPickaxe('+i+')"';
+                var status = bought ? 'OWNED' : '$'+formatMoney(p.cost);
+
+                html += '<div class="'+cls+'" '+clickFn+'>';
+                html += '<div class="item-header">'+p.name+'</div>';
+                html += '<div class="item-cost">Power: '+formatMoney(p.power)+'</div>';
+                html += '<div class="item-owned">'+status+'</div>';
+                html += '</div>';
+            }
+            document.getElementById('pickaxe-list').innerHTML = html;
+        }
+
+        function buyMiner(idx) {
+            var s = state.miners[idx];
+            if(state.money >= s.cost) {
+                state.money = clampMoney(state.money - s.cost);
+                s.count++;
+                s.cost = clampMoney(s.cost * 1.2);
+                playSound('win');
+                updateUI();
+            }
+        }
+
+        function buyPickaxe(idx) {
+            var p = pickaxesData[idx];
+            if(state.money >= p.cost && state.pickaxeId < idx) {
+                state.money = clampMoney(state.money - p.cost);
+                state.pickaxeId = idx;
+                playSound('win');
+                updateUI();
+            }
+        }
+
+        /* --- LEGACY ROULETTE (FRAME SWAP) --- */
+        var rouletteTimer = null;
+        
+        function tryOpenChest(cost, type, customTime) {
+            if(state.money >= cost) {
+                state.money = clampMoney(state.money - cost);
+                updateUI();
+                openRoulette(cost, type, customTime);
+            } else {
+                alert("Not enough money!");
+            }
+        }
+
+        function openRoulette(cost, type, customTime) {
+            var modal = document.getElementById('modal-roulette');
+            var tape = document.getElementById('roulette-tape');
+            var res = document.getElementById('roulette-result');
+            var btn = document.getElementById('roulette-close');
+            var title = document.getElementById('roulette-title');
+
+            modal.style.display = 'block'; // Or expression fix for IE6
+            btn.style.display = 'none';
+            setNodeText(res, '');
+            setNodeText(title, "Opening " + type + " Case...");
+            
+            // Generate result immediately logic
+            var isWin = Math.random() > 0.35; // 65% win rate
+            var prize = 0;
+            if(isWin) {
+                var mult = 1.1 + Math.random() * 2; // 1.1x to 3.1x
+                if(Math.random() > 0.95) mult = 10; // Jackpot
+                prize = clampMoney(cost * mult);
+            } else {
+                prize = clampMoney(cost * (0.1 + Math.random() * 0.5));
+            }
+
+            // ANIMATION: Legacy "Frame Swap" (No smooth scroll)
+            // Instead of moving a long tape, we just generate items and shift their position abruptly
+            tape.innerHTML = '';
+            var items = [];
+            var colors = ['r-lose', 'r-win', 'r-jackpot'];
+            
+            // Create 5 dummy items
+            for(var i=0; i<5; i++) {
+                var d = document.createElement('div');
+                d.className = 'roulette-item ' + colors[Math.floor(Math.random()*3)];
+                setNodeText(d, '?');
+                tape.appendChild(d);
+                items.push(d);
+            }
+            // Position tape so the middle item (index 2) is center
+            // 320px wide window. Item 80px.
+            // Center is 160px. Index 2 starts at 160.
+            // We need index 2 to be at left: 120px? No.
+            // Item width 80. Center of item is 40. Center of window is 160.
+            // Pos = 160 - 40 = 120. So Left should be -40 if index 2 is at 160 (2*80).
+            // Actually let's just shift the tape left.
+            // Let's do a simple "Tick" animation where we shift `left` by 80px every X ms
+            
+            var steps = 0;
+            var maxSteps = 15; // 15 ticks
+            var intervalTime = 150; // slow enough for IE6
+            if(customTime) intervalTime = customTime / 15;
+
+            var currentLeft = 0;
+
+            rouletteTimer = setInterval(function() {
+                steps++;
+                
+                // Add new item to end, remove first item (Infinite scroll illusion)
+                var newItemVal = clampMoney(cost * Math.random() * 2);
+                var d = document.createElement('div');
+                d.className = 'roulette-item ' + (newItemVal > cost ? 'r-win' : 'r-lose');
+                setNodeText(d, '$' + formatMoney(newItemVal));
+                tape.appendChild(d);
+                
+                if(items.length > 5) {
+                    tape.removeChild(items[0]);
+                    items.shift();
+                }
+                items.push(d);
+
+                // Sound
+                playSound('click');
+
+                // On last step, replace middle item with REAL prize
+                if(steps === maxSteps) {
+                    clearInterval(rouletteTimer);
+                    // The item under the needle (index 2 in a 4-item view?)
+                    // Let's just hardcode the middle item result
+                    var midItem = items[2]; // 0, 1, [2], 3, 4
+                    setNodeText(midItem, '$' + formatMoney(prize));
+                    midItem.className = 'roulette-item ' + (prize > cost ? 'r-win' : 'r-lose');
+                    if(prize > cost * 5) midItem.className += ' r-jackpot';
+
+                    // Result Text
+                    state.money = clampMoney(state.money + prize);
+                    updateUI();
+                    saveGame();
+                    
+                    if(prize > cost) {
+                        playSound('win');
+                        setNodeText(res, "WIN! +$" + formatMoney(prize));
+                        res.style.color = "#4cd137";
+                    } else {
+                        playSound('lose');
+                        setNodeText(res, "LOSS! -$" + formatMoney(cost - prize));
+                        res.style.color = "#e84118";
+                    }
+                    btn.style.display = 'block';
+                    setNodeText(title, "Done.");
+                }
+
+                // Simulate shift by just redrawing (browser handles flow layout)
+                
+            }, intervalTime);
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+        function openModal(id) {
+            document.getElementById(id).style.display = 'block';
+        }
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ru' : 'en';
+            alert("Language switch pending update...");
+        }
+
+        /* --- ADMIN & CONSTRUCTOR --- */
+        document.onkeydown = function(e) {
+            e = e || window.event;
+            // Alt + M (Keycode 77)
+            if(e.altKey && e.keyCode === 77) {
+                document.getElementById('admin-panel').style.display = 'block';
+            }
+        };
+
+        function closeAdmin() {
+            document.getElementById('admin-panel').style.display = 'none';
+        }
+
+        function execAdminCmd() {
+            var cmd = document.getElementById('admin-cmd').value.toUpperCase();
+            if(cmd === 'UIS') {
+                document.getElementById('uis-panel').style.display = 'block';
+                closeAdmin();
+            } else {
+                alert("Unknown Command");
+            }
+        }
+
+        function cheatAddMoney() {
+            var val = parseFloat(document.getElementById('cheat-money').value);
+            if(!isNaN(val)) { state.money = clampMoney(state.money + val); updateUI(); }
+        }
+
+        function cheatSetMoney() {
+            var val = parseFloat(document.getElementById('cheat-money').value);
+            if(!isNaN(val)) { state.money = clampMoney(val); updateUI(); }
+        }
+
+        function setTimeScale(s) {
+            timeScale = s;
+            alert("Time Scale: " + s);
+        }
+
+        /* --- CUSTOM CASES LOGIC --- */
+        function uisCreateCase() {
+            var name = document.getElementById('uis-name').value;
+            var price = parseFloat(document.getElementById('uis-price').value);
+            var color = document.getElementById('uis-color').value;
+            var tcolor = document.getElementById('uis-tcolor').value;
+            var time = parseInt(document.getElementById('uis-time').value, 10);
+
+            if(isNaN(price) || price <= 0) return alert("Invalid Price");
+            if(isNaN(time) || time < 500) time = 2000;
+
+            var newCase = {
+                name: name,
+                price: price,
+                color: color,
+                tcolor: tcolor,
+                time: time,
+                isCustom: true
+            };
+
+            state.customCases.push(newCase);
+            renderCustomCases();
+            alert("Case Created!");
+        }
+
+        function uisClearCases() {
+            state.customCases = [];
+            renderCustomCases();
+        }
+
+        function renderCustomCases() {
+            // Remove old custom buttons (naive approach: rebuild grid)
+            // But we have standard buttons. Let's just append or clear appended.
+            // Reload grid content is safer.
+            // Actually, let's just clear the custom part if we had a container, 
+            // but here we will just remove elements with class 'custom-case-btn'
+            
+            // Simplify: Just remove all buttons with id starting 'cust-' and re-add
+            var grid = document.getElementById('chest-grid');
+            // Logic to remove old customs is hard in IE6 DOM. 
+            // Let's just reload page or save/load.
+            // Better: Loop children and remove if custom
+            
+            // For this version: Just append new ones. Duplicates only on refresh.
+            // Better: Clear grid and re-render ALL standard + custom.
+            
+            // Re-render ALL:
+            var html = '';
+            // Standard
+            html += '<button class="chest-btn c-silver" onclick="tryOpenChest(100, \'Silver\')">Silver<br>$100</button>';
+            html += '<button class="chest-btn c-gold" onclick="tryOpenChest(1000, \'Gold\')">Gold<br>$1k</button>';
+            html += '<button class="chest-btn c-diamond" onclick="tryOpenChest(5000, \'Diamond\')">Diamond<br>$5k</button>';
+            html += '<button class="chest-btn c-ruby" onclick="tryOpenChest(10000, \'Ruby\')">Ruby<br>$10k</button>';
+            html += '<button class="chest-btn c-sapphire" onclick="tryOpenChest(100000, \'Sapphire\')">Sapphire<br>$100k</button>';
+            html += '<button class="chest-btn c-emerald" onclick="tryOpenChest(500000, \'Emerald\')">Emerald<br>$500k</button>';
+            html += '<button class="chest-btn c-void" onclick="tryOpenChest(1000000, \'VOID\')">VOID<br>$1M</button>';
+            html += '<button class="chest-btn c-obsidian" onclick="tryOpenChest(5000000, \'Obsidian\')">Obsidian<br>$5M</button>';
+            html += '<button class="chest-btn c-dragon" onclick="tryOpenChest(10000000, \'Dragon\')">Dragon<br>$10M</button>';
+            html += '<button class="chest-btn c-nebula" onclick="tryOpenChest(100000000, \'Nebula\')">Nebula<br>$100M</button>';
+            html += '<button class="chest-btn c-titan" onclick="tryOpenChest(500000000, \'Titan\')">Titan<br>$500M</button>';
+            html += '<button class="chest-btn c-infinity" onclick="tryOpenChest(1000000000, \'INFINITY\')">INFINITY<br>$1B</button>';
+
+            // Custom
+            for(var i=0; i<state.customCases.length; i++) {
+                var c = state.customCases[i];
+                var style = 'background:'+c.color+'; color:'+c.tcolor+';';
+                html += '<button class="chest-btn c-custom" style="'+style+'" onclick="tryOpenChest('+c.price+', \''+c.name+'\', '+c.time+')">'+c.name+'<br>$'+formatMoney(c.price)+'</button>';
+            }
+            grid.innerHTML = html;
+        }
+
+        /* --- SAVE SYSTEM --- */
+        function saveGame() {
+            // Using Cookie for IE6/Local/File protocol support
+            var str = escape(JSON.stringify(state));
+            var d = new Date();
+            d.setTime(d.getTime() + (365*24*60*60*1000));
+            document.cookie = "dtLegacySave="+str+"; expires="+d.toUTCString()+"; path=/";
+        }
+
+        function loadGame() {
+            var name = "dtLegacySave=";
+            var ca = document.cookie.split(';');
+            for(var i=0; i<ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1);
+                if (c.indexOf(name) == 0) {
+                    try {
+                        var json = JSON.parse(unescape(c.substring(name.length, c.length)));
+                        if(json) {
+                            state.money = clampMoney(json.money || 0);
+                            state.pickaxeId = json.pickaxeId || 0;
+                            if(json.miners) state.miners = json.miners;
+                            if(json.customCases) state.customCases = json.customCases;
+                        }
+                    } catch(e) {}
+                }
+            }
+            if(state.pickaxeId < 0) state.pickaxeId = 0;
+            if(state.pickaxeId >= pickaxesData.length) state.pickaxeId = pickaxesData.length - 1;
+            for(var m=0; m<minersData.length; m++) {
+                if(!state.miners[m]) state.miners[m] = {count: 0, cost: minersData[m].baseCost};
+                state.miners[m].count = Math.max(0, Math.floor(parseFloat(state.miners[m].count) || 0));
+                state.miners[m].cost = clampMoney(state.miners[m].cost || minersData[m].baseCost);
+            }
+            for(var c=0; c<state.customCases.length; c++) {
+                state.customCases[c].price = clampMoney(state.customCases[c].price || 0);
+            }
+            updateUI();
+            renderCustomCases();
+        }
+
+        function saveCustomConfig() {
+            // Saves specifically to localStorage if available for config transfer, else cookie
+            saveGame();
+            alert("Config Saved (Inside Save Game)");
+        }
+        function loadCustomConfig() {
+            loadGame();
+            alert("Config Loaded");
+        }
+
+        /* --- INIT --- */
+        window.onload = function() {
+            initAudio();
+            loadGame();
+            updateUI();
+        };
+        window.onbeforeunload = function () { saveGame(); };
+        setInterval(function () { saveGame(); }, 15000);
+
+        // JSON Polyfill for really old IE if needed
+        if (!window.JSON) {
+          window.JSON = {
+            parse: function(sJSON) { return eval('(' + sJSON + ')'); },
+            stringify: function(vContent) {
+              if (vContent instanceof Object) {
+                var sOutput = "";
+                if (vContent.constructor === Array) {
+                  for (var i = 0; i < vContent.length; sOutput += this.stringify(vContent[i]) + ",", i++);
+                  return "[" + sOutput.substr(0, sOutput.length - 1) + "]";
+                }
+                if (vContent.toString !== Object.prototype.toString) { return "\"" + vContent.toString().replace(/"/g, "\\$&") + "\""; }
+                for (var sProp in vContent) { sOutput += "\"" + sProp.replace(/"/g, "\\$&") + "\":" + this.stringify(vContent[sProp]) + ","; }
+                return "{" + sOutput.substr(0, sOutput.length - 1) + "}";
+              }
+              return typeof vContent === "string" ? "\"" + vContent.replace(/"/g, "\\$&") + "\"" : String(vContent);
+            }
+          };
+        }
+    </script>
+</body>
+</html>

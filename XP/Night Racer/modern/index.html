@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NightRacer: Ultimate Audio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-panel: #14141e;
+            --primary: #9d4edd;
+            --primary-glow: rgba(157, 78, 221, 0.5);
+            --accent: #00f2ea;
+            --accent-glow: rgba(0, 242, 234, 0.5);
+            --nitro: #00d2ff;
+            --text-main: #ffffff;
+            --text-dim: #8ba1c5;
+            --border: #2a2a35;
+
+            --common: #a0a0a0;
+            --uncommon: #4caf50;
+            --rare: #2196f3;
+            --legendary: #d241e7;
+            --mythic: #ffeb3b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: radial-gradient(circle at 50% 10%, #1a1a2e 0%, #0a0a0f 80%);
+        }
+
+        #app {
+            width: 100%;
+            max-width: 600px;
+            height: 100%;
+            position: relative;
+            background: var(--bg-panel);
+            border-left: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            z-index: 10;
+            background: var(--bg-panel);
+            overflow-y: auto;
+        }
+
+        .screen.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        h1,
+        h2,
+        h3 {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .text-accent {
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .text-primary {
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .text-dim {
+            color: var(--text-dim);
+        }
+
+        .currency {
+            color: #ffd700;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        button {
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            background: #2a2a35;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #5a189a 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent) 0%, #009688 100%);
+            color: #000;
+            border: none;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .btn-block {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn-icon {
+            padding: 10px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Top Controls */
+        .top-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            height: 40px;
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(20, 20, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            min-height: 70px;
+        }
+
+        .menu-hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        .menu-title {
+            font-size: 3rem;
+            line-height: 0.9;
+            margin-bottom: 10px;
+            font-weight: 900;
+            font-style: italic;
+            text-align: center;
+            z-index: 2;
+            text-shadow: 0 5px 20px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+        }
+
+        .menu-car-container {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            min-height: 200px;
+        }
+
+        #menuCanvas {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .menu-controls {
+            width: 100%;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .garage-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 10px 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+
+        .tab-btn.active {
+            opacity: 1;
+            border-color: var(--accent);
+            background: #2a2a35;
+        }
+
+        .car-list {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px 20px;
+            gap: 15px;
+            scroll-snap-type: x mandatory;
+            min-height: 180px;
+        }
+
+        .car-card {
+            min-width: 140px;
+            background: #1e1e28;
+            border-radius: 12px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .car-card.selected {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
+            background: #252530;
+        }
+
+        .car-visual-box {
+            width: 100%;
+            height: 80px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stats-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px 15px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            align-items: center;
+        }
+
+        .stat-bar {
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .stat-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: 0.5s ease-out;
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .parts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .part-slot {
+            background: #1e1e28;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .case-roulette {
+            height: 200px;
+            background: #0b0b10;
+            position: relative;
+            margin: 20px 0;
+            border-top: 2px solid var(--accent);
+            border-bottom: 2px solid var(--accent);
+            overflow: hidden;
+            box-shadow: inset 0 0 50px #000;
+            width: 100%;
+        }
+
+        .roulette-strip {
+            display: flex;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .roulette-item {
+            width: 150px;
+            height: 100%;
+            flex-shrink: 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%);
+        }
+
+        .roulette-marker {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid var(--accent);
+            transform: translateX(-50%);
+            z-index: 20;
+            filter: drop-shadow(0 0 5px var(--accent));
+        }
+
+        .c-common {
+            color: var(--common);
+        }
+
+        .c-uncommon {
+            color: var(--uncommon);
+        }
+
+        .c-rare {
+            color: var(--rare);
+        }
+
+        .c-legendary {
+            color: var(--legendary);
+        }
+
+        .c-mythic {
+            color: var(--mythic);
+        }
+
+        .r-common {
+            border-bottom: 4px solid var(--common);
+        }
+
+        .r-uncommon {
+            border-bottom: 4px solid var(--uncommon);
+            box-shadow: inset 0 -10px 20px -10px var(--uncommon);
+        }
+
+        .r-rare {
+            border-bottom: 4px solid var(--rare);
+            box-shadow: inset 0 -10px 20px -10px var(--rare);
+        }
+
+        .r-legendary {
+            border-bottom: 4px solid var(--legendary);
+            box-shadow: inset 0 -10px 20px -10px var(--legendary);
+        }
+
+        .r-mythic {
+            border-bottom: 4px solid var(--mythic);
+            box-shadow: inset 0 -10px 20px -10px var(--mythic);
+        }
+
+        /* RACE UI IMPROVEMENTS */
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: #1a1a2e;
+        }
+
+        .race-ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            pointer-events: none;
+            z-index: 50;
+            width: calc(100% - 40px);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .speed-gauge {
+            font-family: monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--accent);
+            text-shadow: 0 0 10px #000;
+            font-style: italic;
+            line-height: 1;
+        }
+
+        .bonus-text {
+            position: absolute;
+            font-weight: bold;
+            color: #ffd700;
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: floatUp 0.8s forwards;
+            text-shadow: 0 0 5px #000;
+            z-index: 60;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-50px) scale(1.2);
+            }
+        }
+
+        /* NITRO & CONTROLS */
+        .nitro-container {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 220px;
+            text-align: center;
+            z-index: 60;
+        }
+
+        .nitro-bar-bg {
+            width: 100%;
+            height: 12px;
+            background: #333;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #555;
+            margin-top: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .nitro-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00d2ff, #008cff);
+            box-shadow: 0 0 10px #00d2ff;
+            transition: width 0.1s linear;
+        }
+
+        .nitro-btn {
+            width: 80px;
+            height: 80px;
+            /* Bigger for mobile */
+            border-radius: 50%;
+            background: rgba(0, 210, 255, 0.2);
+            border: 2px solid #00d2ff;
+            color: #00d2ff;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            pointer-events: auto;
+            cursor: pointer;
+            transition: 0.1s;
+            backdrop-filter: blur(4px);
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        .nitro-btn:active {
+            transform: scale(0.95);
+            background: rgba(0, 210, 255, 0.5);
+            box-shadow: 0 0 20px #00d2ff;
+        }
+
+        .nitro-btn.disabled {
+            border-color: #555;
+            color: #555;
+            opacity: 0.5;
+        }
+
+        .touch-zone {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 45%;
+            z-index: 40;
+        }
+
+        .touch-left {
+            left: 0;
+        }
+
+        .touch-right {
+            right: 0;
+        }
+
+        .touch-hint {
+            position: absolute;
+            bottom: 150px;
+            width: 100px;
+            color: rgba(255, 255, 255, 0.2);
+            font-weight: 900;
+            font-size: 1.5rem;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+            padding: 20px;
+        }
+
+        .modal {
+            background: var(--bg-panel);
+            width: 100%;
+            max-width: 400px;
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+        }
+
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #1e1e28;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+        }
+
+        .leaderboard-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mission-row {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 400px) {
+            .menu-title {
+                font-size: 2.5rem;
+            }
+
+            .car-card {
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-controls">
+        <button class="control-btn" id="lang-btn" onclick="toggleLanguage()">EN</button>
+        <button class="control-btn" onclick="toggleMute()" id="mute-btn">🔊</button>
+    </div>
+
+    <div id="app">
+
+        <!-- MENU START -->
+        <div id="screen-menu" class="screen active">
+            <header>
+                <div class="currency">$<span id="menu-balance">0</span></div>
+                <div style="font-size: 0.8rem; color: #666;" id="txt-version">ULTIMATE ED.</div>
+            </header>
+
+            <div class="menu-hero">
+                <h1 class="menu-title">NIGHT<br><span class="text-primary">RACER</span></h1>
+                <div class="menu-car-container">
+                    <canvas id="menuCanvas" width="400" height="400"></canvas>
+                </div>
+                <div class="menu-controls">
+                    <label class="setting-row">
+                        <span id="txt-safemode">🛡️ Safe Walls <small class="text-dim">(-5% profit)</small></span>
+                        <input type="checkbox" id="chk-safemode" onchange="toggleSafeMode(this.checked)">
+                    </label>
+
+                    <button id="btn-race" class="btn-primary btn-block"
+                        style="font-size: 1.5rem; letter-spacing: 2px; padding: 15px; background: linear-gradient(45deg, #ff3d00, #ff9100); margin-bottom: 10px;"
+                        onclick="startRace()">RACE</button>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <button id="btn-garage" class="btn-block" onclick="nav('screen-garage')">GARAGE</button>
+                        <button id="btn-cases" class="btn-accent btn-block" onclick="nav('screen-cases')">CASES</button>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button id="btn-records" class="btn-block" style="background: rgba(255,255,255,0.05);"
+                            onclick="showLeaderboard()">🏆 RECORDS</button>
+                        <button id="btn-missions" class="btn-block" style="background: rgba(255,255,255,0.05);"
+                            onclick="showMissions()">📋 MISSIONS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GARAGE -->
+        <div id="screen-garage" class="screen">
+            <header>
+                <button class="btn-icon" onclick="nav('screen-menu')">←</button>
+                <h2 id="title-garage">Garage</h2>
+                <div class="currency">$<span id="garage-balance">0</span></div>
+            </header>
+            <div class="garage-tabs">
+                <button class="tab-btn active" id="tab-my" onclick="setGarageTab('my')">MY CARS</button>
+                <button class="tab-btn" id="tab-all" onclick="setGarageTab('all')">CATALOG</button>
+            </div>
+            <div class="car-list" id="garage-list"></div>
+            <div style="padding: 20px; flex: 1; display:flex; flex-direction: column;">
+                <div id="selected-car-info" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 id="gar-car-name">Car Name</h2>
+                        <div id="gar-car-rarity"
+                            style="text-transform: uppercase; font-size: 0.8rem; font-weight: bold;"></div>
+                    </div>
+                    <div class="stats-grid">
+                        <span id="lbl-speed">SPEED</span>
+                        <div class="stat-bar">
+                            <div id="gar-stat-speed" class="stat-fill"></div>
+                        </div>
+                        <span id="lbl-handling">HANDLING</span>
+                        <div class="stat-bar">
+                            <div id="gar-stat-handling" class="stat-fill"></div>
+                        </div>
+                    </div>
+                    <div id="tuning-panel">
+                        <h3 style="margin: 10px 0;" id="title-tuning">TUNING</h3>
+                        <div class="parts-grid">
+                            <div class="part-slot" onclick="openTuning('engine')">
+                                <div style="font-size: 1.5rem;">🔧</div>
+                                <div class="text-dim" style="font-size: 0.8rem;" id="lbl-engine">Engine</div>
+                                <div id="slot-engine" style="font-size:0.8rem; color:var(--accent)">Stock</div>
+                            </div>
+                            <div class="part-slot" onclick="openTuning('wheels')">
+                                <div style="font-size: 1.5rem;">🛞</div>
+                                <div class="text-dim" style="font-size: 0.8rem;" id="lbl-wheels">Wheels</div>
+                                <div id="slot-wheels" style="font-size:0.8rem; color:var(--accent)">Stock</div>
+                            </div>
+                            <div class="part-slot" onclick="openTuning('bumper')">
+                                <div style="font-size: 1.5rem;">🛡️</div>
+                                <div class="text-dim" style="font-size: 0.8rem;" id="lbl-bumper">Bumper</div>
+                                <div id="slot-bumper" style="font-size:0.8rem; color:var(--accent)">Stock</div>
+                            </div>
+                            <div class="part-slot" onclick="openTuning('coating')">
+                                <div style="font-size: 1.5rem;">✨</div>
+                                <div class="text-dim" style="font-size: 0.8rem;" id="lbl-coating">Coating</div>
+                                <div id="slot-coating" style="font-size:0.8rem; color:var(--accent)">None</div>
+                            </div>
+                        </div>
+                        <button id="btn-paint-open" class="btn-block" onclick="openPaintModal()">🎨 PAINT</button>
+                    </div>
+                    <button id="btn-select-car" class="btn-primary btn-block"
+                        onclick="selectCurrentCar()">SELECT</button>
+                    <button id="btn-buy-car" class="btn-accent btn-block" style="display:none;"
+                        onclick="buyCurrentCar()">BUY</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASES -->
+        <div id="screen-cases" class="screen">
+            <header>
+                <button class="btn-icon" onclick="nav('screen-menu')">←</button>
+                <h2 id="title-cases">Cases</h2>
+                <div class="currency">$<span id="case-balance">0</span></div>
+            </header>
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; padding: 20px;">
+                <div
+                    style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
+                    <button onclick="switchCase(-1)">❮</button>
+                    <div style="text-align: center;">
+                        <h2 id="case-name" class="text-primary">Case</h2>
+                        <small class="text-dim" id="case-desc">Win top parts!</small>
+                    </div>
+                    <button onclick="switchCase(1)">❯</button>
+                </div>
+                <div class="case-roulette">
+                    <div class="roulette-marker"></div>
+                    <div class="roulette-line"></div>
+                    <div class="roulette-strip" id="roulette-strip"></div>
+                </div>
+                <button id="btn-spin" class="btn-primary btn-block" style="height: 60px; font-size: 1.2rem;"
+                    onclick="spinCase()"><span id="lbl-open">OPEN</span> $<span id="case-price">1000</span></button>
+                <div id="win-msg"
+                    style="margin-top: 15px; font-weight: bold; min-height: 40px; text-align: center; font-size: 1.1rem;">
+                </div>
+                <div style="margin-top: auto; width: 100%;">
+                    <h3 class="text-dim" id="lbl-contents">Contents:</h3>
+                    <div id="case-contents" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SHOP PARTS -->
+        <div id="screen-shop-parts" class="screen">
+            <header>
+                <button class="btn-icon" onclick="nav('screen-menu')">←</button>
+                <h2 id="title-shop">Part Shop</h2>
+                <div class="currency">$<span id="shop-balance">0</span></div>
+            </header>
+            <div style="padding: 20px;" id="shop-list"></div>
+        </div>
+
+        <!-- RACE -->
+        <div id="screen-race" class="screen" style="padding: 0;">
+            <canvas id="gameCanvas"></canvas>
+
+            <div class="touch-zone touch-left" ontouchstart="setKey('L',1)" ontouchend="setKey('L',0)"></div>
+            <div class="touch-zone touch-right" ontouchstart="setKey('R',1)" ontouchend="setKey('R',0)"></div>
+            <div class="touch-hint" style="left:20px;">LEFT</div>
+            <div class="touch-hint" style="right:20px;">RIGHT</div>
+
+            <div class="race-ui">
+                <div>
+                    <div class="speed-gauge" id="race-speed">0</div>
+                    <div class="text-accent">KM/H</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size: 1.2rem;"><span id="lbl-score">SCORE</span>: <span id="race-score">0</span>
+                    </div>
+                    <div style="font-size: 0.9rem; color: #ffd700;"><span id="lbl-coins">COINS</span>: <span
+                            id="race-coins">0</span></div>
+                </div>
+            </div>
+
+            <div class="nitro-container">
+                <div id="btn-nitro" class="nitro-btn" onmousedown="activateNitro(true)" onmouseup="activateNitro(false)"
+                    ontouchstart="activateNitro(true)" ontouchend="activateNitro(false)">⚡</div>
+                <div class="nitro-bar-bg">
+                    <div id="nitro-fill" class="nitro-bar-fill"></div>
+                </div>
+                <small style="color:#00d2ff; font-weight:bold; text-shadow:0 0 5px #000;">NITRO</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div id="modal-tuning" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
+        <div class="modal">
+            <h3 id="modal-tuning-title">Tuning</h3>
+            <p class="text-dim" id="lbl-inventory">Inventory:</p>
+            <div id="inventory-list" style="margin: 20px 0; max-height: 300px; overflow-y: auto;"></div>
+            <button class="btn-block"
+                onclick="nav('screen-shop-parts');document.getElementById('modal-tuning').style.display='none'"
+                id="btn-buy-parts">Buy Parts</button>
+            <button class="btn-block" onclick="document.getElementById('modal-tuning').style.display='none'"
+                style="background:transparent; border:1px solid #444;" id="btn-close-tuning">Close</button>
+        </div>
+    </div>
+
+    <div id="modal-paint" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
+        <style>
+            .color-btn {
+                height: 44px;
+                border-radius: 10px;
+                border: 2px solid rgba(255, 255, 255, 0.1);
+                position: relative;
+                transition: 0.2s;
+                overflow: hidden;
+            }
+
+            .color-btn:hover {
+                transform: scale(1.1);
+                border-color: #fff;
+            }
+
+            .color-btn.owned::after {
+                content: '✓';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: #fff;
+                font-weight: bold;
+                text-shadow: 0 0 5px #000;
+                background: rgba(0, 0, 0, 0.3);
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.7rem;
+            }
+
+            .color-btn.selected {
+                border-color: var(--accent);
+                box-shadow: 0 0 15px var(--accent-glow), inset 0 0 10px rgba(255, 255, 255, 0.2);
+                transform: scale(1.05);
+                z-index: 2;
+            }
+        </style>
+        <div class="modal">
+            <h3 id="modal-paint-title">Paint</h3>
+            <div id="paint-colors-grid"
+                style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 15px;"></div>
+            <p id="paint-cost-display"
+                style="text-align:center; margin:15px 0; color:var(--text-dim); font-weight: bold; height: 20px;">Select
+                Color</p>
+            <button id="btn-confirm-paint" class="btn-primary btn-block" disabled
+                onclick="confirmPaint()">PAINT</button>
+            <button class="btn-block" onclick="document.getElementById('modal-paint').style.display='none'"
+                style="background:transparent; border:1px solid #444; margin-top: 5px;"
+                id="btn-cancel-paint">Cancel</button>
+        </div>
+    </div>
+
+    <div id="modal-leaderboard" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
+        <div class="modal">
+            <h2 style="text-align: center; color: var(--accent); margin-bottom: 20px;" id="title-top">TOP 10 RUNS</h2>
+            <div id="leaderboard-content" style="max-height: 300px; overflow-y: auto;"></div>
+            <button class="btn-block" onclick="document.getElementById('modal-leaderboard').style.display='none'"
+                style="margin-top: 20px;" id="btn-close-lb">CLOSE</button>
+        </div>
+    </div>
+
+    <div id="modal-missions" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
+        <div class="modal">
+            <h2 style="text-align: center; color: #ffd700; margin-bottom: 20px;" id="title-missions">DAILY MISSIONS</h2>
+            <div id="missions-content"></div>
+            <button class="btn-block" onclick="document.getElementById('modal-missions').style.display='none'"
+                style="margin-top: 20px;" id="btn-close-missions">CLOSE</button>
+        </div>
+    </div>
+
+    <div id="modal-gameover" class="modal-overlay">
+        <div class="modal" style="text-align: center;">
+            <h2 style="color: #ff3d00; font-size: 2.5rem; margin-bottom: 20px;" id="title-wasted">WASTED!</h2>
+            <p><span id="lbl-earnings">Earnings:</span> <span class="currency" id="race-earnings">$0</span></p>
+            <p><span id="lbl-col-coins">Coins:</span> <span class="currency" id="race-collected-coins">$0</span></p>
+            <p style="color: var(--accent)"><span id="lbl-bonus">Bonus:</span> <span class="currency"
+                    id="race-mission-bonus">$0</span></p>
+            <div id="new-record-msg"
+                style="display:none; color: var(--accent); font-weight: bold; margin-top: 10px; animation: floatUp 0.5s;">
+                🏆 NEW RECORD!</div>
+            <br>
+            <button class="btn-primary btn-block" onclick="finishRace()" id="btn-to-garage">GARAGE</button>
+            <button class="btn-block" onclick="startRace()" id="btn-retry">RETRY</button>
+        </div>
+    </div>
+
+    <script>
+        /* --- LANGUAGE SYSTEM --- */
+        let currentLang = 'en';
+
+        const langData = {
+            en: {
+                version: "ULTIMATE ED.",
+                safeMode: "🛡️ Safe Walls <small class='text-dim'>(-5% profit)</small>",
+                btnRace: "RACE",
+                btnGarage: "GARAGE",
+                btnCases: "CASES",
+                btnRecords: "🏆 RECORDS",
+                btnMissions: "📋 MISSIONS",
+
+                titleGarage: "Garage",
+                tabMy: "MY CARS",
+                tabAll: "CATALOG",
+                lblSpeed: "SPEED",
+                lblHand: "HANDLING",
+                titleTuning: "TUNING",
+                lblEngine: "Engine",
+                lblWheels: "Wheels",
+                lblBumper: "Bumper",
+                lblCoating: "Coating",
+                btnPaint: "🎨 PAINT",
+                btnSelect: "SELECT",
+                btnSelected: "SELECTED",
+                btnBuy: "BUY",
+                stock: "Stock",
+                none: "None",
+
+                titleCases: "Cases",
+                lblOpen: "OPEN",
+                lblContents: "Contents:",
+
+                titleShop: "Part Shop",
+
+                lblScore: "SCORE",
+                lblCoins: "COINS",
+
+                modalTuning: "Tuning",
+                lblInventory: "Inventory:",
+                btnBuyParts: "Buy Parts",
+                btnClose: "Close",
+                btnRemove: "Remove Part (Stock)",
+
+                modalPaint: "Paint",
+                lblSelectColor: "Select Color",
+                lblFree: "FREE",
+                btnCancel: "Cancel",
+
+                titleTop: "TOP 10 RUNS",
+                titleMissions: "DAILY MISSIONS",
+
+                titleWasted: "WASTED!",
+                lblEarnings: "Earnings:",
+                lblColCoins: "Coins:",
+                lblBonus: "Bonus:",
+                msgRecord: "🏆 NEW RECORD!",
+                btnToGarage: "GARAGE",
+                btnRetry: "RETRY",
+
+                notEnough: "Not enough money!",
+                bought: "Bought!",
+                msgCar: "CAR",
+                msgPart: "PART",
+
+                rarities: { common: "COMMON", uncommon: "UNCOMMON", rare: "RARE", legendary: "LEGENDARY", mythic: "MYTHIC" },
+                types: { engine: "Engine", wheels: "Wheels", bumper: "Bumper", coating: "Coating" }
+            },
+            ru: {
+                version: "ULTIMATE ИЗД.",
+                safeMode: "🛡️ Авто-стены <small class='text-dim'>(-5% доход)</small>",
+                btnRace: "ГОНКА",
+                btnGarage: "ГАРАЖ",
+                btnCases: "КЕЙСЫ",
+                btnRecords: "🏆 РЕКОРДЫ",
+                btnMissions: "📋 ЗАДАНИЯ",
+
+                titleGarage: "Гараж",
+                tabMy: "МОИ АВТО",
+                tabAll: "КАТАЛОГ",
+                lblSpeed: "СКОРОСТЬ",
+                lblHand: "РУЛЕЖКА",
+                titleTuning: "ТЮНИНГ",
+                lblEngine: "Двигатель",
+                lblWheels: "Колеса",
+                lblBumper: "Бампер",
+                lblCoating: "Покрытие",
+                btnPaint: "🎨 ПОКРАСКА",
+                btnSelect: "ВЫБРАТЬ",
+                btnSelected: "ВЫБРАНО",
+                btnBuy: "КУПИТЬ",
+                stock: "Сток",
+                none: "Нет",
+
+                titleCases: "Кейсы",
+                lblOpen: "ОТКРЫТЬ",
+                lblContents: "Содержимое:",
+
+                titleShop: "Магазин Деталей",
+
+                lblScore: "СЧЁТ",
+                lblCoins: "МОНЕТЫ",
+
+                modalTuning: "Тюнинг",
+                lblInventory: "Инвентарь:",
+                btnBuyParts: "Купить Детали",
+                btnClose: "Закрыть",
+                btnRemove: "Снять (Сток)",
+
+                modalPaint: "Покраска",
+                lblSelectColor: "Выберите цвет",
+                lblFree: "БЕСПЛАТНО",
+                btnCancel: "Отмена",
+
+                titleTop: "ТОП 10 ЗАЕЗДОВ",
+                titleMissions: "ЕЖЕДНЕВНЫЕ ЗАДАНИЯ",
+
+                titleWasted: "РАЗБИТ!",
+                lblEarnings: "За заезд:",
+                lblColCoins: "Монеты:",
+                lblBonus: "Бонус:",
+                msgRecord: "🏆 НОВЫЙ РЕКОРД!",
+                btnToGarage: "В ГАРАЖ",
+                btnRetry: "ЕЩЕ РАЗ",
+
+                notEnough: "Недостаточно денег!",
+                bought: "Куплено!",
+                msgCar: "АВТОМОБИЛЬ",
+                msgPart: "ДЕТАЛЬ",
+
+                rarities: { common: "ОБЫЧНАЯ", uncommon: "НЕОБЫЧНАЯ", rare: "РЕДКАЯ", legendary: "ЛЕГЕНДАРНАЯ", mythic: "МИФИЧЕСКАЯ" },
+                types: { engine: "Двигатель", wheels: "Колеса", bumper: "Бампер", coating: "Покрытие" }
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ru' : 'en';
+            document.getElementById('lang-btn').innerText = currentLang.toUpperCase();
+            applyLanguage();
+        }
+
+        function txt(key) { return langData[currentLang][key] || key; }
+
+        function applyLanguage() {
+            const t = langData[currentLang];
+            document.getElementById('txt-version').innerText = t.version;
+            document.getElementById('txt-safemode').innerHTML = t.safeMode;
+            document.getElementById('btn-race').innerText = t.btnRace;
+            document.getElementById('btn-garage').innerText = t.btnGarage;
+            document.getElementById('btn-cases').innerText = t.btnCases;
+            document.getElementById('btn-records').innerText = t.btnRecords;
+            document.getElementById('btn-missions').innerText = t.btnMissions;
+
+            document.getElementById('title-garage').innerText = t.titleGarage;
+            document.getElementById('tab-my').innerText = t.tabMy;
+            document.getElementById('tab-all').innerText = t.tabAll;
+            document.getElementById('lbl-speed').innerText = t.lblSpeed;
+            document.getElementById('lbl-handling').innerText = t.lblHand;
+            document.getElementById('title-tuning').innerText = t.titleTuning;
+            document.getElementById('lbl-engine').innerText = t.lblEngine;
+            document.getElementById('lbl-wheels').innerText = t.lblWheels;
+            document.getElementById('lbl-bumper').innerText = t.lblBumper;
+            document.getElementById('lbl-coating').innerText = t.lblCoating;
+            document.getElementById('btn-paint-open').innerText = t.btnPaint;
+            // Select/Buy btn updated dynamically
+
+            document.getElementById('title-cases').innerText = t.titleCases;
+            document.getElementById('lbl-open').innerText = t.lblOpen;
+            document.getElementById('lbl-contents').innerText = t.lblContents;
+
+            document.getElementById('title-shop').innerText = t.titleShop;
+            document.getElementById('lbl-score').innerText = t.lblScore;
+            document.getElementById('lbl-coins').innerText = t.lblCoins;
+
+            document.getElementById('modal-tuning-title').innerText = t.modalTuning;
+            document.getElementById('lbl-inventory').innerText = t.lblInventory;
+            document.getElementById('btn-buy-parts').innerText = t.btnBuyParts;
+            document.getElementById('btn-close-tuning').innerText = t.btnClose;
+
+            document.getElementById('modal-paint-title').innerText = t.modalPaint;
+            document.getElementById('paint-cost-display').innerText = t.lblSelectColor;
+            document.getElementById('btn-confirm-paint').innerText = t.btnPaint;
+            document.getElementById('btn-cancel-paint').innerText = t.btnCancel;
+
+            document.getElementById('title-top').innerText = t.titleTop;
+            document.getElementById('btn-close-lb').innerText = t.btnClose;
+
+            document.getElementById('title-missions').innerText = t.titleMissions;
+            document.getElementById('btn-close-missions').innerText = t.btnClose;
+
+            document.getElementById('title-wasted').innerText = t.titleWasted;
+            document.getElementById('lbl-earnings').innerText = t.lblEarnings;
+            document.getElementById('lbl-col-coins').innerText = t.lblColCoins;
+            document.getElementById('lbl-bonus').innerText = t.lblBonus;
+            document.getElementById('btn-to-garage').innerText = t.btnToGarage;
+            document.getElementById('btn-retry').innerText = t.btnRetry;
+
+            // Refresh dynamic lists
+            if (document.getElementById('screen-garage').classList.contains('active')) renderGarageList();
+            if (document.getElementById('screen-shop-parts').classList.contains('active')) renderShopParts();
+            if (document.getElementById('selected-car-info').style.display !== 'none') selectGarageItem(viewingCarId, garageTab === 'my');
+
+            updCase();
+        }
+
+        /* --- AUDIO SYSTEM --- */
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let isMuted = false;
+        let musicTimer = null;
+        let currentTrack = 'none';
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            document.getElementById('mute-btn').innerText = isMuted ? '🔇' : '🔊';
+            if (isMuted) stopMusic();
+            else if (document.getElementById('screen-race').classList.contains('active')) playMusic('race');
+            else playMusic('menu');
+        }
+
+        function playTone(freq, type, duration, vol) {
+            if (isMuted || audioCtx.state === 'suspended') return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function sndClick() { playTone(800, 'sine', 0.05, 0.05); }
+        function sndCoin() { playTone(1200, 'sine', 0.1, 0.1); setTimeout(() => playTone(1800, 'sine', 0.2, 0.1), 50); }
+        function sndNitro() { playTone(100, 'sawtooth', 0.3, 0.05); }
+        function sndCrash() { playTone(100, 'sawtooth', 0.5, 0.3); playTone(50, 'square', 0.5, 0.3); }
+
+        function stopMusic() { if (musicTimer) clearInterval(musicTimer); musicTimer = null; }
+        function playMusic(track) {
+            if (isMuted) return;
+            if (currentTrack === track && musicTimer) return;
+            stopMusic();
+            currentTrack = track;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            let step = 0;
+            if (track === 'menu') {
+                const bassLine = [110, 0, 110, 0, 130, 0, 98, 0];
+                const lead = [440, 0, 0, 0, 523, 0, 392, 0];
+                musicTimer = setInterval(() => {
+                    if (bassLine[step % 8] > 0) playTone(bassLine[step % 8], 'triangle', 0.3, 0.05);
+                    if (lead[step % 8] > 0 && Math.random() > 0.5) playTone(lead[step % 8], 'sine', 0.4, 0.03);
+                    step++;
+                }, 400);
+            }
+            else if (track === 'race') {
+                const bass = [55, 55, 0, 55, 65, 65, 0, 65, 73, 73, 0, 73, 65, 65, 55, 55];
+                musicTimer = setInterval(() => {
+                    let f = bass[step % 16];
+                    if (f > 0) playTone(f, 'sawtooth', 0.1, 0.05);
+                    if (step % 4 === 0) playTone(100, 'noise', 0.05, 0.02);
+                    step++;
+                }, 120);
+            }
+        }
+        document.body.addEventListener('click', () => { if (audioCtx.state === 'suspended') audioCtx.resume(); if (!musicTimer && !isMuted) playMusic('menu'); }, { once: true });
+        document.addEventListener('click', (e) => { if (e.target.tagName === 'BUTTON' || e.target.closest('button')) sndClick(); });
+
+        /* --- DATA --- */
+        const CARS = [
+            { id: 'lada', name: 'Lada 2107', rarity: 'common', speed: 10, hand: 3, price: 2000, color: '#b0b0b0' },
+            { id: 'civic', name: 'Civic Type-R', rarity: 'common', speed: 13, hand: 5, price: 4500, color: '#ffffff' },
+            { id: 'bmw', name: 'BMW M5', rarity: 'uncommon', speed: 16, hand: 6, price: 9000, color: '#3366cc' },
+            { id: 'supra', name: 'Toyota Supra', rarity: 'rare', speed: 19, hand: 7, price: 18000, color: '#ff6600' },
+            { id: 'lambo', name: 'Huracan', rarity: 'legendary', speed: 24, hand: 8, price: 55000, color: '#ffee00' },
+            { id: 'bugatti', name: 'Chiron SS', rarity: 'mythic', speed: 30, hand: 9, price: 180000, color: '#111111' },
+        ];
+        const PARTS = [
+            { id: 'eng_v6', name: 'V6 Engine', type: 'engine', rarity: 'uncommon', speed: 5, hand: 0, price: 1500 },
+            { id: 'eng_v8', name: 'V8 TwinTurbo', type: 'engine', rarity: 'rare', speed: 10, hand: -1, price: 4000 },
+            { id: 'eng_v12', name: 'V12 Race', type: 'engine', rarity: 'legendary', speed: 15, hand: -2, price: 12000 },
+            { id: 'wh_sport', name: 'Sport Tires', type: 'wheels', rarity: 'common', speed: 1, hand: 3, price: 800 },
+            { id: 'wh_slick', name: 'Semislicks', type: 'wheels', rarity: 'rare', speed: 2, hand: 5, price: 2500 },
+            { id: 'wh_f1', name: 'F1 Softs', type: 'wheels', rarity: 'legendary', speed: 4, hand: 8, price: 7000 },
+            { id: 'bmp_aero', name: 'Aero Kit', type: 'bumper', rarity: 'common', speed: 0, hand: 2, price: 500 },
+            { id: 'bmp_wide', name: 'Widebody', type: 'bumper', rarity: 'rare', speed: -1, hand: 6, price: 3000 },
+            { id: 'coat_ceramic', name: 'Ceramic', type: 'coating', rarity: 'uncommon', speed: 2, hand: 1, price: 1200 },
+            { id: 'coat_nano', name: 'Nanofiber', type: 'coating', rarity: 'legendary', speed: 5, hand: 2, price: 6000 },
+        ];
+        const CASES = [
+            { name: "Parts Case", name_ru: "Детали", price: 1000, type: 'parts', desc: "Best for upgrades", desc_ru: "Для улучшений", dropRate: { common: 0.30, uncommon: 0.40, rare: 0.20, legendary: 0.08, mythic: 0.02 } },
+            { name: "Car Case", name_ru: "Автосалон", price: 5000, type: 'cars', desc: "Win new cars", desc_ru: "Выиграй авто", dropRate: { common: 0.20, uncommon: 0.30, rare: 0.30, legendary: 0.15, mythic: 0.05 } },
+            { name: "Elite Case", name_ru: "Элита", price: 15000, type: 'mixed', desc: "High chance legendary", desc_ru: "Высокий шанс лег.", dropRate: { common: 0.0, uncommon: 0.10, rare: 0.30, legendary: 0.40, mythic: 0.20 } }
+        ];
+
+        /* --- STATE --- */
+        let player = {
+            money: 5000, inventory: [],
+            garage: [{ id: 'c1', dbId: 'lada', color: '#b0b0b0', parts: { engine: null, wheels: null, bumper: null, coating: null } }],
+            selectedCarInstanceId: 'c1', settings: { safeMode: false },
+            unlockedColors: [], highscores: [],
+            missions: [], lastMissionReset: 0
+        };
+        const PAINT_COLORS = [
+            { color: '#ffffff', cost: 500 }, { color: '#ff0000', cost: 500 }, { color: '#00ff00', cost: 500 },
+            { color: '#0000ff', cost: 500 }, { color: '#ffff00', cost: 500 }, { color: '#ff00ff', cost: 1000 },
+            { color: '#111111', cost: 2000 }, { color: '#9d4edd', cost: 2500 }, { color: '#00f2ea', cost: 2500 },
+        ];
+
+        /* --- CORE --- */
+        function saveGame() { localStorage.setItem('nr_ult_save', JSON.stringify(player)); updateUI(); }
+        function loadGame() {
+            let s = localStorage.getItem('nr_ult_save');
+            if (s) player = { ...player, ...JSON.parse(s) };
+            if (!player.unlockedColors) player.unlockedColors = [];
+            if (!player.highscores) player.highscores = [];
+            if (!player.missions || player.missions.length === 0) resetMissions();
+            if (Date.now() - (player.lastMissionReset || 0) > 86400000) resetMissions();
+            player.garage.forEach(c => { if (c.color && !player.unlockedColors.includes(c.color)) player.unlockedColors.push(c.color); });
+            document.getElementById('chk-safemode').checked = player.settings.safeMode;
+            updateUI();
+        }
+
+        function resetMissions() {
+            // Simplified mission structure for translation
+            // types: 'coins', 'score'
+            player.missions = [
+                { id: 'm1', type: 'coins', target: 10 + Math.floor(Math.random() * 10), current: 0, reward: 2000, completed: false },
+                { id: 'm2', type: 'score', target: 3000 + Math.floor(Math.random() * 5000), current: 0, reward: 1500, completed: false }
+            ];
+            player.lastMissionReset = Date.now();
+        }
+
+        function nav(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.getElementById('modal-gameover').style.display = 'none';
+            if (id === 'screen-garage') { renderGarageList(); }
+            if (id === 'screen-shop-parts') renderShopParts();
+            if (id === 'screen-menu') playMusic('menu');
+            else if (id !== 'screen-race') playMusic('menu');
+        }
+        function toggleSafeMode(v) { player.settings.safeMode = v; saveGame(); }
+        function updateUI() { document.querySelectorAll('[id$="-balance"]').forEach(el => el.innerText = player.money); }
+
+        /* --- MISSIONS --- */
+        function showMissions() {
+            document.getElementById('modal-missions').style.display = 'flex';
+            const cont = document.getElementById('missions-content'); cont.innerHTML = '';
+            player.missions.forEach(m => {
+                let desc = "";
+                if (m.type === 'coins') desc = currentLang === 'en' ? `Collect ${m.target} coins` : `Собрать ${m.target} монет`;
+                if (m.type === 'score') desc = currentLang === 'en' ? `Score ${m.target} points` : `Набрать ${m.target} очков`;
+
+                let row = document.createElement('div'); row.className = 'mission-row';
+                let status = m.completed ? '<span style="color:#0f0">✓</span>' : `<span style="color:#aaa">${m.current}/${m.target}</span>`;
+                row.innerHTML = `<div>${desc}</div><div style="text-align:right"><div class="currency">$${m.reward}</div>${status}</div>`;
+                cont.appendChild(row);
+            });
+        }
+        function checkMissions(runScore, runCoins) {
+            let bonus = 0;
+            player.missions.forEach(m => {
+                if (!m.completed) {
+                    if (m.type === 'coins') m.current += runCoins;
+                    if (m.type === 'score') m.current = Math.max(m.current, Math.floor(runScore));
+                    if (m.current >= m.target) {
+                        m.completed = true;
+                        bonus += m.reward;
+                    }
+                }
+            });
+            return bonus;
+        }
+
+        /* --- MENU VISUAL --- */
+        let menuAnimReq;
+        function drawMenuCar() {
+            const cvs = document.getElementById('menuCanvas'); const ctx = cvs.getContext('2d');
+            const cur = player.garage.find(c => c.id === player.selectedCarInstanceId);
+            const rect = cvs.parentElement.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            cvs.width = rect.width * dpr; cvs.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+            let frame = 0;
+            const animate = () => {
+                if (!document.getElementById('screen-menu').classList.contains('active')) return;
+                ctx.clearRect(0, 0, rect.width, rect.height);
+                ctx.save();
+                const scale = Math.min(cvs.width, cvs.height) / 80;
+                ctx.translate(cvs.width / 2, cvs.height / 2); ctx.scale(scale, scale);
+                drawDetailedCar(ctx, -18, -33, cur.color, cur, true);
+                ctx.globalCompositeOperation = 'overlay';
+                let grad = ctx.createLinearGradient(-50, -50, 50, 50);
+                grad.addColorStop(0, 'rgba(255,255,255,0)'); grad.addColorStop(0.5 + Math.sin(frame * 0.05) * 0.1, 'rgba(255,255,255,0.2)'); grad.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = grad; ctx.fillRect(-20, -40, 40, 80);
+                ctx.restore();
+                frame++;
+                menuAnimReq = requestAnimationFrame(animate);
+            }
+            cancelAnimationFrame(menuAnimReq); animate();
+        }
+        const obs = new MutationObserver((muts) => { muts.forEach(m => { if (m.target.id === 'screen-menu' && m.target.classList.contains('active')) drawMenuCar(); }) });
+        obs.observe(document.getElementById('screen-menu'), { attributes: true });
+
+        /* --- GARAGE --- */
+        let garageTab = 'my'; let viewingCarId = null;
+        function setGarageTab(t) { garageTab = t; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('tab-' + t).classList.add('active'); renderGarageList(); }
+
+        function renderGarageList() {
+            const list = document.getElementById('garage-list'); list.innerHTML = '';
+            let items = (garageTab === 'my') ? player.garage : CARS;
+            items.forEach(item => {
+                let isOwned = garageTab === 'my';
+                let dbData = isOwned ? CARS.find(x => x.id === item.dbId) : item;
+                let uniqueId = isOwned ? item.id : item.id;
+                let card = document.createElement('div'); card.className = `car-card ${viewingCarId === uniqueId ? 'selected' : ''}`;
+                let rText = langData[currentLang].rarities[dbData.rarity];
+                let cvsId = 'gcvs_' + uniqueId + Math.floor(Math.random() * 1000);
+                card.innerHTML = `<div class="car-visual-box"><canvas id="${cvsId}" width="100" height="80"></canvas></div><div style="font-weight:bold; font-size:0.9rem">${dbData.name}</div><div class="c-${dbData.rarity}" style="font-size:0.7rem; margin-top:2px;">${rText}</div>`;
+                card.onclick = () => selectGarageItem(uniqueId, isOwned);
+                list.appendChild(card);
+                setTimeout(() => {
+                    let ctx = document.getElementById(cvsId).getContext('2d'); ctx.translate(50, 40); ctx.scale(1.2, 1.2);
+                    drawDetailedCar(ctx, -18, -33, isOwned ? item.color : item.color, isOwned ? item : { parts: {} }, false);
+                }, 10);
+            });
+            if (!viewingCarId && items.length > 0) selectGarageItem(items[0].id, garageTab === 'my');
+        }
+
+        function selectGarageItem(id, isOwned) {
+            viewingCarId = id; document.querySelectorAll('.car-card').forEach(c => c.classList.remove('selected'));
+            let item, dbData, stats;
+            if (isOwned) {
+                item = player.garage.find(x => x.id === id); dbData = CARS.find(x => x.id === item.dbId); stats = getCarStats(item);
+                document.getElementById('tuning-panel').style.display = 'block'; document.getElementById('btn-select-car').style.display = 'block'; document.getElementById('btn-buy-car').style.display = 'none';
+                document.getElementById('btn-select-car').innerText = (player.selectedCarInstanceId === id) ? txt('btnSelected') : txt('btnSelect');
+                document.getElementById('btn-select-car').disabled = (player.selectedCarInstanceId === id);
+                ['engine', 'wheels', 'bumper', 'coating'].forEach(slot => {
+                    let pid = item.parts[slot];
+                    document.getElementById('slot-' + slot).innerText = pid ? PARTS.find(x => x.id === pid).name : txt('stock');
+                    document.getElementById('slot-' + slot).style.color = pid ? 'var(--text-main)' : 'var(--accent)';
+                });
+            } else {
+                item = CARS.find(x => x.id === id); dbData = item; stats = { speed: item.speed, hand: item.hand };
+                document.getElementById('tuning-panel').style.display = 'none'; document.getElementById('btn-select-car').style.display = 'none'; document.getElementById('btn-buy-car').style.display = 'block'; document.getElementById('btn-buy-car').innerHTML = `${txt('btnBuy')} $${item.price}`;
+            }
+            document.getElementById('selected-car-info').style.display = 'block'; document.getElementById('gar-car-name').innerText = dbData.name;
+            document.getElementById('gar-car-rarity').innerText = langData[currentLang].rarities[dbData.rarity];
+            document.getElementById('gar-car-rarity').className = `c-${dbData.rarity}`;
+            document.getElementById('gar-stat-speed').style.width = Math.min((stats.speed / 45) * 100, 100) + '%'; document.getElementById('gar-stat-handling').style.width = Math.min((stats.hand / 15) * 100, 100) + '%';
+        }
+
+        function getCarStats(c) { let db = CARS.find(x => x.id === c.dbId); let s = db.speed, h = db.hand; for (let k in c.parts) if (c.parts[k]) { let p = PARTS.find(x => x.id === c.parts[k]); if (p) { s += p.speed; h += p.hand; } } return { speed: s, hand: h }; }
+        function selectCurrentCar() { if (garageTab !== 'my') return; player.selectedCarInstanceId = viewingCarId; saveGame(); selectGarageItem(viewingCarId, true); }
+        function buyCurrentCar() { let car = CARS.find(x => x.id === viewingCarId); if (player.money >= car.price) { player.money -= car.price; player.garage.push({ id: 'c' + Date.now(), dbId: car.id, color: car.color, parts: {} }); if (!player.unlockedColors.includes(car.color)) player.unlockedColors.push(car.color); alert(txt('bought')); saveGame(); setGarageTab('my'); } else alert(txt('notEnough')); }
+
+        let activeSlot = null;
+        function openTuning(s) { activeSlot = s; document.getElementById('modal-tuning').style.display = 'flex'; const l = document.getElementById('inventory-list'); l.innerHTML = ''; let av = player.inventory.map(id => PARTS.find(x => x.id === id)).filter(p => p && p.type === s); let btnR = document.createElement('button'); btnR.innerText = txt('btnRemove'); btnR.className = "btn-block"; btnR.style.border = "1px dashed #666"; btnR.onclick = () => installPart(null); l.appendChild(btnR); av.forEach(p => { let b = document.createElement('button'); b.className = "btn-block shop-item"; b.innerHTML = `<span>${p.name} <span class="c-${p.rarity}">(${langData[currentLang].rarities[p.rarity]})</span></span> <span class="text-accent">+${p.speed}S +${p.hand}H</span>`; b.onclick = () => installPart(p.id); l.appendChild(b); }); }
+        function installPart(pid) { let c = player.garage.find(x => x.id === viewingCarId); if (c.parts[activeSlot]) player.inventory.push(c.parts[activeSlot]); if (pid) { let idx = player.inventory.indexOf(pid); if (idx > -1) player.inventory.splice(idx, 1); c.parts[activeSlot] = pid; } else c.parts[activeSlot] = null; document.getElementById('modal-tuning').style.display = 'none'; saveGame(); selectGarageItem(viewingCarId, true); }
+
+        function renderShopParts() { const l = document.getElementById('shop-list'); l.innerHTML = ''; PARTS.sort((a, b) => a.price - b.price).forEach(p => { let d = document.createElement('div'); d.className = "shop-item"; d.innerHTML = `<div><div style="font-weight:bold">${p.name}</div><div class="c-${p.rarity}" style="font-size:0.8rem">${langData[currentLang].rarities[p.rarity]} | ${langData[currentLang].types[p.type]}</div><div class="text-accent" style="font-size:0.8rem">+${p.speed} Spd / +${p.hand} Hnd</div></div><button class="btn-accent" onclick="buyPart('${p.id}', ${p.price})">$${p.price}</button>`; l.appendChild(d); }); }
+        function buyPart(id, price) { if (player.money >= price) { player.money -= price; player.inventory.push(id); saveGame(); alert(txt('bought')); updateUI(); } else alert(txt('notEnough')); }
+
+        let selectedPaintColor = null;
+        function openPaintModal() { document.getElementById('modal-paint').style.display = 'flex'; renderPaintGrid(); }
+        function renderPaintGrid() { const grid = document.getElementById('paint-colors-grid'); grid.innerHTML = ''; selectedPaintColor = null; document.getElementById('paint-cost-display').innerText = txt('lblSelectColor'); document.getElementById('btn-confirm-paint').disabled = true; PAINT_COLORS.forEach(p => { const btn = document.createElement('button'); btn.className = 'color-btn'; btn.style.background = p.color; const isOwned = player.unlockedColors.includes(p.color); if (isOwned) btn.classList.add('owned'); btn.onclick = () => { document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); selectedPaintColor = p; document.getElementById('paint-cost-display').innerText = isOwned ? txt('lblFree') : `$${p.cost}`; document.getElementById('btn-confirm-paint').disabled = false; }; grid.appendChild(btn); }); }
+        function confirmPaint() { if (!selectedPaintColor) return; const c = selectedPaintColor.color; const cost = player.unlockedColors.includes(c) ? 0 : selectedPaintColor.cost; if (player.money >= cost) { if (cost > 0) player.money -= cost; if (cost > 0) player.unlockedColors.push(c); let car = player.garage.find(x => x.id === viewingCarId); car.color = c; saveGame(); document.getElementById('modal-paint').style.display = 'none'; selectGarageItem(viewingCarId, true); updateUI(); } else alert(txt('notEnough')); }
+
+        function showLeaderboard() { document.getElementById('modal-leaderboard').style.display = 'flex'; const cont = document.getElementById('leaderboard-content'); cont.innerHTML = `<div class="leaderboard-row"><span>#</span><span>${txt('msgCar')}</span><span>${txt('lblScore')}</span></div>`; let scores = player.highscores.sort((a, b) => b.score - a.score).slice(0, 10); if (scores.length === 0) cont.innerHTML += '<div style="text-align:center;padding:20px;color:#666">...</div>'; scores.forEach((s, i) => { let row = document.createElement('div'); row.className = 'leaderboard-row'; let carName = CARS.find(c => c.id === s.carId)?.name || '???'; row.innerHTML = `<span>${i + 1}</span><span>${carName}</span><span style="color:var(--accent)">${Math.floor(s.score)}</span>`; cont.appendChild(row); }); }
+
+        let curCase = 0; let spinning = false;
+        function switchCase(d) { curCase += d; if (curCase < 0) curCase = CASES.length - 1; if (curCase >= CASES.length) curCase = 0; updCase(); }
+        function updCase() {
+            let c = CASES[curCase];
+            document.getElementById('case-name').innerText = currentLang === 'en' ? c.name : c.name_ru;
+            document.getElementById('case-desc').innerText = currentLang === 'en' ? c.desc : c.desc_ru;
+            document.getElementById('case-price').innerText = c.price;
+            let d = document.getElementById('case-contents'); d.innerHTML = '';
+            let pool = (c.type === 'parts' ? PARTS : (c.type === 'cars' ? CARS : [...PARTS, ...CARS]));
+            ['mythic', 'legendary', 'rare'].forEach(rar => { pool.filter(x => x.rarity === rar).forEach(x => { let s = document.createElement('span'); s.className = `c-${rar}`; s.style.fontSize = '0.75rem'; s.style.border = '1px solid #333'; s.style.padding = '2px 5px'; s.style.borderRadius = '4px'; s.innerText = x.name; d.appendChild(s); }); });
+        }
+        function spinCase() {
+            if (spinning) return; let c = CASES[curCase];
+            if (player.money < c.price) return alert(txt('notEnough'));
+            player.money -= c.price; updateUI(); spinning = true;
+            const strip = document.getElementById('roulette-strip'); strip.style.transition = 'none'; strip.style.transform = 'translateX(0)'; strip.innerHTML = ''; document.getElementById('win-msg').innerHTML = '';
+            let pool = (c.type === 'parts' ? PARTS : (c.type === 'cars' ? CARS : [...PARTS, ...CARS]));
+            const getRand = () => { let r = Math.random(), w = c.dropRate, rar = 'common'; if (r < w.mythic) rar = 'mythic'; else if (r < w.mythic + w.legendary) rar = 'legendary'; else if (r < w.mythic + w.legendary + w.rare) rar = 'rare'; else if (r < w.mythic + w.legendary + w.rare + w.uncommon) rar = 'uncommon'; let sub = pool.filter(x => x.rarity === rar); if (!sub.length) sub = pool.filter(x => x.rarity === 'common'); return sub[Math.floor(Math.random() * sub.length)]; };
+            const winItem = getRand(); const totalItems = 60; const winIndex = 50; const itemWidth = 150;
+            for (let i = 0; i < totalItems; i++) { let it = (i === winIndex) ? winItem : getRand(); let div = document.createElement('div'); div.className = `roulette-item r-${it.rarity}`; div.innerHTML = `<div style="font-size:2rem; margin-bottom:10px;">${it.speed !== undefined && !it.type ? '🏎️' : '⚙️'}</div><div style="font-size:0.8rem; font-weight:bold; text-align:center; padding:0 5px;">${it.name}</div><div class="c-${it.rarity}" style="font-size:0.7rem; margin-top:5px;">${langData[currentLang].rarities[it.rarity]}</div>`; strip.appendChild(div); }
+            const containerW = document.querySelector('.case-roulette').offsetWidth; const targetX = -((winIndex * itemWidth) + (itemWidth / 2) - (containerW / 2)); const noise = Math.floor(Math.random() * 120) - 60;
+            requestAnimationFrame(() => { requestAnimationFrame(() => { strip.style.transition = "transform 5s cubic-bezier(0.1, 0, 0.2, 1)"; strip.style.transform = `translateX(${targetX + noise}px)`; }); });
+            setTimeout(() => {
+                spinning = false; let isCar = (winItem.speed !== undefined && !winItem.type);
+                if (isCar) { player.garage.push({ id: 'c' + Date.now(), dbId: winItem.id, color: winItem.color || '#fff', parts: {} }); document.getElementById('win-msg').innerHTML = `<span class="c-${winItem.rarity}" style="font-size:1.3rem">${txt('msgCar')}: ${winItem.name}!</span>`; }
+                else { player.inventory.push(winItem.id); document.getElementById('win-msg').innerHTML = `<span class="c-${winItem.rarity}" style="font-size:1.3rem">${txt('msgPart')}: ${winItem.name}</span>`; }
+                saveGame();
+            }, 5500);
+        }
+
+        /* --- RACE LOGIC --- */
+        let raceActive = false;
+        let rCanvas = document.getElementById('gameCanvas');
+        let rCtx = rCanvas.getContext('2d');
+        let rState = { roadY: 0, score: 0, speed: 0, opponents: [], coins: [], bgOffset: 0, collected: 0 };
+        let playerCar = { x: 0, y: 0, data: null, stats: { s: 0, h: 0 }, w: 36, h: 66, nitro: 0, maxNitro: 100, isNitro: false };
+        let particles = [];
+        let keys = { L: 0, R: 0, Space: 0 };
+        let buildings = [];
+
+        function initBuildings() {
+            buildings = [];
+            for (let i = 0; i < 10; i++) {
+                buildings.push({ y: i * 100, h: 50 + Math.random() * 200, w: 30 + Math.random() * 50, x: -50 - Math.random() * 50, color: '#050510' });
+                buildings.push({ y: i * 100, h: 50 + Math.random() * 200, w: 30 + Math.random() * 50, x: 400 + Math.random() * 50, color: '#050510' });
+            }
+        }
+
+        function startRace() {
+            nav('screen-race'); playMusic('race');
+            const dpr = window.devicePixelRatio || 1;
+            rCanvas.width = rCanvas.parentElement.offsetWidth * dpr;
+            rCanvas.height = rCanvas.parentElement.offsetHeight * dpr;
+            rCtx.setTransform(1, 0, 0, 1, 0, 0); rCtx.scale(dpr, dpr);
+
+            let c = player.garage.find(x => x.id === player.selectedCarInstanceId);
+            let s = getCarStats(c);
+            playerCar.data = c;
+            playerCar.stats.s = 15 + (s.speed * 0.5);
+            playerCar.stats.h = 4 + (s.hand * 0.5);
+            playerCar.x = (rCanvas.width / dpr) / 2 - 18; playerCar.y = (rCanvas.height / dpr) - 150;
+            playerCar.nitro = 0; playerCar.isNitro = false;
+            rState = { roadY: 0, score: 0, speed: 0, opponents: [], coins: [], bgOffset: 0, collected: 0 };
+            particles = []; raceActive = true; keys = { L: 0, R: 0, Space: 0 };
+            initBuildings(); raceLoop();
+        }
+
+        function raceLoop() { if (!raceActive) return; updateRace(); drawRace(); requestAnimationFrame(raceLoop); }
+
+        function activateNitro(active) {
+            if (active && playerCar.nitro > 5) { if (!playerCar.isNitro) sndNitro(); playerCar.isNitro = true; }
+            else { playerCar.isNitro = false; }
+        }
+
+        function updateRace() {
+            const dpr = window.devicePixelRatio || 1;
+            const logH = rCanvas.height / dpr;
+            const V_WIDTH = 600; // Virtual width for game logic
+            const screenW = rCanvas.width / dpr;
+            const scaleX = screenW / V_WIDTH;
+
+            if (keys.Space && playerCar.nitro > 5) activateNitro(true);
+            else if (keys.Space && playerCar.nitro <= 0) activateNitro(false);
+
+            if (playerCar.isNitro) { playerCar.nitro -= 1.5; if (playerCar.nitro <= 0) playerCar.isNitro = false; }
+            else if (playerCar.nitro < playerCar.maxNitro) playerCar.nitro += 0.25;
+
+            let targetSpeed = playerCar.stats.s; if (playerCar.isNitro) targetSpeed *= 1.35;
+            if (rState.speed < targetSpeed) rState.speed += 0.4; if (rState.speed > targetSpeed) rState.speed -= 0.5;
+
+            rState.roadY += rState.speed * 2.5; rState.score += rState.speed * 0.1;
+
+            let hMod = playerCar.isNitro ? 0.6 : 1;
+            if (keys.L) playerCar.x -= playerCar.stats.h * hMod;
+            if (keys.R) playerCar.x += playerCar.stats.h * hMod;
+
+            let safe = player.settings.safeMode;
+            if (safe) {
+                if (playerCar.x < 0) { playerCar.x = 0; rState.speed *= 0.98; }
+                if (playerCar.x > V_WIDTH - 36) { playerCar.x = V_WIDTH - 36; rState.speed *= 0.98; }
+            } else if (playerCar.x < 0 || playerCar.x > V_WIDTH - 36) return crash();
+
+            let spawnRate = 0.02 + (rState.speed / 2000);
+            if (Math.random() < spawnRate) {
+                let randomX = Math.random() * (V_WIDTH - 36);
+                if (!rState.opponents.some(o => Math.abs(o.y - (-150)) < 150)) {
+                    rState.opponents.push({ x: randomX, y: -150, speed: rState.speed * (0.2 + Math.random() * 0.3), color: ['#888', '#555', '#33a', '#a33'][Math.floor(Math.random() * 4)] });
+                }
+            }
+            if (Math.random() < 0.015) {
+                let randomX = 20 + Math.random() * (V_WIDTH - 40);
+                if (!rState.opponents.some(o => Math.abs(o.y - (-150)) < 100)) { rState.coins.push({ x: randomX, y: -150, w: 20, h: 20 }); }
+            }
+
+            for (let i = rState.opponents.length - 1; i >= 0; i--) {
+                let o = rState.opponents[i]; o.y += (rState.speed - o.speed) * 1.5;
+                if (playerCar.x < o.x + 34 && playerCar.x + 34 > o.x + 2 && playerCar.y < o.y + 64 && playerCar.y + 64 > o.y + 2) return crash();
+                if (o.y > logH + 100) rState.opponents.splice(i, 1);
+            }
+            for (let i = rState.coins.length - 1; i >= 0; i--) {
+                let c = rState.coins[i]; c.y += rState.speed * 1.5;
+                if (playerCar.x < c.x + c.w && playerCar.x + 36 > c.x && playerCar.y < c.y + c.h && playerCar.y + 66 > c.y) {
+                    rState.collected += 100; sndCoin();
+                    let div = document.createElement('div'); div.className = 'bonus-text'; div.innerText = '+$100'; div.style.left = (c.x * scaleX) + 'px'; div.style.top = c.y + 'px'; document.getElementById('screen-race').appendChild(div); setTimeout(() => div.remove(), 800);
+                    rState.coins.splice(i, 1); continue;
+                }
+                if (c.y > logH) rState.coins.splice(i, 1);
+            }
+
+            buildings.forEach(b => { b.y += rState.speed * 2.5; if (b.y > logH) { b.y = -200; b.h = 50 + Math.random() * 200; } });
+
+            if (playerCar.isNitro) for (let k = 0; k < 3; k++) particles.push({ x: playerCar.x + 18, y: playerCar.y + 64, vx: (Math.random() - 0.5) * 4, vy: 5 + Math.random() * 5, life: 10, color: '#00d2ff' });
+            particles.forEach(p => { p.x += p.vx; p.y += p.vy + (rState.speed * 0.5); p.life--; }); particles = particles.filter(p => p.life > 0);
+
+            document.getElementById('race-score').innerText = Math.floor(rState.score);
+            document.getElementById('race-speed').innerText = Math.floor(rState.speed * 10);
+            document.getElementById('race-coins').innerText = rState.collected;
+            document.getElementById('nitro-fill').style.width = playerCar.nitro + '%';
+            if (playerCar.nitro < 5) document.getElementById('btn-nitro').classList.add('disabled'); else document.getElementById('btn-nitro').classList.remove('disabled');
+        }
+
+        function drawRace() {
+            const dpr = window.devicePixelRatio || 1;
+            const V_WIDTH = 600;
+            const screenW = rCanvas.width / dpr;
+            const logH = rCanvas.height / dpr;
+            const scaleX = screenW / V_WIDTH;
+
+            rCtx.save();
+            rCtx.scale(scaleX, 1); // Scale horizontally to fit the road
+
+            rCtx.fillStyle = '#1a1a2e'; rCtx.fillRect(0, 0, V_WIDTH, logH);
+            rCtx.fillStyle = '#0a0a14'; buildings.forEach(b => {
+                // Draw buildings on the edges of the virtual width
+                let bx = b.x < 0 ? b.x : V_WIDTH + (b.x - 400);
+                rCtx.fillRect(bx, b.y, b.w, b.h);
+            });
+            rCtx.fillStyle = '#181820'; rCtx.fillRect(0, 0, V_WIDTH, logH);
+            rCtx.strokeStyle = 'rgba(255,255,255,0.1)'; rCtx.lineWidth = 4 / scaleX; rCtx.setLineDash([40, 40]); rCtx.lineDashOffset = -rState.roadY;
+            let laneW = V_WIDTH / 3; rCtx.beginPath(); rCtx.moveTo(laneW, -50); rCtx.lineTo(laneW, logH + 50); rCtx.moveTo(laneW * 2, -50); rCtx.lineTo(laneW * 2, logH + 50); rCtx.stroke();
+            rCtx.setLineDash([]); rCtx.strokeStyle = 'rgba(0,242,234,0.5)'; rCtx.lineWidth = 6 / scaleX; rCtx.beginPath(); rCtx.moveTo(0, 0); rCtx.lineTo(0, logH); rCtx.moveTo(V_WIDTH, 0); rCtx.lineTo(V_WIDTH, logH); rCtx.stroke();
+            rState.coins.forEach(c => { rCtx.fillStyle = '#ffd700'; rCtx.beginPath(); rCtx.arc(c.x + 10, c.y + 10, 8, 0, Math.PI * 2); rCtx.fill(); rCtx.strokeStyle = '#fff'; rCtx.lineWidth = 2 / scaleX; rCtx.stroke(); rCtx.fillStyle = '#000'; rCtx.font = 'bold 12px sans-serif'; rCtx.fillText('$', c.x + 7, c.y + 14); });
+            rState.opponents.forEach(o => drawDetailedCar(rCtx, o.x, o.y, o.color, null, false));
+            particles.forEach(p => { rCtx.fillStyle = p.color === '#00d2ff' ? `rgba(0,210,255,${p.life / 10})` : `rgba(255,100,0,${p.life / 20})`; rCtx.beginPath(); rCtx.arc(p.x, p.y, Math.random() * 4 + 2, 0, Math.PI * 2); rCtx.fill(); });
+            drawDetailedCar(rCtx, playerCar.x, playerCar.y, playerCar.data.color, playerCar.data, true);
+
+            rCtx.restore();
+
+            if (player.settings.safeMode) { rCtx.fillStyle = 'rgba(0,255,255,0.1)'; rCtx.fillRect(0, 0, 10, logH); rCtx.fillRect(screenW - 10, 0, 10, logH); }
+        }
+
+        function drawDetailedCar(g, x, y, color, carInstance, isPlayer) {
+            g.save(); g.translate(x, y);
+            g.fillStyle = 'rgba(0,0,0,0.5)'; g.beginPath(); g.ellipse(18, 33, 18, 30, 0, 0, Math.PI * 2); g.fill();
+            g.fillStyle = '#111'; let wOff = (isPlayer && carInstance && carInstance.parts && carInstance.parts.wheels) ? -2 : 0;
+            g.fillRect(2 + wOff, 8, 6, 14); g.fillRect(28 - wOff, 8, 6, 14); g.fillRect(2 + wOff, 46, 6, 14); g.fillRect(28 - wOff, 46, 6, 14);
+            g.fillStyle = color; g.beginPath(); g.moveTo(4, 8); g.quadraticCurveTo(18, -2, 32, 8); g.lineTo(34, 60); g.quadraticCurveTo(18, 68, 2, 60); g.lineTo(4, 8); g.fill();
+            g.fillStyle = '#181818'; g.beginPath(); g.moveTo(5, 42); g.lineTo(7, 20); g.quadraticCurveTo(18, 17, 29, 20); g.lineTo(31, 42); g.quadraticCurveTo(18, 45, 5, 42); g.fill();
+            if (isPlayer && carInstance && carInstance.parts) { if (carInstance.parts.bumper) { g.fillStyle = color; g.fillRect(0, 60, 36, 5); g.fillStyle = 'rgba(0,0,0,0.3)'; g.fillRect(2, 61, 32, 2); } if (carInstance.parts.engine) { g.fillStyle = 'rgba(0,0,0,0.4)'; g.beginPath(); g.moveTo(14, 14); g.lineTo(18, 8); g.lineTo(22, 14); g.fill(); } if (carInstance.parts.coating) { g.fillStyle = 'rgba(255,255,255,0.3)'; g.fillRect(16, 0, 4, 66); } }
+            g.fillStyle = '#ffeb3b'; g.beginPath(); g.ellipse(6, 6, 2, 4, 0, 0, Math.PI * 2); g.fill(); g.beginPath(); g.ellipse(30, 6, 2, 4, 0, 0, Math.PI * 2); g.fill();
+            g.fillStyle = '#d32f2f'; g.fillRect(5, 62, 7, 2); g.fillRect(24, 62, 7, 2);
+            if (isPlayer && playerCar.isNitro) { g.fillStyle = '#00d2ff'; g.beginPath(); g.moveTo(10, 66); g.lineTo(18, 85 + Math.random() * 10); g.lineTo(26, 66); g.fill(); g.fillStyle = '#fff'; g.beginPath(); g.moveTo(14, 66); g.lineTo(18, 75); g.lineTo(22, 66); g.fill(); }
+            g.restore();
+        }
+
+        function crash() {
+            raceActive = false; stopMusic(); sndCrash();
+            let mult = player.settings.safeMode ? 0.95 : 1;
+            let runScore = Math.floor(rState.score);
+            let earn = Math.floor((runScore / 5) * mult) + rState.collected;
+            let missionBonus = checkMissions(runScore, rState.collected); earn += missionBonus;
+            player.money += earn;
+            let newRecord = false;
+            let currentBest = player.highscores.length ? Math.max(...player.highscores.map(s => s.score)) : 0;
+            if (runScore > currentBest) newRecord = true;
+            player.highscores.push({ score: runScore, date: new Date().toLocaleDateString(), carId: playerCar.data.dbId });
+            player.highscores.sort((a, b) => b.score - a.score);
+            if (player.highscores.length > 50) player.highscores.pop();
+            saveGame();
+            document.getElementById('race-earnings').innerText = '$' + Math.floor((runScore / 5) * mult);
+            document.getElementById('race-collected-coins').innerText = '$' + rState.collected;
+            document.getElementById('race-mission-bonus').innerText = '$' + missionBonus;
+            let msg = document.getElementById('new-record-msg'); msg.style.display = newRecord ? 'block' : 'none';
+            if (newRecord) msg.innerText = txt('msgRecord') + ` ${runScore}!`;
+            document.getElementById('modal-gameover').style.display = 'flex';
+        }
+        function finishRace() { nav('screen-garage'); }
+
+        // Touch Control Helpers
+        function setKey(k, v) { keys[k] = v; }
+        window.addEventListener('keydown', e => { if (e.code === 'ArrowLeft') keys.L = 1; if (e.code === 'ArrowRight') keys.R = 1; if (e.code === 'Space') keys.Space = 1; });
+        window.addEventListener('keyup', e => { if (e.code === 'ArrowLeft') keys.L = 0; if (e.code === 'ArrowRight') keys.R = 0; if (e.code === 'Space') keys.Space = 0; });
+        // Prevent zoom/scroll
+        document.addEventListener('touchmove', function (e) { if (raceActive) e.preventDefault(); }, { passive: false });
+
+        // Resize Handler
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (document.getElementById('screen-menu').classList.contains('active')) drawMenuCar();
+                if (raceActive) {
+                    const dpr = window.devicePixelRatio || 1;
+                    rCanvas.width = rCanvas.parentElement.offsetWidth * dpr;
+                    rCanvas.height = rCanvas.parentElement.offsetHeight * dpr;
+                    rCtx.setTransform(1, 0, 0, 1, 0, 0); rCtx.scale(dpr, dpr);
+                }
+            }, 100);
+        });
+
+        loadGame(); applyLanguage(); drawMenuCar(); updCase();
+
+        // Mobile Controls Implementation
+        window.setKey = setKey;
+        window.activateNitro = activateNitro;
+    </script>
+</body>
+
+</html>

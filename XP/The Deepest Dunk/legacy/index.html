@@ -1,0 +1,2638 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Deepest Dunk - XP Edition</title>
+
+    <!-- IE8 Compatibility Polyfills -->
+    <script type="text/javascript" src="../../ie8-polyfills.js"></script>
+
+    <!-- IE8 Canvas Emulator: excanvas.js removed (not used) -->
+
+    <style type="text/css">
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            background-color: #fdfaf5;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            color: #2c1e18;
+        }
+
+        /* Game Container */
+        #game-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #fdfaf5;
+        }
+
+        #game-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+        }
+
+        /* UI Overlay */
+        #ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+
+        /* Vignette Effects */
+        #vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            background: none;
+        }
+
+        #mint-vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 6;
+            background: none;
+            display: none;
+        }
+
+        /* Overlay Screens */
+        .overlay-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 400px;
+            margin-left: -220px;
+            margin-top: -200px;
+            background: #ffffff;
+            border: 4px solid #3c2a21;
+            padding: 25px;
+            text-align: center;
+            display: none;
+            z-index: 100;
+        }
+
+        .overlay-screen.active {
+            display: block;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Typography */
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #3c2a21;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Champion Badge */
+        #champion-badge {
+            background: #FFD700;
+            color: #fff;
+            padding: 8px 15px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        #champion-badge.active {
+            display: inline-block;
+        }
+
+        /* Instructions */
+        .instructions {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .instruction-item {
+            background: #f5f5f5;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .key {
+            display: inline-block;
+            background: #3c2a21;
+            color: #fdfaf5;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .instruction-item p {
+            font-size: 12px;
+            color: #5d4037;
+            margin: 0;
+        }
+
+        /* Buttons */
+        button {
+            background: #3c2a21;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #5d4037;
+        }
+
+        button:active {
+            background: #3c2a21;
+        }
+
+        .ui-btn {
+            padding: 8px 15px;
+            font-size: 12px;
+            width: auto;
+            background: #fff;
+            color: #3c2a21;
+            border: 2px solid #3c2a21;
+        }
+
+        .ui-btn:hover {
+            background: #3c2a21;
+            color: white;
+        }
+
+        .setup-buttons {
+            margin-top: 15px;
+        }
+
+        .setup-buttons button {
+            width: auto;
+            margin: 5px;
+            padding: 10px 20px;
+        }
+
+        /* Top Controls */
+        #top-controls {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            margin-left: -60px;
+            z-index: 100;
+        }
+
+        /* HUD */
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            display: none;
+            z-index: 50;
+        }
+
+        .depth-meter {
+            font-size: 36px;
+            font-weight: bold;
+            color: #3c2a21;
+            text-align: left;
+        }
+
+        .status-bars {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 180px;
+        }
+
+        .bar-container {
+            background: #fff;
+            border: 2px solid #5d4037;
+            height: 20px;
+            width: 100%;
+            position: relative;
+        }
+
+        .bar {
+            height: 100%;
+            background: #5d4037;
+            width: 100%;
+        }
+
+        .bar-container span {
+            position: absolute;
+            top: 22px;
+            right: 0;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #3c2a21;
+        }
+
+        /* Combo Panel */
+        .combo-panel {
+            width: 100%;
+            padding: 8px;
+            background: #fff5dc;
+            border: 2px solid #8d6e63;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .combo-panel.active {
+            display: block;
+            border-color: #ffc107;
+        }
+
+        #combo-text {
+            font-size: 11px;
+            font-weight: bold;
+            color: #4a3728;
+            text-align: right;
+            text-transform: uppercase;
+        }
+
+        .combo-timer {
+            margin-top: 5px;
+            width: 100%;
+            height: 6px;
+            background: #463223;
+        }
+
+        #combo-timer-fill {
+            width: 0%;
+            height: 100%;
+            background: #ffc107;
+        }
+
+        /* Cookie Grid */
+        #cookie-grid {
+            margin-top: 15px;
+        }
+
+        .cookie-card {
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .cookie-card:hover {
+            background: #fff;
+            border-color: #8d6e63;
+        }
+
+        .cookie-card h3 {
+            color: #3c2a21;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .cookie-info {
+            font-size: 11px;
+            color: #666;
+            margin: 0;
+        }
+
+        /* Game Over Screen */
+        #game-over-screen h2 {
+            font-size: 24px;
+            color: #d35400;
+            margin-bottom: 10px;
+        }
+
+        #final-depth {
+            font-size: 18px;
+            color: #3c2a21;
+            margin-bottom: 15px;
+        }
+
+        #high-scores {
+            text-align: left;
+            background: #f5f5f5;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        #high-scores h3 {
+            font-size: 12px;
+            margin-bottom: 8px;
+            color: #3c2a21;
+        }
+
+        #score-list {
+            list-style: none;
+            font-size: 11px;
+        }
+
+        #score-list li {
+            padding: 3px 0;
+            border-bottom: 1px dotted #ddd;
+        }
+
+        .game-over-buttons {
+            margin-top: 15px;
+        }
+
+        .game-over-buttons button {
+            margin-top: 5px;
+        }
+
+        #btn-menu {
+            background: transparent;
+            color: #3c2a21;
+            border: 2px solid #3c2a21;
+        }
+
+        #btn-menu:hover {
+            background: #3c2a21;
+            color: white;
+        }
+
+        /* Victory Screen */
+        #victory-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            text-align: center;
+            z-index: 100;
+            display: none;
+        }
+
+        #victory-screen h1 {
+            font-size: 60px;
+            color: #fff;
+            filter: progid:DXImageTransform.Microsoft.Glow(color=#FFD700,Strength=3);
+        }
+
+        /* Bottom Settings */
+        #bottom-settings {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            border-top: 2px solid #ddd;
+            padding: 10px 15px;
+            z-index: 20;
+            display: none;
+        }
+
+        .settings-row {
+            text-align: center;
+        }
+
+        .setting-group {
+            display: inline-block;
+            margin: 0 15px;
+            font-size: 11px;
+        }
+
+        .setting-group input {
+            vertical-align: middle;
+        }
+
+        .slider-container {
+            display: inline;
+        }
+
+        .vol-slider {
+            width: 60px;
+            vertical-align: middle;
+        }
+
+        .legacy-stepper {
+            display: inline;
+            margin-left: 4px;
+        }
+
+        .legacy-step-btn {
+            width: 22px;
+            height: 20px;
+            line-height: 18px;
+            padding: 0;
+            margin-top: 0;
+            margin: 0 2px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid #3c2a21;
+            background: #fff;
+            color: #3c2a21;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+
+        .legacy-step-value {
+            display: inline-block;
+            min-width: 38px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 11px;
+        }
+
+        /* Buffs Panel */
+        #buffs-panel {
+            margin-bottom: 8px;
+        }
+
+        .buff-icon {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background: #fff;
+            border: 2px solid white;
+            text-align: center;
+            line-height: 24px;
+            font-size: 14px;
+        }
+
+        /* Run Stats */
+        .run-stats {
+            text-align: left;
+            background: #f5f5f5;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 11px;
+        }
+
+        .stat-row {
+            padding: 3px 0;
+            border-bottom: 1px dotted #ddd;
+        }
+
+        .stat-val {
+            font-weight: bold;
+            float: right;
+        }
+
+        /* Close X Button */
+        .close-x {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #3c2a21;
+            padding: 0;
+            width: auto;
+            cursor: pointer;
+        }
+
+        .close-x:hover {
+            color: #e74c3c;
+        }
+
+        /* Damage Flash */
+        .damage-flash {
+            background-color: #e74c3c !important;
+        }
+
+        /* Mint Blur */
+        .mint-blur canvas {
+            filter: none;
+            /* IE8 doesn't support filters */
+        }
+
+        body.compact-ui .overlay-screen {
+            left: 5%;
+            width: 84%;
+            margin-left: 0;
+            margin-top: -170px;
+            padding: 12px;
+        }
+
+        body.compact-ui #top-controls {
+            top: 6px;
+            left: 6px;
+            margin-left: 0;
+        }
+
+        body.compact-ui #hud {
+            padding: 8px;
+        }
+
+        body.compact-ui .depth-meter {
+            font-size: 24px;
+        }
+
+        body.compact-ui .status-bars {
+            position: static;
+            width: auto;
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        body.compact-ui #bottom-settings {
+            padding: 6px 8px;
+        }
+
+        body.compact-ui .setting-group {
+            display: block;
+            margin: 4px 0;
+        }
+
+        body.compact-ui #high-scores {
+            max-height: 130px;
+            overflow: auto;
+        }
+    </style>
+    <!--[if lte IE 7]>
+    <style type="text/css">
+        .setting-group,
+        .buff-icon {
+            display: inline;
+            zoom: 1;
+        }
+    </style>
+    <![endif]-->
+</head>
+
+<body>
+    <!-- Background Music -->
+    <bgsound id="bg-music" src="Music.mp3" loop="-1" />
+
+    <div id="game-container">
+        <div id="game-canvas"></div>
+
+        <div id="ui-overlay">
+            <div id="top-controls">
+                <button id="lang-toggle" class="ui-btn">RU</button>
+                <button id="master-mute-btn" class="ui-btn">Sound</button>
+            </div>
+
+            <!-- Audio Setup Screen -->
+            <div id="audio-setup-screen" class="overlay-screen active">
+                <button id="quick-close-audio" class="close-x">x</button>
+                <h2 class="title">Sound Settings</h2>
+                <p class="subtitle">Music and Sounds enabled by default</p>
+                <div class="setup-buttons">
+                    <button id="audio-start-btn">PLAY</button>
+                    <button id="audio-mute-start-btn">PLAY MUTED</button>
+                </div>
+            </div>
+
+            <!-- Start Screen -->
+            <div id="start-screen" class="overlay-screen">
+                <h1 class="title">The Deepest Dunk</h1>
+                <div id="champion-badge">YOU ARE A CHAMPION</div>
+                <p class="subtitle">Reach the bottom of the Infinite Glass</p>
+
+                <div class="instructions">
+                    <div class="instruction-item">
+                        <span class="key">DRY (Release)</span>
+                        <p>Fall fast, but very fragile.</p>
+                    </div>
+                    <div class="instruction-item">
+                        <span class="key">SOGGY (Hold Space)</span>
+                        <p>Absorb milk to become soft.</p>
+                    </div>
+                </div>
+
+                <button id="start-btn">SELECT COOKIE</button>
+            </div>
+
+            <!-- Selection Screen -->
+            <div id="selection-screen" class="overlay-screen">
+                <h2 class="title">Choose Your Cookie</h2>
+                <div id="cookie-grid"></div>
+            </div>
+
+            <!-- Game Over Screen -->
+            <div id="game-over-screen" class="overlay-screen">
+                <h2 id="death-reason">Shattered!</h2>
+                <p id="final-depth">Depth: 0mm</p>
+                <div id="run-stats" class="run-stats"></div>
+                <div id="high-scores">
+                    <h3>Local Records</h3>
+                    <ul id="score-list"></ul>
+                </div>
+                <div class="game-over-buttons">
+                    <button id="btn-retry">DUNK AGAIN</button>
+                    <button id="btn-change-skin">CHANGE COOKIE</button>
+                    <button id="btn-menu">MENU</button>
+                </div>
+            </div>
+
+            <!-- Victory Screen -->
+            <div id="victory-screen">
+                <h1>YOU WON!</h1>
+            </div>
+
+            <div id="vignette"></div>
+            <div id="mint-vignette"></div>
+
+            <!-- HUD -->
+            <div id="hud">
+                <div class="depth-meter">
+                    <span id="depth-value">0</span>mm
+                </div>
+                <div class="status-bars">
+                    <div class="bar-container">
+                        <div id="hp-bar" class="bar"></div>
+                        <span>Integrity</span>
+                    </div>
+                    <div id="buffs-panel"></div>
+                    <div id="combo-panel" class="combo-panel">
+                        <div id="combo-text">COMBO x1</div>
+                        <div class="combo-timer">
+                            <div id="combo-timer-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Settings -->
+            <div id="bottom-settings">
+                <div class="settings-row">
+                    <div class="setting-group">
+                        <input type="checkbox" id="chk-music" checked="checked" />
+                        <label for="chk-music">Music</label>
+                        <div class="slider-container">
+                            <input type="range" id="vol-music" class="vol-slider" min="0" max="100" value="20" />
+                            <span id="val-music">20%</span>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <input type="checkbox" id="chk-sfx" checked="checked" />
+                        <label for="chk-sfx">Sounds</label>
+                        <div class="slider-container">
+                            <input type="range" id="vol-sfx" class="vol-slider" min="0" max="100" value="100" />
+                            <span id="val-sfx">100%</span>
+                        </div>
+                    </div>
+                    <div class="setting-group master-group">
+                        <span>Master Vol</span>
+                        <input type="range" id="vol-master" class="vol-slider" min="0" max="100" value="100" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        /**
+         * The Deepest Dunk - XP Edition (IE8 Compatible)
+         * Fully optimized for Internet Explorer 8 on Windows XP
+         */
+
+        // ==================== PERF SETTINGS ====================
+        var PERF = {
+            level: 0,
+            autoLevel: 0,
+            autoChecks: 0,
+            fpsCount: 0,
+            lastFps: 30,
+            MAX_PARTICLES: [80, 80, 40, 20, 10],
+            MAX_TRAIL:     [30, 30, 15,  8,  4],
+            INTERVAL_MS:   [50, 33, 50, 67, 100]
+        };
+        window.IS_IE6 = !!(window.attachEvent && !window.XMLHttpRequest);
+        if (window.IS_IE6) {
+            PERF.level = 4;
+            PERF.autoLevel = 4;
+            PERF.MAX_PARTICLES = [30, 30, 18, 10, 5];
+            PERF.MAX_TRAIL = [10, 10, 6, 4, 2];
+            PERF.INTERVAL_MS = [67, 50, 67, 100, 125];
+        }
+        function perfLevel()    { return PERF.level === 0 ? PERF.autoLevel : PERF.level; }
+        function maxParticles() { return PERF.MAX_PARTICLES[perfLevel()]; }
+        function maxTrail()     { return PERF.MAX_TRAIL[perfLevel()]; }
+
+        // FPS auto-tuner
+        setInterval(function () {
+            PERF.autoChecks++;
+            var fps = PERF.fpsCount;
+            PERF.fpsCount = 0;
+            PERF.lastFps = fps;
+            if (PERF.level === 0 && PERF.autoChecks >= 3) {
+                if (fps < 12 && PERF.autoLevel < 4) { PERF.autoLevel++; }
+                else if (fps > 25 && PERF.autoLevel > 0) { PERF.autoLevel--; }
+            }
+        }, 1000);
+
+        // ==================== POLYFILLS ====================
+
+        // JSON polyfill for IE6
+        if(!window.JSON){window.JSON={parse:function(s){return(new Function('return '+s))();},stringify:function(o){if(o===null)return'null';if(typeof o==='undefined')return undefined;if(typeof o==='number'||typeof o==='boolean')return String(o);if(typeof o==='string')return'"'+o.replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\n/g,'\\n')+'"';if(o instanceof Array){var a=[];for(var i=0;i<o.length;i++)a.push(JSON.stringify(o[i]));return'['+a.join(',')+']';}var p=[];for(var k in o){if(o.hasOwnProperty(k))p.push('"'+k+'":'+JSON.stringify(o[k]));}return'{'+p.join(',')+'}';}};}
+
+        // Array.indexOf polyfill for IE6
+        if(!Array.prototype.indexOf){Array.prototype.indexOf=function(s,f){f=f||0;for(var i=f;i<this.length;i++)if(this[i]===s)return i;return-1};}
+
+        // requestAnimationFrame polyfill — адаптивный для старого железа
+        if (!window.requestAnimationFrame) {
+            window.requestAnimationFrame = function (callback) {
+                return setTimeout(callback, PERF.INTERVAL_MS[perfLevel()] || 50);
+            };
+        }
+
+        // cancelAnimationFrame polyfill for IE8
+        if (!window.cancelAnimationFrame) {
+            window.cancelAnimationFrame = function (id) {
+                clearTimeout(id);
+            };
+        }
+
+        // Math.hypot polyfill
+        if (!Math.hypot) {
+            Math.hypot = function () {
+                var sum = 0;
+                for (var i = 0; i < arguments.length; i++) {
+                    sum += arguments[i] * arguments[i];
+                }
+                return Math.sqrt(sum);
+            };
+        }
+
+        // ==================== GLOBAL ERROR HANDLER FOR IE6 ====================
+        window.onerror = function (msg, url, line) {
+            // Silently handle errors without logging
+            return true;
+        };
+
+        // ==================== GLOBALS ====================
+
+        var canvas = null;
+        var ctx = null;
+        var logicalWidth = 800;
+        var FRAME_MS = 1000 / 60;
+        var animationId = null;
+
+        // UI Elements
+        var uiOverlay = {};
+
+        // Game State
+        var state = {
+            isStarted: false,
+            isGameOver: false,
+            isShattering: false,
+            shatterProgress: 0,
+            lang: 'en',
+            audio: {
+                musicEnabled: true,
+                sfxEnabled: true,
+                musicVol: 0.2,
+                sfxVol: 1.0,
+                masterVol: 1.0,
+                isMasterMuted: false
+            },
+            depth: 0,
+            time: 0,
+            cameraY: 0,
+            isHoldingSpace: false,
+            keys: { left: false, right: false },
+            selectedCookie: 'classic',
+            isChampion: false,
+            victoryTriggered: false,
+            timeScale: 1,
+            targetTimeScale: 1,
+            currentStage: 'Fresh Milk',
+            combo: {
+                windowMs: 2000,
+                collisionHits: [],
+                sugarHits: [],
+                activeUntilMs: 0,
+                multiplier: 1,
+                pendingHealBonus: 0,
+                lastCollisionTriggerMs: -99999,
+                lastSugarTriggerMs: -99999,
+                flashTimer: 0,
+                waveTimer: 0
+            },
+            buffs: {
+                crystalArmor: false
+            },
+            stats: {
+                totalTime: 0,
+                totalDepth: 0,
+                gamesPlayed: 0,
+                totalVictories: 0,
+                collisions: 0,
+                sugarCollected: 0,
+                bubblesCollected: 0,
+                iceBroken: 0,
+                maxCombo: 0
+            },
+            currentRunStats: {
+                time: 0,
+                collisions: 0,
+                sugar: 0,
+                bubbles: 0,
+                iceBroken: 0,
+                maxCombo: 0
+            },
+            mintSlowdown: 0
+        };
+
+        // Cookie Types
+        var COOKIES = {
+            classic: {
+                id: 'classic',
+                name: { en: 'Classic Choco', ru: 'Классическое' },
+                info: { en: 'Balanced stats.', ru: 'Сбалансированное.' },
+                hp: 100,
+                absorbSpeed: 0.03,
+                weight: 1.0,
+                agility: 1.8,
+                color: '#3c2a21',
+                softColor: '#5d4037'
+            },
+            oatmeal: {
+                id: 'oatmeal',
+                name: { en: 'Oatmeal Brick', ru: 'Овсяный Кирпич' },
+                info: { en: 'Huge HP, sinks fast.', ru: 'Много HP, тонет быстро.' },
+                hp: 200,
+                absorbSpeed: 0.015,
+                weight: 1.8,
+                agility: 0.8,
+                color: '#7b5e3d',
+                softColor: '#8d6e63'
+            },
+            macaron: {
+                id: 'macaron',
+                name: { en: 'Macaron', ru: 'Макарон' },
+                info: { en: 'Fragile, resists dissolving.', ru: 'Хрупкое, не тает.' },
+                hp: 30,
+                absorbSpeed: 0.005,
+                weight: 0.7,
+                agility: 2.2,
+                color: '#ff80ab',
+                softColor: '#f48fb1'
+            },
+            cracker: {
+                id: 'cracker',
+                name: { en: 'Cracker', ru: 'Крекер' },
+                info: { en: 'Spicy Dust! Action to shoot.', ru: 'Острый порошок! Действие для выстрела.' },
+                hp: 80,
+                absorbSpeed: 0,
+                weight: 0.5,
+                agility: 3.0,
+                color: '#e2a35d',
+                softColor: '#e2a35d'
+            },
+            mint: {
+                id: 'mint',
+                name: { en: 'Minty Fresh', ru: 'Мятная Свежесть' },
+                info: { en: 'Slows time on damage.', ru: 'Замедляет время при уроне.' },
+                hp: 90,
+                absorbSpeed: 0.025,
+                weight: 0.9,
+                agility: 2.0,
+                color: '#a5d6a7',
+                softColor: '#e8f5e9'
+            }
+        };
+
+        // Stage definitions
+        var STAGES = {
+            MILK: { depth: 0, name: 'Fresh Milk', color: '#fdfaf5' },
+            COCOA: { depth: 2000, name: 'Deep Cocoa', color: '#3d2b1f' },
+            VOID: { depth: 4500, name: 'The Void', color: '#0a0a12' },
+            ENLIGHTENED: { depth: 5000, name: 'Enlightenment', color: '#000000' }
+        };
+
+        // Strings for localization
+        var STRINGS = {
+            en: {
+                surfTitle: "Shattered!",
+                mushTitle: "Crumbled...",
+                finalDepth: "Depth: ",
+                mm: "mm",
+                champTitle: "CHAMPION!",
+                action: "ACTION",
+                combo: "COMBO",
+                healBonus: "next heal +"
+            },
+            ru: {
+                surfTitle: "Разбился!",
+                mushTitle: "Растворился...",
+                finalDepth: "Глубина: ",
+                mm: "мм",
+                champTitle: "ЧЕМПИОН!",
+                action: "ДЕЙСТВИЕ",
+                combo: "КОМБО",
+                healBonus: "след. лечение +"
+            }
+        };
+
+        // Colors
+        var COLORS = {
+            milk: '#fdfaf5',
+            ice: '#b4dcff',
+            wall: '#dcdde1',
+            roomBg: '#f5efe0',
+            floor: '#4a3728',
+            sugar: '#fbc02d',
+            bubble: '#00bcd4'
+        };
+
+        // Player object
+        var player = {
+            x: 0,
+            y: 0,
+            radius: 35,
+            baseRadius: 35,
+            hp: 100,
+            maxHp: 100,
+            vx: 0,
+            vy: 0,
+            rotation: 0,
+            state: 'DRY',
+            absorption: 0,
+            shards: []
+        };
+
+        // Entities
+        var entities = [];
+        var particles = [];
+        var milkTrail = [];
+        var backgroundElements = [];
+        var saltProjectiles = [];
+
+        // ==================== COOKIE STORAGE ====================
+
+        var CookieStorage = {
+            set: function (key, value, days) {
+                days = days || 365;
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                var expires = '; expires=' + date.toGMTString();
+                document.cookie = key + '=' + escape(String(value)) + expires + '; path=/';
+            },
+            get: function (key) {
+                var nameEQ = key + '=';
+                var ca = document.cookie.split(';');
+                for (var i = 0; i < ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) === 0) return unescape(c.substring(nameEQ.length, c.length));
+                }
+                return null;
+            },
+            remove: function (key) {
+                this.set(key, '', -1);
+            },
+            getJSON: function (key, defaultValue) {
+                var val = this.get(key);
+                if (val) {
+                    try {
+                        return JSON.parse(val);
+                    } catch (e) {
+                        return defaultValue;
+                    }
+                }
+                return defaultValue;
+            },
+            setJSON: function (key, value) {
+                this.set(key, JSON.stringify(value));
+            }
+        };
+
+        // ==================== AUDIO CONTROLLER ====================
+
+        var AudioController = {
+            bgMusicEl: null,
+            muted: false,
+
+            init: function () {
+                this.bgMusicEl = document.getElementById('bg-music');
+                this.updateVolumes();
+            },
+
+            playMusic: function () {
+                if (this.bgMusicEl && !this.muted && state.audio.musicEnabled) {
+                    // bgsound plays automatically in IE8
+                }
+            },
+
+            pauseMusic: function () {
+                if (this.bgMusicEl) {
+                    this.bgMusicEl.src = '';
+                }
+            },
+
+            updateVolumes: function () {
+                // IE8 bgsound doesn't support volume control
+                // Just enable/disable based on settings
+                if (state.audio.isMasterMuted || !state.audio.musicEnabled) {
+                    this.pauseMusic();
+                } else {
+                    this.playMusic();
+                }
+            },
+
+            playDing: function () {
+                // Simple beep for IE8
+                if (state.audio.sfxEnabled && !state.audio.isMasterMuted) {
+                    // Could use bgsound for short sounds
+                }
+            },
+
+            playBlast: function () { },
+            playClink: function () { },
+            playThud: function () { },
+            playShatter: function () { },
+
+            updateFilters: function (isSoggy, depthFactor) {
+                // Not supported in IE8
+            }
+        };
+
+        // ==================== UTILITIES ====================
+
+        var TRIG_SAMPLES = 360;
+        var SIN_TABLE = new Array(TRIG_SAMPLES);
+        var COS_TABLE = new Array(TRIG_SAMPLES);
+
+        function initMathLookups() {
+            for (var i = 0; i < TRIG_SAMPLES; i++) {
+                var rad = (i * Math.PI * 2) / TRIG_SAMPLES;
+                SIN_TABLE[i] = Math.sin(rad);
+                COS_TABLE[i] = Math.cos(rad);
+            }
+        }
+
+        function getSin(rad) {
+            var deg = ((rad * 57.2957) % 360 + 360) % 360;
+            return SIN_TABLE[deg | 0];
+        }
+
+        function getCos(rad) {
+            var deg = ((rad * 57.2957) % 360 + 360) % 360;
+            return COS_TABLE[deg | 0];
+        }
+
+        function ObjectPool(createFn, recycleFn) {
+            this.pool = [];
+            this.createFn = createFn;
+            this.recycleFn = recycleFn;
+        }
+        ObjectPool.prototype.get = function () {
+            return this.pool.length > 0 ? this.pool.pop() : this.createFn();
+        };
+        ObjectPool.prototype.recycle = function (obj) {
+            if (this.recycleFn) this.recycleFn(obj);
+            this.pool.push(obj);
+        };
+
+        var particlePool, milkTrailPool, projectilePool;
+
+        // ==================== INITIALIZATION ====================
+
+        function initUI() {
+            uiOverlay = {
+                audioSetup: document.getElementById('audio-setup-screen'),
+                start: document.getElementById('start-screen'),
+                selection: document.getElementById('selection-screen'),
+                gameOver: document.getElementById('game-over-screen'),
+                hud: document.getElementById('hud'),
+                langToggle: document.getElementById('lang-toggle'),
+                masterMuteBtn: document.getElementById('master-mute-btn'),
+                depth: document.getElementById('depth-value'),
+                hpBar: document.getElementById('hp-bar'),
+                comboPanel: document.getElementById('combo-panel'),
+                comboText: document.getElementById('combo-text'),
+                comboTimerFill: document.getElementById('combo-timer-fill'),
+                deathReason: document.getElementById('death-reason'),
+                finalDepth: document.getElementById('final-depth'),
+                grid: document.getElementById('cookie-grid'),
+                victory: document.getElementById('victory-screen'),
+                vignette: document.getElementById('vignette'),
+                mintVignette: document.getElementById('mint-vignette'),
+                championBadge: document.getElementById('champion-badge'),
+                settings: {
+                    panel: document.getElementById('bottom-settings'),
+                    chkMusic: document.getElementById('chk-music'),
+                    chkSfx: document.getElementById('chk-sfx'),
+                    volMusic: document.getElementById('vol-music'),
+                    volSfx: document.getElementById('vol-sfx'),
+                    volMaster: document.getElementById('vol-master'),
+                    valMusic: document.getElementById('val-music'),
+                    valSfx: document.getElementById('val-sfx')
+                },
+                btnRetry: document.getElementById('btn-retry'),
+                btnChangeSkin: document.getElementById('btn-change-skin'),
+                btnMenu: document.getElementById('btn-menu')
+            };
+        }
+
+        function init() {
+            canvas = document.getElementById('game-canvas');
+            window.gameWidth = document.documentElement.clientWidth || 800;
+            window.gameHeight = document.documentElement.clientHeight || 600;
+            initDOMEngine();
+
+            initUI();
+            initMathLookups();
+
+            // Initialize Pools
+            particlePool = new ObjectPool(function () {
+                return { x: 0, y: 0, vx: 0, vy: 0, size: 0, life: 0, rot: 0, rotVel: 0, color: '', active: false };
+            }, function (p) { p.active = false; });
+
+            milkTrailPool = new ObjectPool(function () {
+                return { x: 0, y: 0, radius: 0, life: 0, active: false };
+            }, function (m) { m.active = false; });
+
+            projectilePool = new ObjectPool(function () {
+                return { x: 0, y: 0, vx: 0, vy: 0, life: 0, rot: 0, rotVel: 0, history: [], active: false };
+            }, function (s) { s.active = false; s.history = []; });
+
+            resize();
+            createParallax();
+            setupEventHandlers();
+            setupAudioUI();
+        }
+
+        function setupEventHandlers() {
+            // Window resize
+            if (window.attachEvent) {
+                window.attachEvent('onresize', resize);
+            } else if (window.addEventListener) {
+                window.addEventListener('resize', resize, false);
+            }
+
+            // Keyboard events
+            if (document.attachEvent) {
+                document.attachEvent('onkeydown', handleKeyDown);
+                document.attachEvent('onkeyup', handleKeyUp);
+            } else if (document.addEventListener) {
+                document.addEventListener('keydown', handleKeyDown, false);
+                document.addEventListener('keyup', handleKeyUp, false);
+            }
+
+            // Button clicks
+            bindClick(uiOverlay.langToggle, toggleLanguage);
+            bindClick(uiOverlay.masterMuteBtn, toggleMasterMute);
+
+            bindClick(document.getElementById('audio-start-btn'), function () { setupAudio(true); });
+            bindClick(document.getElementById('audio-mute-start-btn'), function () { setupAudio(false); });
+            bindClick(document.getElementById('quick-close-audio'), function () { setupAudio(true); });
+
+            bindClick(document.getElementById('start-btn'), showSelection);
+
+            bindClick(uiOverlay.btnRetry, function () { softReset(); startGame(state.selectedCookie); });
+            bindClick(uiOverlay.btnChangeSkin, function () { softReset(); showSelection(); });
+            bindClick(uiOverlay.btnMenu, function () { softReset(); showScreen('start'); });
+        }
+
+        function handleKeyDown(e) {
+            e = e || window.event;
+            var code = e.keyCode || e.which;
+            if (code === 32) { // Space
+                state.isHoldingSpace = true;
+                if (e.preventDefault) e.preventDefault();
+                e.returnValue = false;
+            }
+            if (code === 37 || code === 65) { // Left or A
+                state.keys.left = true;
+            }
+            if (code === 39 || code === 68) { // Right or D
+                state.keys.right = true;
+            }
+        }
+
+        function handleKeyUp(e) {
+            e = e || window.event;
+            var code = e.keyCode || e.which;
+            if (code === 32) { // Space
+                state.isHoldingSpace = false;
+            }
+            if (code === 37 || code === 65) { // Left or A
+                state.keys.left = false;
+            }
+            if (code === 39 || code === 68) { // Right or D
+                state.keys.right = false;
+            }
+        }
+
+        function bindClick(el, fn) {
+            if (!el) return;
+            el.onclick = function (e) {
+                fn(e || window.event);
+                return false;
+            };
+        }
+
+        function bindChange(el, fn) {
+            if (!el) return;
+            if (el.addEventListener) {
+                el.addEventListener('change', fn, false);
+                el.addEventListener('input', fn, false);
+            } else if (el.attachEvent) {
+                el.attachEvent('onchange', fn);
+            } else {
+                el.onchange = fn;
+            }
+        }
+
+        function supportsRangeInput() {
+            var el = document.createElement('input');
+            el.setAttribute('type', 'range');
+            return el.type === 'range';
+        }
+
+        function clampVolValue(v) {
+            var n = parseInt(v, 10);
+            if (isNaN(n)) n = 0;
+            if (n < 0) n = 0;
+            if (n > 100) n = 100;
+            return n;
+        }
+
+        function updateVolumeFromInput(type, inputEl) {
+            if (!inputEl) return;
+            var val = clampVolValue(inputEl.value);
+            inputEl.value = val;
+
+            if (type === 'music') {
+                state.audio.musicVol = val / 100;
+                if (uiOverlay.settings.valMusic) uiOverlay.settings.valMusic.innerHTML = val + '%';
+                AudioController.updateVolumes();
+            } else if (type === 'sfx') {
+                state.audio.sfxVol = val / 100;
+                if (uiOverlay.settings.valSfx) uiOverlay.settings.valSfx.innerHTML = val + '%';
+            } else if (type === 'master') {
+                state.audio.masterVol = val / 100;
+                if (state.audio.isMasterMuted) {
+                    state.audio.isMasterMuted = false;
+                    updateMasterBtnIcon();
+                }
+                AudioController.updateVolumes();
+            }
+        }
+
+        function ensureRangeFallback(inputEl, type) {
+            if (!inputEl || supportsRangeInput()) return;
+
+            inputEl.style.display = 'none';
+
+            var wrap = document.createElement('span');
+            wrap.className = 'legacy-stepper';
+
+            var minusBtn = document.createElement('button');
+            minusBtn.className = 'legacy-step-btn';
+            minusBtn.type = 'button';
+            minusBtn.innerHTML = '-';
+
+            var valueLabel = document.createElement('span');
+            valueLabel.className = 'legacy-step-value';
+
+            var plusBtn = document.createElement('button');
+            plusBtn.className = 'legacy-step-btn';
+            plusBtn.type = 'button';
+            plusBtn.innerHTML = '+';
+
+            function syncStepValue() {
+                valueLabel.innerHTML = clampVolValue(inputEl.value) + '%';
+            }
+
+            bindClick(minusBtn, function () {
+                inputEl.value = clampVolValue(inputEl.value) - 5;
+                updateVolumeFromInput(type, inputEl);
+                syncStepValue();
+            });
+
+            bindClick(plusBtn, function () {
+                inputEl.value = clampVolValue(inputEl.value) + 5;
+                updateVolumeFromInput(type, inputEl);
+                syncStepValue();
+            });
+
+            syncStepValue();
+
+            wrap.appendChild(minusBtn);
+            wrap.appendChild(valueLabel);
+            wrap.appendChild(plusBtn);
+
+            if (inputEl.parentNode) {
+                inputEl.parentNode.appendChild(wrap);
+            }
+        }
+
+        function resize() {
+            var w = document.documentElement.clientWidth || document.body.clientWidth || 800;
+            var h = document.documentElement.clientHeight || document.body.clientHeight || 600;
+
+            window.gameWidth = w;
+            window.gameHeight = h;
+            logicalWidth = w;
+            if (document.body) {
+                var cls = document.body.className || '';
+                var hasCompact = cls.indexOf('compact-ui') !== -1;
+                if (w < 760) {
+                    if (!hasCompact) document.body.className = cls ? (cls + ' compact-ui') : 'compact-ui';
+                } else if (hasCompact) {
+                    document.body.className = cls.replace(/\bcompact-ui\b/g, '').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
+                }
+            }
+
+            if (player.x > logicalWidth) {
+                player.x = logicalWidth - 50;
+            }
+        }
+
+        // ==================== DOM ENGINE ====================
+        var domEls = { bgElements: [], particles: [], entities: [], salt: [], shards: [], trail: [] };
+        var playerDiv = null;
+
+        function initDOMEngine() {
+            canvas.innerHTML = '';
+            playerDiv = document.createElement('div');
+            playerDiv.style.position = 'absolute';
+            playerDiv.style.display = 'none';
+            playerDiv.style.zIndex = '50';
+            canvas.appendChild(playerDiv);
+        }
+
+        function syncDOMArray(arr, domArr, zIndex) {
+            while (domArr.length < arr.length) {
+                var el = document.createElement('div');
+                el.style.position = 'absolute';
+                el.style.display = 'none';
+                el.style.zIndex = zIndex;
+                canvas.appendChild(el);
+                domArr.push(el);
+            }
+            for (var i = 0; i < domArr.length; i++) domArr[i].style.display = 'none';
+        }
+        function drawDivCentered(el, x, y, size, color, radius, opacity) {
+            el.style.display = 'block';
+            el.style.left = Math.floor(x - size / 2) + 'px';
+            el.style.top = Math.floor(y - size / 2) + 'px';
+            el.style.width = Math.floor(size) + 'px';
+            el.style.height = Math.floor(size) + 'px';
+            el.style.backgroundColor = color;
+            if (radius) el.style.borderRadius = radius;
+            if (opacity !== undefined) {
+                el.style.opacity = opacity;
+                el.style.filter = 'alpha(opacity=' + Math.floor(opacity * 100) + ')';
+            }
+        }
+
+        // ==================== UI FUNCTIONS ====================
+
+        function showScreen(screenId) {
+            var screens = ['audio-setup-screen', 'start-screen', 'selection-screen', 'game-over-screen', 'victory-screen'];
+            for (var i = 0; i < screens.length; i++) {
+                var el = document.getElementById(screens[i]);
+                if (el) {
+                    if (screens[i] === screenId) {
+                        el.className = 'overlay-screen active';
+                    } else {
+                        el.className = 'overlay-screen';
+                    }
+                }
+            }
+        }
+
+        function toggleLanguage() {
+            state.lang = state.lang === 'en' ? 'ru' : 'en';
+            refreshUIStrings();
+            if (uiOverlay.selection && uiOverlay.selection.className.indexOf('active') !== -1) {
+                renderCookieCards();
+            }
+        }
+
+        function refreshUIStrings() {
+            if (uiOverlay.langToggle) {
+                uiOverlay.langToggle.innerHTML = state.lang.toUpperCase();
+            }
+
+            // Update all elements with data-en/data-ru attributes
+            var elements = document.getElementsByTagName('*');
+            for (var i = 0; i < elements.length; i++) {
+                var el = elements[i];
+                var attr = el.getAttribute('data-' + state.lang);
+                if (attr) {
+                    el.innerHTML = attr;
+                }
+            }
+
+            updateComboUI(getNowMs());
+        }
+
+        function showSelection() {
+            showScreen('selection-screen');
+            renderCookieCards();
+        }
+
+        function renderCookieCards() {
+            if (!uiOverlay.grid) return;
+
+            var html = '';
+            for (var key in COOKIES) {
+                if (COOKIES.hasOwnProperty(key)) {
+                    var c = COOKIES[key];
+                    html += '<div class="cookie-card" data-cookie="' + key + '">';
+                    html += '<h3>' + c.name[state.lang] + '</h3>';
+                    html += '<p class="cookie-info">' + c.info[state.lang] + '</p>';
+                    html += '</div>';
+                }
+            }
+            uiOverlay.grid.innerHTML = html;
+
+            // Bind click events to cards
+            var cards = uiOverlay.grid.getElementsByTagName('div');
+            for (var i = 0; i < cards.length; i++) {
+                (function (card) {
+                    bindClick(card, function () {
+                        var cookieId = card.getAttribute('data-cookie');
+                        if (cookieId) {
+                            startGame(cookieId);
+                        }
+                    });
+                })(cards[i]);
+            }
+        }
+
+        function setupAudioUI() {
+            if (uiOverlay.settings.chkMusic) {
+                bindClick(uiOverlay.settings.chkMusic, function () {
+                    state.audio.musicEnabled = uiOverlay.settings.chkMusic.checked;
+                    AudioController.updateVolumes();
+                });
+            }
+
+            if (uiOverlay.settings.chkSfx) {
+                bindClick(uiOverlay.settings.chkSfx, function () {
+                    state.audio.sfxEnabled = uiOverlay.settings.chkSfx.checked;
+                });
+            }
+
+            // Volume controls (range in modern browsers, +/- fallback in IE6)
+            var volMusic = document.getElementById('vol-music');
+            var volSfx = document.getElementById('vol-sfx');
+            var volMaster = document.getElementById('vol-master');
+
+            bindChange(volMusic, function () { updateVolumeFromInput('music', volMusic); });
+            bindChange(volSfx, function () { updateVolumeFromInput('sfx', volSfx); });
+            bindChange(volMaster, function () { updateVolumeFromInput('master', volMaster); });
+
+            ensureRangeFallback(volMusic, 'music');
+            ensureRangeFallback(volSfx, 'sfx');
+            ensureRangeFallback(volMaster, 'master');
+        }
+
+        function setupAudio(enable) {
+            showScreen('start-screen');
+            AudioController.init();
+
+            if (enable) {
+                state.audio.musicEnabled = true;
+                state.audio.sfxEnabled = true;
+                state.audio.isMasterMuted = false;
+            } else {
+                state.audio.isMasterMuted = true;
+                updateMasterBtnIcon();
+            }
+
+            syncAudioUI();
+            AudioController.updateVolumes();
+        }
+
+        function syncAudioUI() {
+            if (uiOverlay.settings.chkMusic) {
+                uiOverlay.settings.chkMusic.checked = state.audio.musicEnabled;
+            }
+            if (uiOverlay.settings.chkSfx) {
+                uiOverlay.settings.chkSfx.checked = state.audio.sfxEnabled;
+            }
+            if (uiOverlay.settings.volMusic) {
+                uiOverlay.settings.volMusic.value = state.audio.musicVol * 100;
+            }
+            if (uiOverlay.settings.valMusic) {
+                uiOverlay.settings.valMusic.innerHTML = Math.round(state.audio.musicVol * 100) + '%';
+            }
+            if (uiOverlay.settings.volSfx) {
+                uiOverlay.settings.volSfx.value = state.audio.sfxVol * 100;
+            }
+            if (uiOverlay.settings.valSfx) {
+                uiOverlay.settings.valSfx.innerHTML = Math.round(state.audio.sfxVol * 100) + '%';
+            }
+            if (uiOverlay.settings.volMaster) {
+                uiOverlay.settings.volMaster.value = state.audio.masterVol * 100;
+            }
+        }
+
+        function toggleMasterMute() {
+            state.audio.isMasterMuted = !state.audio.isMasterMuted;
+            updateMasterBtnIcon();
+            AudioController.updateVolumes();
+        }
+
+        function updateMasterBtnIcon() {
+            if (uiOverlay.masterMuteBtn) {
+                uiOverlay.masterMuteBtn.innerHTML = state.audio.isMasterMuted ? 'Muted' : 'Sound';
+            }
+        }
+
+        // ==================== GAME LOGIC ====================
+
+        function startGame(type) {
+            state.selectedCookie = type;
+            var stats = COOKIES[type];
+
+            player.hp = stats.hp;
+            player.maxHp = stats.hp;
+            player.baseRadius = type === 'cracker' ? 25 : 35;
+
+            resetComboState();
+            state.isStarted = true;
+
+            showScreen(null);
+            if (uiOverlay.hud) {
+                uiOverlay.hud.style.display = 'block';
+            }
+
+            player.x = logicalWidth / 2;
+            player.y = 0;
+            state.cameraY = -200;
+
+            AudioController.playMusic();
+
+            // Restart game loop if not running
+            if (animationId === null) {
+                gameLoop();
+            }
+        }
+
+        function softReset() {
+            stopGameLoop();
+
+            state.isStarted = false;
+            state.isGameOver = false;
+            state.isShattering = false;
+            state.shatterProgress = 0;
+            state.depth = 0;
+            state.time = 0;
+            state.cameraY = -200;
+            state.timeScale = 1;
+            state.targetTimeScale = 1;
+            state.victoryTriggered = false;
+            state.keys.left = false;
+            state.keys.right = false;
+            state.isHoldingSpace = false;
+
+            player.x = logicalWidth / 2;
+            player.y = 0;
+            player.vx = 0;
+            player.vy = 0;
+            player.rotation = 0;
+            player.state = 'DRY';
+            player.absorption = 0;
+            player.shards = [];
+
+            while (entities.length > 0) entities.pop();
+            while (particles.length > 0) particlePool.recycle(particles.pop());
+            while (milkTrail.length > 0) milkTrailPool.recycle(milkTrail.pop());
+            while (saltProjectiles.length > 0) projectilePool.recycle(saltProjectiles.pop());
+
+            if (uiOverlay.gameOver) uiOverlay.gameOver.className = 'overlay-screen';
+            if (uiOverlay.victory) uiOverlay.victory.style.display = 'none';
+            if (uiOverlay.hud) uiOverlay.hud.style.display = 'none';
+
+            state.currentRunStats = {
+                time: 0,
+                collisions: 0,
+                sugar: 0,
+                bubbles: 0,
+                iceBroken: 0,
+                maxCombo: 0
+            };
+            state.buffs.crystalArmor = false;
+            state.mintSlowdown = 0;
+
+            updateBuffsUI();
+            resetComboState();
+            AudioController.updateFilters(false, 0);
+        }
+
+        function createParallax() {
+            backgroundElements = [];
+            // Reduced count for IE8 performance (VML is expensive)
+            var count = window.IS_IE6 ? 6 : ((!window.XMLHttpRequest) ? 8 : 12);
+            for (var i = 0; i < count; i++) {
+                backgroundElements.push({
+                    x: Math.random() * 800,
+                    y: Math.random() * 5000,
+                    size: 80 + Math.random() * 120,
+                    speedScale: 0.2 + Math.random() * 0.3,
+                    opacity: 0.05 + Math.random() * 0.05,
+                    type: Math.random() > 0.5 ? 'spoon' : 'face'
+                });
+            }
+        }
+
+        function getNowMs() {
+            return state.time * FRAME_MS;
+        }
+
+        function resetComboState() {
+            state.combo.collisionHits = [];
+            state.combo.sugarHits = [];
+            state.combo.activeUntilMs = 0;
+            state.combo.multiplier = 1;
+            state.combo.pendingHealBonus = 0;
+            state.combo.lastCollisionTriggerMs = -99999;
+            state.combo.lastSugarTriggerMs = -99999;
+            state.combo.flashTimer = 0;
+            state.combo.waveTimer = 0;
+            updateComboUI(0);
+        }
+
+        function pruneComboEvents(nowMs) {
+            var fromMs = nowMs - state.combo.windowMs;
+            var newCollision = [];
+            var newSugar = [];
+
+            for (var i = 0; i < state.combo.collisionHits.length; i++) {
+                if (state.combo.collisionHits[i] >= fromMs) {
+                    newCollision.push(state.combo.collisionHits[i]);
+                }
+            }
+            for (var i = 0; i < state.combo.sugarHits.length; i++) {
+                if (state.combo.sugarHits[i] >= fromMs) {
+                    newSugar.push(state.combo.sugarHits[i]);
+                }
+            }
+
+            state.combo.collisionHits = newCollision;
+            state.combo.sugarHits = newSugar;
+        }
+
+        function registerCollisionCombo(nowMs) {
+            state.combo.collisionHits.push(nowMs);
+            pruneComboEvents(nowMs);
+
+            if (state.combo.collisionHits.length >= 2 && nowMs - state.combo.lastCollisionTriggerMs > 900) {
+                state.combo.lastCollisionTriggerMs = nowMs;
+                state.combo.pendingHealBonus += 0.15;
+                activateCombo(nowMs);
+                AudioController.playDing();
+            }
+        }
+
+        function registerSugarCombo(nowMs) {
+            state.combo.sugarHits.push(nowMs);
+            pruneComboEvents(nowMs);
+
+            if (state.combo.sugarHits.length >= 3 && nowMs - state.combo.lastSugarTriggerMs > 1000) {
+                state.combo.lastSugarTriggerMs = nowMs;
+                activateCombo(nowMs);
+                triggerSugarBlast();
+                AudioController.playBlast();
+            }
+        }
+
+        function activateCombo(nowMs) {
+            state.combo.activeUntilMs = nowMs + state.combo.windowMs;
+            state.combo.multiplier = Math.min(3, state.combo.multiplier + 1);
+            state.combo.flashTimer = 18;
+        }
+
+        function triggerSugarBlast() {
+            var px = player.x;
+            var py = player.y;
+            state.combo.waveTimer = 28;
+
+            for (var i = 0; i < entities.length; i++) {
+                var ent = entities[i];
+                if (ent.type !== 'ice') continue;
+
+                var dx = ent.x - px;
+                var dy = ent.y - py;
+                var dist = Math.max(35, Math.sqrt(dx * dx + dy * dy));
+                var angle = Math.atan2(dy, dx);
+                var force = 150 / dist;
+
+                ent.vx += getCos(angle) * force * 12;
+                ent.vy += getSin(angle) * force * 12;
+                ent.radius *= 0.8;
+                ent.wasBlastPushed = true;
+            }
+
+            // Create particles — ограничиваем на слабых машинах
+            var pCount = Math.min(30, maxParticles() - particles.length);
+            for (var i = 0; i < pCount; i++) {
+                var a = (i / pCount) * Math.PI * 2;
+                var p = particlePool.get();
+                var sa = getSin(a), ca = getCos(a);
+                p.x = (px + ca * 20) | 0;
+                p.y = (py + sa * 20) | 0;
+                p.vx = ca * (5 + Math.random() * 4);
+                p.vy = sa * (5 + Math.random() * 4);
+                p.size = 2 + Math.random() * 2;
+                p.life = 0.9;
+                p.rot = 0;
+                p.rotVel = 0;
+                p.color = '#ffffff';
+                p.active = true;
+                particles.push(p);
+            }
+        }
+
+        function applyHealing(baseAmount) {
+            var heal = baseAmount;
+            if (state.combo.pendingHealBonus > 0) {
+                heal += baseAmount * state.combo.pendingHealBonus;
+                state.combo.pendingHealBonus = 0;
+            }
+            player.hp = Math.min(player.maxHp, player.hp + heal);
+        }
+
+        function updateComboUI(nowMs) {
+            if (!uiOverlay.comboPanel || !uiOverlay.comboText || !uiOverlay.comboTimerFill) return;
+
+            var remaining = Math.max(0, state.combo.activeUntilMs - nowMs);
+            var activeRatio = Math.min(1, remaining / state.combo.windowMs);
+            var show = remaining > 0 || state.combo.pendingHealBonus > 0;
+
+            if (show) {
+                uiOverlay.comboPanel.className = 'combo-panel active';
+            } else {
+                uiOverlay.comboPanel.className = 'combo-panel';
+            }
+
+            var bonusPct = Math.round(state.combo.pendingHealBonus * 100);
+            var title = STRINGS[state.lang].combo + ' x' + state.combo.multiplier;
+
+            if (bonusPct > 0) {
+                uiOverlay.comboText.innerHTML = title + ' | ' + STRINGS[state.lang].healBonus + bonusPct + '%';
+            } else {
+                uiOverlay.comboText.innerHTML = title;
+            }
+
+            uiOverlay.comboTimerFill.style.width = (activeRatio * 100).toFixed(1) + '%';
+
+            if (!show) {
+                state.combo.multiplier = 1;
+            }
+        }
+
+        function updateBuffsUI() {
+            var panel = document.getElementById('buffs-panel');
+            if (!panel) return;
+
+            panel.innerHTML = '';
+
+            if (state.buffs.crystalArmor) {
+                var icon = document.createElement('div');
+                icon.className = 'buff-icon';
+                icon.innerHTML = 'Shield';
+                icon.title = 'Crystal Armor (-20% ice damage)';
+                panel.appendChild(icon);
+            }
+        }
+
+        // ==================== MAIN UPDATE ====================
+
+        function update() {
+            if (state.isGameOver) return;
+            if (state.isShattering) {
+                updateShatter();
+                return;
+            }
+            if (!state.isStarted) return;
+
+            // Mint slowdown
+            if (state.mintSlowdown > 0) {
+                state.mintSlowdown--;
+                state.targetTimeScale = 0.05;
+            } else if (state.victoryTriggered) {
+                state.targetTimeScale = 0.2;
+            } else {
+                state.targetTimeScale = 1;
+            }
+
+            // Smooth timeScale transition
+            state.timeScale += (state.targetTimeScale - state.timeScale) * 0.1;
+
+            // Mint vignette effect
+            if (uiOverlay.mintVignette) {
+                var isMintActive = state.selectedCookie === 'mint' && state.mintSlowdown > 0;
+                if (isMintActive) {
+                    uiOverlay.mintVignette.style.display = 'block';
+                } else {
+                    uiOverlay.mintVignette.style.display = 'none';
+                }
+            }
+
+            state.time++;
+            state.currentRunStats.time++;
+
+            var nowMs = getNowMs();
+            if (state.combo.flashTimer > 0) state.combo.flashTimer--;
+            if (state.combo.waveTimer > 0) state.combo.waveTimer--;
+
+            var depthMm = Math.max(0, state.depth / 20);
+            var stats = COOKIES[state.selectedCookie] || COOKIES['classic'];
+            if (!stats) return; // Extreme safety
+
+            updateProgression(depthMm);
+
+            var isHyperVal = depthMm > 5000;
+            var fallAccel = (isHyperVal ? 0.55 : 0.45) * stats.weight;
+            var absorbPenalty = isHyperVal ? 3 : 6;
+            var isCracker = state.selectedCookie === 'cracker';
+
+            // Controls
+            if (state.isHoldingSpace) {
+                if (isCracker) {
+                    if (state.time % 12 === 0) {
+                        player.hp -= 4;
+                        AudioController.playClink();
+
+                        // Shoot salt projectiles
+                        for (var i = 0; i < 32; i++) {
+                            var angle = (i / 32) * Math.PI * 2;
+                            var s = projectilePool.get();
+                            s.x = player.x;
+                            s.y = player.y;
+                            s.vx = player.vx + getCos(angle) * 12;
+                            s.vy = player.vy + getSin(angle) * 12;
+                            s.life = 1.0;
+                            s.rot = Math.random() * Math.PI * 2;
+                            s.rotVel = 0.1 + Math.random() * 0.2;
+                            s.active = true;
+                            saltProjectiles.push(s);
+                        }
+                    }
+                    player.state = 'DRY';
+                } else if (stats.absorbSpeed > 0) {
+                    player.state = 'SOGGY';
+                    var antiGravityFactor = Math.max(0.35, 1 - Math.max(0, -player.vy) / 12);
+                    player.vy -= (0.62 / stats.weight) * antiGravityFactor;
+                    if (player.vy < -8.5) player.vy = -8.5;
+                    player.hp -= stats.absorbSpeed * absorbPenalty;
+                    player.absorption = Math.min(1, player.absorption + stats.absorbSpeed * (isHyperVal ? 0.5 : 1));
+
+                    if (state.time % 3 === 0 && milkTrail.length < maxTrail()) {
+                        var m = milkTrailPool.get();
+                        m.x = player.x;
+                        m.y = player.y;
+                        m.radius = player.radius * 0.8;
+                        m.life = 1;
+                        m.active = true;
+                        milkTrail.push(m);
+                    }
+                }
+            } else {
+                player.state = 'DRY';
+                player.absorption = Math.max(0, player.absorption - stats.absorbSpeed);
+            }
+
+            // Physics
+            player.vy += fallAccel * state.timeScale;
+            if (state.keys.left) player.vx -= stats.agility;
+            if (state.keys.right) player.vx += stats.agility;
+
+            player.vx *= 0.88;
+            player.vy *= 0.98;
+
+            var timeScaleMod = state.selectedCookie === 'mint' ? (0.15 + 0.85 * state.timeScale) : state.timeScale;
+            player.x += player.vx * timeScaleMod;
+            player.y += player.vy * timeScaleMod;
+            player.rotation += (player.vx * 0.015 + 0.015) * state.timeScale;
+
+            // Wall collision
+            var wallW = 15;
+            if (player.x < player.radius + wallW) {
+                player.x = player.radius + wallW;
+                player.hp -= 5;
+                triggerFlash();
+                AudioController.playClink();
+                player.vx = Math.abs(player.vx * 1.6) + 5;
+                if (player.state === 'DRY') emitCrumbs(player.x, player.y, 5);
+            } else if (player.x > logicalWidth - player.radius - wallW) {
+                player.x = logicalWidth - player.radius - wallW;
+                player.hp -= 5;
+                triggerFlash();
+                AudioController.playClink();
+                player.vx = -(Math.abs(player.vx * 1.6) + 5);
+                if (player.state === 'DRY') emitCrumbs(player.x, player.y, 5);
+            }
+
+            // Camera
+            var idealOffset = (window.gameHeight || 600) * 0.4375;
+            var speedShift = player.vy * 5;
+            var targetCamY = player.y - idealOffset + speedShift;
+            state.cameraY += (targetCamY - state.cameraY) * 0.1;
+
+            state.depth = player.y;
+            // Optimize UI update frequency
+            if (uiOverlay.depth && (state.time % 15 === 0)) {
+                uiOverlay.depth.innerHTML = Math.floor(depthMm);
+            }
+
+            // Death conditions
+            if (state.depth < -60) {
+                startShatterSequence();
+                return;
+            }
+            if (player.hp <= 0) {
+                gameOver(STRINGS[state.lang].mushTitle);
+                return;
+            }
+
+            // Removed the dynamic floorY check that caused premature death at ~133mm.
+            // The game should only end when HP reaches 0 or you win at 5000mm.
+
+            // Update HP bar
+            if (uiOverlay.hpBar) {
+                uiOverlay.hpBar.style.width = Math.max(0, (player.hp / player.maxHp) * 100) + '%';
+            }
+
+            // Update player radius
+            var radiusBase = player.baseRadius || 35;
+            var hpRatio = (player.hp || 1) / (player.maxHp || 100);
+            player.radius = (radiusBase * (0.6 + hpRatio * 0.4)) * (1 + (player.absorption || 0) * 0.3);
+
+            // Spawn entities
+            spawnEntity();
+
+            // Update entities
+            updateEntities();
+            updateSaltProjectiles();
+            updateParticles();
+            updateMilkTrail();
+
+            var depthFactor = Math.min(1, Math.max(0, (depthMm - 4000) / 1000));
+            updateComboUI(nowMs);
+            AudioController.updateFilters(player.state === 'SOGGY', depthFactor);
+        }
+
+        function updateProgression(depth) {
+            if (depth < 2000) {
+                state.currentStage = 'Fresh Milk';
+            } else if (depth < 4500) {
+                state.currentStage = 'Deep Cocoa';
+            } else if (depth < 5000) {
+                state.currentStage = 'The Void';
+            } else {
+                state.currentStage = 'Enlightenment';
+            }
+
+            // Update vignette
+            if (uiOverlay.vignette) {
+                if (depth > 4000) {
+                    var v = Math.min(0.8, (depth - 4000) / 1000 * 0.8);
+                    uiOverlay.vignette.style.background = '#000000';
+                    uiOverlay.vignette.style.filter = 'alpha(opacity=' + (v * 100) + ')';
+                } else {
+                    uiOverlay.vignette.style.background = 'none';
+                }
+            }
+
+            if (depth >= 5000 && !state.victoryTriggered) {
+                triggerVictory();
+            }
+        }
+
+        function triggerVictory() {
+            state.victoryTriggered = true;
+            state.isChampion = true;
+            CookieStorage.set('dunk_isChampion', 'true');
+
+            if (uiOverlay.victory) {
+                uiOverlay.victory.style.display = 'block';
+            }
+
+            state.timeScale = 0.2;
+
+            setTimeout(function () {
+                state.timeScale = 1;
+            }, 3000);
+        }
+
+        function spawnEntity() {
+            if (Math.random() > 0.94 && state.isStarted && !state.isShattering) {
+                var depth = Math.max(0, state.depth / 20);
+                if (Math.random() < (depth > 2000 ? 0.92 : 0.94)) {
+                    var type = Math.random() < 0.12 ? 'sugar' : (Math.random() < 0.24 ? 'bubble' : 'ice');
+                    entities.push({
+                        x: 60 + Math.random() * (logicalWidth - 120),
+                        y: state.cameraY + (window.gameHeight || 600) + 200,
+                        type: type,
+                        vx: 0,
+                        vy: 0,
+                        radius: type === 'ice' ? (15 + Math.random() * 65) : (type === 'sugar' ? 25 : 35),
+                        rotation: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+        }
+
+        function emitCrumbs(x, y, count) {
+            if (window.LegacyOptions && !window.LegacyOptions.particlesEnabled) return;
+            count = Math.min(count, Math.max(0, maxParticles() - particles.length));
+            for (var i = 0; i < count; i++) {
+                var p = particlePool.get();
+                p.x = x;
+                p.y = y;
+                p.vx = (Math.random() - 0.5) * 10;
+                p.vy = (Math.random() - 0.5) * 10;
+                p.size = 2 + Math.random() * 4;
+                p.life = 1;
+                p.rot = Math.random() * 6;
+                p.rotVel = (Math.random() - 0.5) * 0.2;
+                p.color = '';
+                p.active = true;
+                particles.push(p);
+            }
+        }
+
+        function triggerFlash() {
+            var container = document.getElementById('game-container');
+            if (container) {
+                container.className = 'damage-flash';
+                setTimeout(function () {
+                    container.className = '';
+                }, 300);
+            }
+        }
+
+        function updateEntities() {
+            var height = window.gameHeight || 600;
+
+            for (var i = entities.length - 1; i >= 0; i--) {
+                var ent = entities[i];
+                ent.x += ent.vx * state.timeScale;
+                ent.y += ent.vy * state.timeScale;
+                ent.vx *= 0.95;
+                ent.vy *= 0.95;
+
+                // Wall collision for blasted ice
+                if (ent.type === 'ice' && ent.wasBlastPushed) {
+                    var wallW = 15;
+                    var hitWall = false;
+
+                    if (ent.x < wallW + ent.radius) {
+                        ent.x = wallW + ent.radius;
+                        ent.vx = Math.abs(ent.vx) * 0.6;
+                        hitWall = true;
+                    } else if (ent.x > logicalWidth - wallW - ent.radius) {
+                        ent.x = logicalWidth - wallW - ent.radius;
+                        ent.vx = -Math.abs(ent.vx) * 0.6;
+                        hitWall = true;
+                    }
+
+                    if (hitWall) {
+                        ent.radius *= 0.9;
+                        if (ent.radius < 12) {
+                            entities.splice(i, 1);
+                            continue;
+                        }
+                    }
+                }
+
+                // Player collision
+                var dx = player.x - ent.x;
+                var dy = player.y - ent.y;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < player.radius + ent.radius) {
+                    handleCollision(ent, i);
+                } else if (ent.y < state.cameraY - 200) {
+                    entities.splice(i, 1);
+                }
+            }
+        }
+
+        function updateSaltProjectiles() {
+            var s, i, j, ent, dx, dy, dist, hit, depthMm, k, p;
+            for (i = saltProjectiles.length - 1; i >= 0; i--) {
+                s = saltProjectiles[i];
+
+                if (!s.history) s.history = [];
+                s.history.unshift({ x: s.x, y: s.y });
+                if (s.history.length > 5) s.history.pop();
+
+                s.x += s.vx * state.timeScale;
+                s.y += s.vy * state.timeScale;
+                s.life -= 0.015 * state.timeScale;
+                s.rot += s.rotVel * state.timeScale;
+
+                if (s.life <= 0) {
+                    projectilePool.recycle(saltProjectiles.splice(i, 1)[0]);
+                    continue;
+                }
+
+                // Check collision with ice
+                hit = false;
+                depthMm = Math.max(0, state.depth / 20);
+
+                for (j = entities.length - 1; j >= 0; j--) {
+                    ent = entities[j];
+                    dx = s.x - ent.x;
+                    dy = s.y - ent.y;
+                    dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (ent.type === 'ice' && dist < ent.radius + 15) {
+                        ent.radius -= 5;
+
+                        for (k = 0; k < (depthMm > 4000 ? 6 : 4); k++) {
+                            p = particlePool.get();
+                            p.x = s.x; p.y = s.y;
+                            p.vx = (Math.random() - 0.5) * 10;
+                            p.vy = (Math.random() - 0.5) * 10;
+                            p.size = 2;
+                            p.life = 0.7;
+                            p.rot = 0;
+                            p.rotVel = 0;
+                            p.color = '#FF5722';
+                            p.active = true;
+                            particles.push(p);
+                        }
+
+                        if (ent.radius < 15) {
+                            entities.splice(j, 1);
+                        }
+
+                        hit = true;
+                        break;
+                    }
+                }
+
+                if (hit) {
+                    projectilePool.recycle(saltProjectiles.splice(i, 1)[0]);
+                }
+            }
+        }
+
+        function updateParticles() {
+            var p, i;
+            if (window.LegacyOptions && !window.LegacyOptions.particlesEnabled) return;
+
+            for (i = particles.length - 1; i >= 0; i--) {
+                p = particles[i];
+                p.vy += 0.2 * state.timeScale;
+                p.x += p.vx * state.timeScale;
+                p.y += p.vy * state.timeScale;
+                p.life -= 0.02 * state.timeScale;
+
+                if (p.life <= 0) {
+                    particlePool.recycle(particles.splice(i, 1)[0]);
+                }
+            }
+        }
+
+        function updateMilkTrail() {
+            var i, m;
+            for (i = milkTrail.length - 1; i >= 0; i--) {
+                m = milkTrail[i];
+                m.life -= 0.03 * state.timeScale;
+                if (m.life <= 0) {
+                    milkTrailPool.recycle(milkTrail.splice(i, 1)[0]);
+                }
+            }
+        }
+
+        function handleCollision(ent, idx) {
+            var nowMs = getNowMs();
+            var angle = Math.atan2(ent.y - player.y, ent.x - player.x);
+
+            if (ent.type === 'ice') {
+                var r = ent.radius;
+                state.currentRunStats.collisions++;
+                state.stats.collisions++;
+
+                // Mint ability
+                if (state.selectedCookie === 'mint' && state.mintSlowdown <= 0) {
+                    state.mintSlowdown = 120;
+                }
+
+                var damage = 10;
+                if (r < 25) damage = 10;
+                else if (r < 50) damage = 25;
+                else damage = 15;
+
+                if (state.buffs.crystalArmor) damage *= 0.8;
+
+                // Break large ice when moving fast
+                if (r >= 50 && Math.abs(player.vy) > 12) {
+                    state.currentRunStats.iceBroken++;
+                    state.stats.iceBroken++;
+                    state.buffs.crystalArmor = true;
+                    updateBuffsUI();
+                    AudioController.playShatter();
+                    registerCollisionCombo(nowMs);
+
+                    if (player.state === 'DRY') emitCrumbs(player.x, player.y, 15);
+
+                    // Split ice
+                    for (var i = 0; i < 3; i++) {
+                        entities.push({
+                            x: ent.x + (Math.random() - 0.5) * 40,
+                            y: ent.y + (Math.random() - 0.5) * 40,
+                            type: 'ice',
+                            radius: 20,
+                            vx: (Math.random() - 0.5) * 15,
+                            vy: (Math.random() - 0.5) * 15,
+                            rotation: Math.random() * 6
+                        });
+                    }
+
+                    entities.splice(idx, 1);
+                    return;
+                }
+
+                player.hp -= damage;
+                triggerFlash();
+                AudioController.playClink();
+                registerCollisionCombo(nowMs);
+
+                if (player.state === 'DRY') {
+                    emitCrumbs(player.x, player.y, r < 25 ? 8 : 12);
+                }
+
+                if (r < 25) {
+                    entities.splice(idx, 1);
+                } else if (r < 50) {
+                    ent.vx = Math.cos(angle) * 25;
+                    ent.vy = Math.sin(angle) * 25;
+                    player.vx = -Math.cos(angle) * 10;
+                } else {
+                    ent.vy = player.vy * 0.8;
+                    ent.y = player.y + player.radius + ent.radius - 5;
+                }
+            } else if (ent.type === 'sugar') {
+                state.currentRunStats.sugar++;
+                state.stats.sugarCollected++;
+                applyHealing(20);
+                registerSugarCombo(nowMs);
+                AudioController.playThud();
+                entities.splice(idx, 1);
+            } else if (ent.type === 'bubble') {
+                state.currentRunStats.bubbles++;
+                state.stats.bubblesCollected++;
+                applyHealing(8);
+                player.vy = -18;
+                AudioController.playThud();
+                entities.splice(idx, 1);
+            }
+        }
+
+        function startShatterSequence() {
+            state.isShattering = true;
+            state.isStarted = false;
+            if (uiOverlay.hud) uiOverlay.hud.style.display = 'none';
+
+            var height = window.gameHeight || 600;
+            player.y = height * 0.6;
+            player.x = logicalWidth / 2;
+            player.vy = -40;
+            player.vx = (Math.random() - 0.5) * 12;
+        }
+
+        function updateShatter() {
+            state.shatterProgress++;
+            player.vy += 0.8;
+            player.x += player.vx;
+            player.y += player.vy;
+
+            var height = window.gameHeight || 600;
+            var floorL = height - 100;
+
+            if (player.y > floorL && player.shards.length === 0) {
+                player.y = floorL;
+                AudioController.playShatter();
+
+                var shardCount = (window.LegacyOptions && window.LegacyOptions.maxParticles !== undefined) ? window.LegacyOptions.maxParticles + 5 : 60;
+                for (var i = 0; i < shardCount; i++) {
+                    player.shards.push({
+                        x: player.x,
+                        y: player.y,
+                        vx: (Math.random() - 0.5) * 30,
+                        vy: -Math.random() * 25,
+                        size: 3 + Math.random() * 8,
+                        angle: Math.random() * 6,
+                        rot: (Math.random() - 0.5) * 0.4
+                    });
+                }
+            }
+
+            // Update shards
+            for (var i = 0; i < player.shards.length; i++) {
+                var s = player.shards[i];
+                s.vy += 0.8;
+                s.x += s.vx;
+                s.y += s.vy;
+                s.angle += s.rot;
+
+                if (s.y > floorL) {
+                    s.y = floorL;
+                    s.vy *= -0.3;
+                    s.vx *= 0.6;
+                }
+            }
+
+            if (state.shatterProgress > 320 && !state.isGameOver) {
+                gameOver(STRINGS[state.lang].surfTitle);
+            }
+        }
+
+        function gameOver(reason) {
+            if (state.isGameOver) return;
+
+            state.isGameOver = true;
+            state.isStarted = false;
+            state.stats.gamesPlayed++;
+
+            if (uiOverlay.hud) uiOverlay.hud.style.display = 'none';
+            showScreen('game-over-screen');
+
+            var mm = Math.max(0, Math.floor(state.depth / 20));
+
+            if (uiOverlay.deathReason) {
+                var title = mm >= 5000 ? STRINGS[state.lang].champTitle + ' ' : '';
+                uiOverlay.deathReason.innerHTML = title + reason;
+            }
+
+            if (uiOverlay.finalDepth) {
+                uiOverlay.finalDepth.innerHTML = STRINGS[state.lang].finalDepth + mm + STRINGS[state.lang].mm;
+            }
+
+            // Run stats
+            var statsList = document.getElementById('run-stats');
+            if (statsList) {
+                var s = state.currentRunStats;
+                statsList.innerHTML =
+                    '<div class="stat-row"><span>Time:</span> <span class="stat-val">' + Math.floor(s.time / 60) + 's</span></div>' +
+                    '<div class="stat-row"><span>Sugar:</span> <span class="stat-val">' + s.sugar + '</span></div>' +
+                    '<div class="stat-row"><span>Ice Broken:</span> <span class="stat-val">' + s.iceBroken + '</span></div>' +
+                    '<div class="stat-row"><span>Collisions:</span> <span class="stat-val">' + s.collisions + '</span></div>';
+            }
+
+            saveHighScore(mm);
+            displayHighScores();
+
+            var highScores = document.getElementById('high-scores');
+            if (highScores) highScores.style.display = 'block';
+
+            AudioController.pauseMusic();
+        }
+
+        // Initialize game on load - IE8 compatible
+        if (window.attachEvent) {
+            window.attachEvent('onload', init);
+        } else if (window.addEventListener) {
+            window.addEventListener('load', init, false);
+        } else {
+            init();
+        }
+
+        function saveHighScore(score) {
+            var scores = CookieStorage.getJSON('dunk_scores', []);
+            scores.push({
+                date: new Date().toLocaleDateString(),
+                score: score,
+                cookie: state.selectedCookie
+            });
+
+            // Sort by score descending
+            scores.sort(function (a, b) { return b.score - a.score; });
+
+            // Keep only top 5
+            scores = scores.slice(0, 5);
+
+            CookieStorage.setJSON('dunk_scores', scores);
+        }
+
+        function displayHighScores() {
+            var list = document.getElementById('score-list');
+            if (!list) return;
+
+            var scores = CookieStorage.getJSON('dunk_scores', []);
+            var html = '';
+
+            for (var i = 0; i < scores.length; i++) {
+                var s = scores[i];
+                html += '<li><span>' + s.score + 'mm (' + s.cookie + ')</span> <span>' + s.date + '</span></li>';
+            }
+
+            list.innerHTML = html;
+        }
+
+        // ==================== DRAWING ====================
+
+        function getLiquidColor(depthMm) {
+            if (depthMm < 2000) return COLORS.milk;
+
+            if (depthMm < 4500) {
+                var ratio = (depthMm - 2000) / 2500;
+                return interpolateColor(COLORS.milk, STAGES.COCOA.color, ratio);
+            }
+
+            var ratio = Math.min(1, (depthMm - 4500) / 1000);
+            return interpolateColor(STAGES.COCOA.color, STAGES.VOID.color, ratio);
+        }
+
+        function interpolateColor(c1, c2, r) {
+            var r1 = parseInt(c1.slice(1, 3), 16);
+            var g1 = parseInt(c1.slice(3, 5), 16);
+            var b1 = parseInt(c1.slice(5, 7), 16);
+
+            var r2 = parseInt(c2.slice(1, 3), 16);
+            var g2 = parseInt(c2.slice(3, 5), 16);
+            var b2 = parseInt(c2.slice(5, 7), 16);
+
+            var rf = Math.round(r1 + (r2 - r1) * r);
+            var gf = Math.round(g1 + (g2 - g1) * r);
+            var bf = Math.round(b1 + (b2 - b1) * r);
+
+            return 'rgb(' + rf + ',' + gf + ',' + bf + ')';
+        }
+
+        function draw() {
+            var width = logicalWidth;
+            var height = window.gameHeight || 600;
+
+            if (state.isShattering) {
+                drawShatterScene();
+                return;
+            }
+
+            var depthMm = Math.max(0, state.depth / 20);
+            var liquidColor = getLiquidColor(depthMm);
+            var camY = state.cameraY || 0;
+
+            canvas.style.backgroundColor = liquidColor;
+
+            // Background elements
+            var bgStats = COOKIES[state.selectedCookie] || COOKIES['classic'];
+            syncDOMArray(backgroundElements, domEls.bgElements, '10');
+            for (var i = 0; i < backgroundElements.length; i++) {
+                var el = backgroundElements[i];
+                var ey = (el.y % 5000) - 500;
+                var camYOffset = camY * el.speedScale;
+                var modOffset = ((camYOffset % 5000) + 5000) % 5000;
+                var e_screen_y = ey - modOffset;
+
+                var iterations = 0;
+                while (e_screen_y < -500 && iterations < 10) { e_screen_y += 5000; iterations++; }
+                iterations = 0;
+                while (e_screen_y > height + 500 && iterations < 10) { e_screen_y -= 5000; iterations++; }
+
+                var op = el.opacity * (depthMm > 4000 ? 0.2 : 1);
+                drawDivCentered(domEls.bgElements[i], el.x, e_screen_y, el.type === 'spoon' ? el.size / 2 : el.size * 2, bgStats.color, '50%', op);
+            }
+
+            // Milk trail
+            syncDOMArray(milkTrail, domEls.trail, '20');
+            for (var i = 0; i < milkTrail.length; i++) {
+                var m = milkTrail[i];
+                var my = m.y - camY;
+                if (my < -50 || my > height + 50) continue;
+                drawDivCentered(domEls.trail[i], m.x, my, m.radius * 2, '#ffffff', '50%', m.life * 0.3);
+            }
+
+            // Entities
+            syncDOMArray(entities, domEls.entities, '30');
+            for (var i = 0; i < entities.length; i++) {
+                var ent = entities[i];
+                var ey_p = ent.y - camY;
+                if (ey_p < -200 || ey_p > height + 200) continue;
+
+                var c = COLORS.ice, r = '0%';
+                if (ent.type === 'sugar') { c = COLORS.sugar; r = '4px'; }
+                else if (ent.type === 'bubble') { c = 'rgba(178,235,242,0.6)'; r = '50%'; }
+                drawDivCentered(domEls.entities[i], ent.x, ey_p, ent.radius * 2, c, r, 1);
+            }
+
+            // Particles
+            if (window.LegacyOptions && window.LegacyOptions.particlesEnabled !== false) {
+                syncDOMArray(particles, domEls.particles, '40');
+                for (var i = 0; i < particles.length; i++) {
+                    var p = particles[i];
+                    var py_p = p.y - camY;
+                    if (py_p < -50 || py_p > height + 50) continue;
+                    drawDivCentered(domEls.particles[i], p.x, py_p, p.size * 2, p.color || bgStats.color, '0%', p.life);
+                }
+            }
+
+            // Player
+            var stats = COOKIES[state.selectedCookie] || COOKIES['classic'];
+            var abs = player.absorption || 0;
+            var py_screen = player.y - camY;
+
+            var pColor = stats.color;
+            if (depthMm > 5000) pColor = '#ffffff';
+            else if (abs > 0.05) pColor = stats.softColor;
+
+            var pr = player.radius || 35;
+            if (state.selectedCookie === 'cracker') pr += 5;
+
+            drawDivCentered(playerDiv, player.x, py_screen, pr * 2, pColor, state.selectedCookie === 'cracker' ? '0%' : '50%', 1);
+
+            // Wobble emulation
+            if (state.selectedCookie !== 'cracker' && abs > 0.05) {
+                var wobble = Math.sin(state.time * 0.1) * (abs * 8);
+                playerDiv.style.width = Math.floor(pr * 2 + wobble) + 'px';
+                playerDiv.style.height = Math.floor(pr * 2 - wobble) + 'px';
+            }
+
+            // Flash effect
+            if (state.combo.flashTimer > 0) {
+                playerDiv.style.border = '4px solid #ffe066';
+            } else if (state.combo.waveTimer > 0) {
+                playerDiv.style.border = '4px solid #ffffff';
+            } else {
+                playerDiv.style.border = 'none';
+            }
+        }
+
+        function drawShatterScene() {
+            canvas.style.backgroundColor = COLORS.roomBg;
+
+            // Hide everything except player shards
+            for (var i = 0; i < domEls.bgElements.length; i++) domEls.bgElements[i].style.display = 'none';
+            for (var i = 0; i < domEls.trail.length; i++) domEls.trail[i].style.display = 'none';
+            for (var i = 0; i < domEls.entities.length; i++) domEls.entities[i].style.display = 'none';
+            for (var i = 0; i < domEls.particles.length; i++) domEls.particles[i].style.display = 'none';
+
+            if (player.shards.length === 0) {
+                var pColor = COOKIES[state.selectedCookie] ? COOKIES[state.selectedCookie].color : '#3c2a21';
+                drawDivCentered(playerDiv, player.x, player.y, player.radius * 2, pColor, state.selectedCookie === 'cracker' ? '0%' : '50%', 1);
+            } else {
+                playerDiv.style.display = 'none';
+                syncDOMArray(player.shards, domEls.shards, '50');
+                for (var i = 0; i < player.shards.length; i++) {
+                    var s = player.shards[i];
+                    drawDivCentered(domEls.shards[i], s.x, s.y, s.size * 2, COOKIES[state.selectedCookie].color, '0%', 1);
+                }
+            }
+        }
+
+        // ==================== GAME LOOP ====================
+
+        function gameLoop() {
+            try {
+                PERF.fpsCount++;
+                update();
+                draw();
+                animationId = window.requestAnimationFrame(gameLoop);
+            } catch (err) {
+                // Error logging removed for IE6 compatibility
+                // Try to recover
+                animationId = window.requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function stopGameLoop() {
+            if (animationId !== null) {
+                window.cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        }
+
+    </script>
+</body>
+
+</html>

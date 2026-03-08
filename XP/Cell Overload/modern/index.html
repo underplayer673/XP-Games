@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- Updated viewport to prevent zooming and ensure proper scaling -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cell Overload | Перегрузка клетки</title>
+    <meta name="description" content="Пошаговая стратегия на сетке с цепными реакциями. Мультиплеер и умный ИИ.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+    <div class="settings-panel">
+        <button id="tutorialBtn" class="icon-btn"><span>?</span></button>
+        <button id="langBtn" class="icon-btn"><span>EN</span></button>
+        <button id="toggleMusicBtn" class="icon-btn">
+            <span id="musicIcon">🔇</span>
+        </button>
+    </div>
+
+    <audio id="bgMusic" loop autoplay>
+        <source src="Music.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="game-container">
+        <header>
+            <h1 class="glitch" data-text="CELL OVERLOAD">CELL OVERLOAD</h1>
+            <div class="status-panel">
+                <div id="eloDisplay" class="elo-badge">ELO: 1200</div>
+                <div class="turn-indicator"><span id="txtTurn">Ход</span>: <span class="player-name">Синие</span></div>
+                <div class="score-board">
+                    <div class="score blue">Blue: <span id="blueScore">0</span></div>
+                    <div class="score red">Red: <span id="redScore">0</span></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="setup-screen" id="setupScreen">
+            <!-- Game Mode Selection -->
+            <div class="setting-group">
+                <h3 id="txtMode">Режим игры</h3>
+                <div class="options-row">
+                    <button class="opt-btn active" data-mode="pve" id="btnPvE">Игрок vs ИИ</button>
+                    <button class="opt-btn" data-mode="pvp" id="btnPvP">1 vs 1 (ПК)</button>
+                </div>
+            </div>
+
+            <!-- Player Side Selection (Only for PvE) -->
+            <div class="setting-group" id="sideSelection">
+                <h3 id="txtSide">Ваша сторона</h3>
+                <div class="options-row">
+                    <button class="opt-btn active" data-side="blue" id="btnBlueSide">Синие (1-й)</button>
+                    <button class="opt-btn" data-side="red" id="btnRedSide">Красные (2-й)</button>
+                </div>
+            </div>
+
+            <!-- AI Difficulty -->
+            <div class="setting-group" id="diffSelection">
+                <h3 id="txtChooseDiff">Сложность ИИ</h3>
+                <div class="difficulty-options">
+                    <button class="diff-btn" data-level="1">1</button>
+                    <button class="diff-btn" data-level="2">2</button>
+                    <button class="diff-btn active" data-level="3">3</button>
+                    <button class="diff-btn" data-level="4">4</button>
+                    <button class="diff-btn" data-level="5">5</button>
+                    <button class="diff-btn" data-level="6">6</button>
+                    <button class="diff-btn" data-level="7">7</button>
+                </div>
+                <div id="diffDescription" class="diff-desc">Нормально</div>
+            </div>
+
+            <button id="startGameBtn" class="main-btn">НАЧАТЬ БИТВУ</button>
+        </div>
+
+        <div class="board-container hidden" id="boardContainer">
+            <div id="gameBoard" class="game-grid"></div>
+        </div>
+
+        <div class="overlay hidden" id="gameOverScreen">
+            <div class="winner-msg">
+                <h2 id="winnerText"></h2>
+                <button id="restartBtn" class="main-btn">МЕНЮ</button>
+            </div>
+        </div>
+
+        <div class="overlay hidden" id="tutorialScreen">
+            <div class="tutorial-card">
+                <h2 id="tutTitle">Как играть</h2>
+                <div id="tutContent" class="tut-content"></div>
+                <button id="closeTutorialBtn" class="main-btn">OK</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

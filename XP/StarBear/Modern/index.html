@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>StarBear: Hardcore Update</title>
+    <style>
+        :root {
+            --accent: #00ffcc;
+            --bg: #05070a;
+            --danger: #ff0055;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg);
+            font-family: 'Courier New', monospace;
+            touch-action: none;
+            user-select: none;
+            color: white;
+        }
+
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        /* UI LAYOUT */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            z-index: 10;
+            transition: opacity 0.2s;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .screen.game-ui {
+            background: transparent;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px var(--accent);
+            margin: 0 0 10px 0;
+        }
+
+        h2 {
+            font-size: 16px;
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+        .currency {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 16px;
+            color: #ffd700;
+            font-weight: bold;
+            border: 1px solid #ffd700;
+            padding: 5px 10px;
+        }
+
+        /* BTNS */
+        .btn {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid white;
+            color: white;
+            padding: 15px 0;
+            width: 260px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 8px;
+            text-transform: uppercase;
+            transition: 0.1s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+            background: white;
+            color: black;
+        }
+
+        .btn.primary {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+        }
+
+        .btn.primary:hover {
+            background: var(--accent);
+            color: black;
+        }
+
+        /* SHOP */
+        .shop-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .shop-item {
+            border: 1px solid #333;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .shop-item.selected {
+            border-color: var(--accent);
+            background: rgba(0, 255, 204, 0.05);
+        }
+
+        .item-info b {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 16px;
+        }
+
+        .item-info span {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .item-cost {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        /* HUD */
+        #energy-bar-container {
+            width: 200px;
+            height: 6px;
+            background: #222;
+            border: 1px solid #555;
+            margin-bottom: 50px;
+            pointer-events: auto;
+            position: relative;
+        }
+
+        #energy-fill {
+            width: 100%;
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.1s;
+        }
+
+        #sprint-toggle {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 64px;
+            height: 64px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            border: 2px solid #555;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            color: #ccc;
+        }
+
+        #sprint-toggle.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 255, 204, 0.1);
+        }
+
+        .shield-status {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #4facfe;
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 0 0 5px #4facfe;
+            display: none;
+            letter-spacing: 1px;
+        }
+
+        .shield-status.broken {
+            color: #555;
+            text-shadow: none;
+        }
+
+        /* Level Cards */
+        .level-card {
+            border: 1px solid #444;
+            padding: 15px;
+            margin: 5px;
+            width: 280px;
+            cursor: pointer;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .level-card:hover {
+            border-color: white;
+        }
+
+        .level-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+            color: #ddd;
+        }
+
+        .level-meta {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- MENUS -->
+    <div id="screen-menu" class="screen">
+        <h1>StarBear</h1>
+        <h2>Hardcore Odyssey</h2>
+        <div class="currency">DUST: <span id="menu-dust">0</span></div>
+        <button class="btn primary" onclick="App.showLevelSelect()">Start Mission</button>
+        <button class="btn" onclick="App.showShop()">Hangar</button>
+    </div>
+
+    <div id="screen-shop" class="screen hidden">
+        <h1>Bears</h1>
+        <div class="currency">DUST: <span id="shop-dust">0</span></div>
+        <div class="shop-grid" id="shop-list"></div>
+        <button class="btn" onclick="App.showMenu()" style="margin-top:20px">Back</button>
+    </div>
+
+    <div id="screen-levels" class="screen hidden">
+        <h1>Select Zone</h1>
+        <div id="level-list"></div>
+        <button class="btn" onclick="App.showMenu()" style="margin-top:20px">Back</button>
+    </div>
+
+    <!-- HUD -->
+    <div id="screen-hud" class="screen game-ui hidden">
+        <div style="width:100%; padding:15px; display:flex; justify-content:space-between;">
+            <div id="hud-timer" style="font-size:20px; font-weight:bold;">00:00</div>
+        </div>
+
+        <div id="hud-shield" class="shield-status">SHIELD ONLINE</div>
+
+        <div id="energy-bar-container">
+            <div id="energy-fill"></div>
+        </div>
+        <div id="sprint-toggle">SPRINT</div>
+    </div>
+
+    <!-- RESULT -->
+    <div id="screen-result" class="screen hidden" style="background: rgba(0,0,0,0.9);">
+        <h1 id="res-title">DEAD</h1>
+        <h2 id="res-reason" style="color:#aaa">...</h2>
+        <div id="res-reward" style="font-size:24px; color:#ffd700; margin-bottom:30px"></div>
+        <button class="btn primary" onclick="App.restart()">RETRY (Random Gen)</button>
+        <button class="btn" onclick="App.showMenu()">MENU</button>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+
+        /** CONFIGURATION (HARDCORE MODE) */
+        const CONFIG = {
+            bears: {
+                default: { name: "Standard", cost: 0, desc: "No special abilities.", color: '#eee' },
+                tank: { name: "Tank Bear", cost: 150, desc: "Shield blocks 1 hit. Recharges on SAFE stars.", color: '#4facfe' },
+                flow: { name: "Flow Bear", cost: 300, desc: "+25% Move Speed.", color: '#00f260' },
+                oracle: { name: "Oracle Bear", cost: 500, desc: "Sees Traps & Longer Comet Forecast.", color: '#b200ff' }
+            },
+            worlds: [
+                // Increased speeds and density for difficulty
+                { id: 0, name: "Nebula", height: 5000, cometSpeed: 180, cometGap: 250, fakes: false, reward: 30 },
+                { id: 1, name: "Asteroids", height: 7000, cometSpeed: 280, cometGap: 180, fakes: true, reward: 80 },
+                { id: 2, name: "Neon Storm", height: 10000, cometSpeed: 400, cometGap: 140, fakes: true, reward: 200 }
+            ],
+            game: {
+                maxDist: 340, // Max jump distance
+                snap: 50,
+                regen: 20,
+                drain: 45 // Sprint drains fast
+            }
+        };
+
+        /** DATA PERSISTENCE */
+        const Data = {
+            dust: 0, unlocked: ['default'], selected: 'default',
+            load() {
+                const d = localStorage.getItem('starbear_hc');
+                if (d) Object.assign(this, JSON.parse(d));
+                else this.dust = 100; // Starter bonus
+            },
+            save() {
+                localStorage.setItem('starbear_hc', JSON.stringify(this));
+                App.updateUI();
+            }
+        };
+
+        /** APP CONTROLLER */
+        const App = {
+            game: null,
+            worldId: 0,
+
+            init() {
+                Data.load();
+                this.updateUI();
+                this.renderLevels();
+
+                // Input Binding
+                const sBtn = document.getElementById('sprint-toggle');
+                const handleSprint = (e) => { e.stopPropagation(); if (this.game) this.game.toggleSprint(); };
+                sBtn.addEventListener('mousedown', handleSprint);
+                sBtn.addEventListener('touchstart', handleSprint);
+            },
+
+            updateUI() {
+                ['menu-dust', 'shop-dust'].forEach(id => document.getElementById(id).innerText = Data.dust);
+                this.renderShop();
+            },
+
+            showScreen(id) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+                document.getElementById(id).classList.remove('hidden');
+                if (id !== 'screen-hud' && this.game) {
+                    this.game.destroy();
+                    this.game = null;
+                }
+            },
+            showMenu() { this.showScreen('screen-menu'); },
+            showShop() { this.showScreen('screen-shop'); },
+            showLevelSelect() { this.showScreen('screen-levels'); },
+
+            renderShop() {
+                const list = document.getElementById('shop-list');
+                list.innerHTML = '';
+                Object.keys(CONFIG.bears).forEach(k => {
+                    const b = CONFIG.bears[k];
+                    const locked = !Data.unlocked.includes(k);
+                    const active = Data.selected === k;
+
+                    const el = document.createElement('div');
+                    el.className = `shop-item ${active ? 'selected' : ''}`;
+                    el.innerHTML = `
+                <div class="item-info"><b style="color:${b.color}">${b.name}</b><span>${b.desc}</span></div>
+                <div class="item-cost">${active ? 'EQUIPPED' : (locked ? b.cost : 'SELECT')}</div>
+            `;
+                    el.onclick = () => {
+                        if (active) return;
+                        if (locked) {
+                            if (Data.dust >= b.cost) {
+                                Data.dust -= b.cost;
+                                Data.unlocked.push(k);
+                                Data.selected = k;
+                                Data.save();
+                            }
+                        } else {
+                            Data.selected = k;
+                            Data.save();
+                        }
+                    };
+                    list.appendChild(el);
+                });
+            },
+
+            renderLevels() {
+                const list = document.getElementById('level-list');
+                list.innerHTML = '';
+                CONFIG.worlds.forEach(w => {
+                    const el = document.createElement('div');
+                    el.className = 'level-card';
+                    el.innerHTML = `<h3>${w.name}</h3><div class="level-meta">Height: ${w.height}px | Traps: ${w.fakes ? 'YES' : 'NO'}</div>`;
+                    el.onclick = () => this.start(w.id);
+                    list.appendChild(el);
+                });
+            },
+
+            start(wid) {
+                this.worldId = wid;
+                this.showScreen('screen-hud');
+                this.game = new Game(CONFIG.worlds[wid], Data.selected);
+            },
+
+            restart() { this.start(this.worldId); },
+
+            endGame(win, reason, time) {
+                this.showScreen('screen-result');
+                const t = document.getElementById('res-title');
+                const r = document.getElementById('res-reward');
+
+                if (win) {
+                    t.innerText = "MISSION COMPLETE";
+                    t.style.color = "#00ffcc";
+                    const rew = CONFIG.worlds[this.worldId].reward;
+                    r.innerText = `+${rew} DUST`;
+                    Data.dust += rew;
+                    Data.save();
+                    document.getElementById('res-reason').innerText = `Time: ${time}`;
+                } else {
+                    t.innerText = "KILLED IN ACTION";
+                    t.style.color = "#ff0055";
+                    r.innerText = "";
+                    document.getElementById('res-reason').innerText = reason;
+                }
+            }
+        };
+
+        /** GAME ENGINE */
+        const Vec = { dist: (x1, y1, x2, y2) => Math.hypot(x2 - x1, y2 - y1), lerp: (a, b, t) => a + (b - a) * t };
+
+        class Game {
+            constructor(world, bearKey) {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.resize();
+                window.onresize = () => this.resize();
+
+                this.world = world;
+                this.bearKey = bearKey;
+                this.bearStats = this.getStats(bearKey);
+
+                // Procedural Generation (Fresh every time)
+                this.stars = this.genLevel();
+                this.bear = new Bear(this.stars[0], this.bearStats);
+                this.comets = this.genComets();
+
+                this.cameraY = 0;
+                this.time = 0;
+                this.running = true;
+                this.lastTime = performance.now();
+
+                this.input = { x: 0, y: 0, down: false, drag: null };
+                this.bindInput();
+
+                // UI Reset
+                document.getElementById('hud-shield').style.display = this.bear.shieldMax > 0 ? 'block' : 'none';
+                document.getElementById('hud-shield').className = 'shield-status';
+                document.getElementById('hud-shield').innerText = 'SHIELD ONLINE';
+                document.getElementById('sprint-toggle').classList.remove('active');
+
+                this.loop();
+            }
+
+            getStats(k) {
+                // Hardcore Stats
+                let s = { speed: 130, shield: 0, oracle: false };
+                if (k === 'flow') s.speed = 175;
+                if (k === 'tank') s.shield = 1;
+                if (k === 'oracle') s.oracle = true;
+                return s;
+            }
+
+            destroy() { this.running = false; window.onresize = null; }
+            resize() { this.canvas.width = window.innerWidth; this.canvas.height = window.innerHeight; }
+
+            genLevel() {
+                const s = [];
+                let y = this.canvas.height - 150;
+                let x = this.canvas.width / 2;
+
+                // 1. Start
+                s.push(new Star(x, y, 'start'));
+
+                // 2. Spine (Safe Path)
+                while (y > -this.world.height) {
+                    y -= (150 + Math.random() * 100); // Tighter jumps
+                    let range = 250;
+                    let nx = Math.max(40, Math.min(this.canvas.width - 40, x + (Math.random() - 0.5) * range));
+                    x = nx;
+                    s.push(new Star(x, y, 'normal'));
+                }
+
+                // 3. Portal
+                s.push(new Star(this.canvas.width / 2, -this.world.height - 100, 'portal'));
+
+                // 4. Traps (Fake Stars)
+                if (this.world.fakes) {
+                    // Add lots of fakes near the spine to confuse
+                    const count = s.length;
+                    for (let i = 1; i < count - 1; i++) {
+                        if (Math.random() > 0.3) { // 70% chance to add a trap near a real star
+                            const real = s[i];
+                            const angle = Math.random() * 6.28;
+                            const dist = 80 + Math.random() * 120;
+                            const fx = Math.max(30, Math.min(this.canvas.width - 30, real.x + Math.cos(angle) * dist));
+                            const fy = real.y + Math.sin(angle) * dist;
+
+                            // Prevent overlapping
+                            if (!s.some(st => Vec.dist(st.x, st.y, fx, fy) < 80)) {
+                                s.push(new Star(fx, fy, 'fake'));
+                            }
+                        }
+                    }
+                }
+                return s;
+            }
+
+            genComets() {
+                const c = [];
+                const gap = this.world.cometGap;
+                const speed = this.world.cometSpeed;
+
+                // Harder density
+                for (let y = this.canvas.height - 500; y > -this.world.height; y -= gap) {
+                    // Randomize Y slightly so it's not a grid
+                    let cy = y + (Math.random() - 0.5) * 50;
+                    c.push(new Comet(cy, this.canvas.width, speed));
+                }
+                return c;
+            }
+
+            bindInput() {
+                const getPoint = (e) => {
+                    if (e.touches && e.touches.length) return e.touches[0];
+                    if (e.changedTouches && e.changedTouches.length) return e.changedTouches[0];
+                    return e;
+                };
+
+                const handler = (e) => {
+                    if (!this.running) return;
+                    e.preventDefault();
+                    const r = this.canvas.getBoundingClientRect();
+                    const t = getPoint(e);
+                    const hasPoint = t && typeof t.clientX === 'number' && typeof t.clientY === 'number';
+
+                    if (hasPoint) {
+                        this.input.x = t.clientX - r.left;
+                        this.input.y = t.clientY - r.top + this.cameraY;
+                    }
+
+                    if (e.type === 'mousedown' || e.type === 'touchstart') {
+                        this.input.down = true;
+                        if (this.bear.state === 'IDLE') {
+                            if (Vec.dist(this.input.x, this.input.y, this.bear.x, this.bear.y) < CONFIG.game.snap) {
+                                this.input.drag = { sx: this.bear.x, sy: this.bear.y, ex: this.input.x, ey: this.input.y };
+                            }
+                        } else if (this.bear.state !== 'DEAD') {
+                            this.bear.wait(true);
+                        }
+                    } else if (e.type === 'mouseup' || e.type === 'touchend' || e.type === 'touchcancel') {
+                        this.input.down = false;
+                        this.bear.wait(false);
+                        if (this.input.drag) {
+                            this.tryConnect();
+                            this.input.drag = null;
+                        }
+                    } else if (this.input.drag && hasPoint) {
+                        this.input.drag.ex = this.input.x;
+                        this.input.drag.ey = this.input.y;
+                    }
+                };
+                ['mousedown', 'mousemove', 'mouseup', 'touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach(ev => this.canvas.addEventListener(ev, handler, { passive: false }));
+            }
+
+            tryConnect() {
+                let target = null, min = CONFIG.game.snap;
+                this.stars.forEach(s => {
+                    if (s === this.bear.star) return;
+                    let d = Vec.dist(this.input.drag.ex, this.input.drag.ey, s.x, s.y);
+                    if (d < min) { min = d; target = s; }
+                });
+
+                if (target && Vec.dist(this.bear.star.x, this.bear.star.y, target.x, target.y) <= CONFIG.game.maxDist) {
+                    this.bear.go(target);
+                }
+            }
+
+            toggleSprint() {
+                this.bear.sprint = !this.bear.sprint;
+                document.getElementById('sprint-toggle').classList.toggle('active');
+            }
+
+            loop() {
+                if (!this.running) return;
+                const now = performance.now();
+                const dt = Math.min((now - this.lastTime) / 1000, 0.1);
+                this.lastTime = now;
+                this.time += dt;
+
+                // Update
+                this.bear.update(dt);
+                this.stars.forEach(s => s.update(this.time));
+                this.comets.forEach(c => c.update(dt, this.time, this.bearStats.oracle));
+
+                // Camera
+                let targetCam = this.bear.y - this.canvas.height * 0.7;
+                if (targetCam > 0) targetCam = 0;
+                this.cameraY = Vec.lerp(this.cameraY, targetCam, 0.1);
+
+                // Collision
+                if (this.bear.active) {
+                    const hitR = 8;
+                    for (let c of this.comets) {
+                        if (c.active && Vec.dist(this.bear.x, this.bear.y, c.x, c.y) < hitR + c.r) {
+                            if (this.bear.curShield > 0) {
+                                this.bear.breakShield();
+                                c.active = false; // Destroy comet visual feedback
+                            } else {
+                                this.bear.die();
+                                App.endGame(false, "VAPORIZED BY COMET", 0);
+                            }
+                        }
+                    }
+                }
+
+                // Draw
+                this.draw();
+
+                requestAnimationFrame(() => this.loop());
+            }
+
+            draw() {
+                const ctx = this.ctx;
+                const cy = this.cameraY;
+                ctx.fillStyle = '#05070a';
+                ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Parallax
+                ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                ctx.beginPath();
+                for (let i = 0; i < this.canvas.width; i += 100) { ctx.moveTo(i, 0); ctx.lineTo(i, this.canvas.height); }
+                for (let i = -(cy % 100); i < this.canvas.height; i += 100) { ctx.moveTo(0, i); ctx.lineTo(this.canvas.width, i); }
+                ctx.stroke();
+
+                // Drag Line
+                if (this.input.drag) {
+                    ctx.beginPath();
+                    ctx.moveTo(this.bear.x, this.bear.y - cy);
+                    ctx.lineTo(this.input.drag.ex, this.input.drag.ey - cy);
+
+                    // ORACLE VISUAL
+                    let color = 'white';
+                    if (this.bearStats.oracle) {
+                        // Check collision with fake star
+                        for (let s of this.stars) {
+                            if (s.type === 'fake' && Vec.dist(this.input.drag.ex, this.input.drag.ey, s.x, s.y) < CONFIG.game.snap) {
+                                color = '#ff0055'; // WARNING
+                                break;
+                            }
+                        }
+                    }
+
+                    ctx.strokeStyle = color;
+                    ctx.setLineDash([5, 5]); ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]);
+                }
+
+                // Render
+                this.stars.forEach(s => {
+                    if (s.y - cy > -50 && s.y - cy < this.canvas.height + 50) s.draw(ctx, cy, this.bearStats.oracle);
+                });
+                this.comets.forEach(c => {
+                    if (c.y - cy > -50 && c.y - cy < this.canvas.height + 50) c.draw(ctx, cy);
+                });
+                this.bear.draw(ctx, cy);
+
+                // UI Updates
+                document.getElementById('hud-timer').innerText = this.time.toFixed(2);
+                document.getElementById('energy-fill').style.width = this.bear.energy + "%";
+            }
+        }
+
+        class Star {
+            constructor(x, y, t) { this.x = x; this.y = y; this.type = t; this.anim = Math.random() * 10; }
+            update(t) { this.anim += 0.05; }
+            draw(ctx, cy, isOracle) {
+                const sy = this.y - cy;
+                let r = 6;
+                let color = '#555';
+                let glow = 'transparent';
+
+                if (this.type === 'start') { color = '#00aaff'; glow = color; r = 8; }
+                else if (this.type === 'portal') { color = '#00ffcc'; glow = color; r = 10; }
+                else if (this.type === 'normal') { color = '#fff'; glow = 'white'; }
+                else if (this.type === 'fake') {
+                    // FAKE STAR LOGIC
+                    if (isOracle) {
+                        // Obvious for Oracle
+                        color = '#ff0055';
+                        glow = 'red';
+                        r = 7 + Math.sin(this.anim * 5) * 2; // Glitchy size
+                    } else {
+                        // Subtle for Normal
+                        color = '#e0d0ff'; // Slightly purple white
+                        glow = 'transparent'; // No glow to hide it
+                        r = 6 + Math.sin(this.anim) * 0.5; // Very slight pulse
+                    }
+                }
+
+                ctx.beginPath(); ctx.arc(this.x, sy, r, 0, 7);
+                ctx.fillStyle = color; ctx.shadowColor = glow; ctx.shadowBlur = 10;
+                ctx.fill(); ctx.shadowBlur = 0;
+            }
+        }
+
+        class Comet {
+            constructor(y, w, spd) {
+                this.y = y; this.w = w; this.speed = spd;
+                this.dir = Math.random() > 0.5 ? 1 : -1;
+                this.x = this.dir === 1 ? -50 : w + 50;
+                this.active = false;
+                this.timer = Math.random() * 5;
+                this.cycle = 4; // Faster cycle
+                this.r = 7;
+            }
+            update(dt, t, isOracle) {
+                this.timer += dt;
+                // Oracle sees telegraph much earlier (2.5s vs 1.0s)
+                const teleTime = isOracle ? 2.5 : 1.0;
+                const flightTime = this.w / this.speed;
+                const totalTime = teleTime + flightTime + 1.0; // +1s cooldown
+
+                let p = this.timer % totalTime;
+
+                if (p < teleTime) {
+                    this.state = 'tele';
+                    this.active = false;
+                } else if (p < teleTime + flightTime) {
+                    this.state = 'fly';
+                    this.active = true;
+                    let flyP = (p - teleTime) / flightTime;
+                    let sx = this.dir === 1 ? -50 : this.w + 50;
+                    let ex = this.dir === 1 ? this.w + 50 : -50;
+                    this.x = sx + (ex - sx) * flyP;
+                } else {
+                    this.state = 'cd';
+                    this.active = false;
+                }
+            }
+            draw(ctx, cy) {
+                const sy = this.y - cy;
+                if (this.state === 'tele') {
+                    // Flicker
+                    if (Math.floor(Date.now() / 50) % 3 === 0) {
+                        ctx.beginPath(); ctx.moveTo(0, sy); ctx.lineTo(this.w, sy);
+                        ctx.strokeStyle = 'rgba(255,0,0,0.5)'; ctx.lineWidth = 1; ctx.stroke();
+                    }
+                } else if (this.state === 'fly') {
+                    ctx.beginPath(); ctx.arc(this.x, sy, this.r, 0, 7);
+                    ctx.fillStyle = '#ff2222'; ctx.fill();
+                    // Tail
+                    ctx.beginPath(); ctx.moveTo(this.x, sy); ctx.lineTo(this.x - this.dir * 40, sy);
+                    ctx.strokeStyle = '#ffaa00'; ctx.lineWidth = 3; ctx.stroke();
+                }
+            }
+        }
+
+        class Bear {
+            constructor(s, stats) {
+                this.star = s; this.x = s.x; this.y = s.y;
+                this.stats = stats;
+                this.shieldMax = stats.shield;
+                this.curShield = stats.shield;
+
+                this.state = 'IDLE'; // IDLE, WALK, SPRINT, WAIT
+                this.sprint = false;
+                this.active = false; // Vulnerable?
+                this.energy = 100;
+                this.target = null;
+                this.prog = 0;
+                this.dist = 0;
+            }
+
+            wait(on) { if (this.state !== 'IDLE' && this.state !== 'DEAD') this.state = on ? 'WAIT' : 'WALK'; }
+
+            go(target) {
+                this.target = target;
+                this.dist = Vec.dist(this.star.x, this.star.y, target.x, target.y);
+                this.prog = 0;
+                this.state = 'WALK';
+                this.active = true;
+            }
+
+            breakShield() {
+                this.curShield = 0;
+                const ui = document.getElementById('hud-shield');
+                ui.innerText = "SHIELD BROKEN";
+                ui.className = "shield-status broken";
+            }
+
+            rechargeShield() {
+                if (this.shieldMax > 0 && this.curShield === 0) {
+                    this.curShield = this.shieldMax;
+                    const ui = document.getElementById('hud-shield');
+                    ui.innerText = "SHIELD ONLINE";
+                    ui.className = "shield-status";
+                }
+            }
+
+            die() { this.state = 'DEAD'; this.active = false; }
+
+            update(dt) {
+                if (this.state === 'DEAD' || this.state === 'WIN') return;
+
+                // Energy
+                if (this.state === 'IDLE') this.energy = Math.min(100, this.energy + CONFIG.game.regen * dt);
+
+                if (this.state === 'WAIT') return; // Paused logic
+
+                if (this.target) {
+                    // Speed logic
+                    let spd = this.stats.speed;
+                    if (this.sprint && this.energy > 0) {
+                        spd = 350; // Fast Sprint
+                        this.state = 'SPRINT';
+                        this.energy -= CONFIG.game.drain * dt;
+                    } else {
+                        this.state = 'WALK';
+                    }
+
+                    // Fake Star Death Check (60% path)
+                    if (this.target.type === 'fake' && this.prog > 0.6) {
+                        this.die();
+                        App.endGame(false, "IT WAS A TRAP", 0);
+                        return;
+                    }
+
+                    this.prog += (spd * dt) / this.dist;
+                    if (this.prog >= 1) {
+                        // Arrive
+                        this.x = this.target.x; this.y = this.target.y;
+                        this.star = this.target;
+                        this.target = null;
+                        this.active = false;
+
+                        if (this.star.type === 'portal') {
+                            this.state = 'WIN';
+                            App.endGame(true, "", document.getElementById('hud-timer').innerText);
+                        } else {
+                            this.state = 'IDLE';
+                            // RECHARGE SHIELD ONLY ON SAFE STARS
+                            if (this.star.type === 'normal' || this.star.type === 'start') {
+                                this.rechargeShield();
+                            }
+                        }
+                    } else {
+                        this.x = Vec.lerp(this.star.x, this.target.x, this.prog);
+                        this.y = Vec.lerp(this.star.y, this.target.y, this.prog);
+                    }
+                }
+            }
+
+            draw(ctx, cy) {
+                const sy = this.y - cy;
+
+                // Line
+                if (this.target) {
+                    ctx.beginPath(); ctx.moveTo(this.star.x, this.star.y - cy); ctx.lineTo(this.target.x, this.target.y - cy);
+                    ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.stroke();
+                }
+
+                // Body
+                ctx.beginPath(); ctx.arc(this.x, sy, 12, 0, 7);
+                if (this.state === 'DEAD') ctx.fillStyle = '#444';
+                else if (this.state === 'SPRINT') ctx.fillStyle = '#00ffcc';
+                else if (this.state === 'WAIT') ctx.fillStyle = '#ffaa00';
+                else ctx.fillStyle = this.stats.color || 'white'; // Use Bear Color
+                ctx.fill();
+
+                // Shield Visual
+                if (this.curShield > 0) {
+                    ctx.beginPath(); ctx.arc(this.x, sy, 16, 0, 7);
+                    ctx.strokeStyle = '#4facfe'; ctx.lineWidth = 2; ctx.stroke();
+                }
+
+                // Wait Shield
+                if (this.state === 'WAIT') {
+                    ctx.beginPath(); ctx.arc(this.x, sy, 18, 0, 7);
+                    ctx.strokeStyle = '#ffaa00'; ctx.setLineDash([2, 2]); ctx.stroke(); ctx.setLineDash([]);
+                }
+            }
+        }
+
+        window.onload = () => App.init();
+    </script>
+</body>
+
+</html>

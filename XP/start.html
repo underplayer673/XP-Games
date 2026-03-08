@@ -1,0 +1,1434 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
+    <title>XP Games Launcher</title>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="ie8-polyfills.js"></script>
+    <![endif]-->
+    <style>
+        /* Reset & Base - IE6 compatible */
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* IE6 gradient fallback */
+            background: #1a1a2e;
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1a1a2e', endColorstr='#0f3460', GradientType=1);
+            height: 100%;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Background Pattern - simplified for IE6 */
+        body {
+            background-image: none;
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 760px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        * html .container { width: 750px; } /* IE6 box model fix */
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: 700;
+            /* IE6 fallback - solid color instead of gradient text */
+            color: #00d4ff;
+            margin-bottom: 10px;
+            filter: glow(color=#00d4ff, strength=3);
+        }
+
+        .tagline {
+            font-size: 18px;
+            color: #b3b3b3;
+            letter-spacing: 2px;
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: block;
+            z-index: 100;
+        }
+
+        .lang-btn {
+            display: inline-block;
+            padding: 8px 14px;
+            border: 1px solid #333;
+            /* IE6 doesn't support border-radius - use solid */
+            background: #222;
+            color: #999;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .lang-btn:hover {
+            background: #333;
+            border-color: #555;
+        }
+
+        .lang-btn.active {
+            background: #003366;
+            border-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        .lang-flag {
+            font-size: 16px;
+        }
+
+        /* Benchmark Screen */
+        #benchmark-screen {
+            display: block;
+        }
+
+        .benchmark-box {
+            background: #222;
+            border: 1px solid #444;
+            padding: 20px;
+            width: 95%;
+            margin: 0 auto;
+        }
+
+        .benchmark-title {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #00d4ff;
+        }
+
+        .progress-container {
+            background: #111;
+            height: 20px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            /* IE6 gradient fallback */
+            background: #00d4ff;
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00d4ff', endColorstr='#ff006e', GradientType=1);
+        }
+
+        .benchmark-status {
+            font-size: 16px;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+
+        .benchmark-detail {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 20px;
+        }
+
+        /* Test Progress Indicators - IE6 uses tables instead of grid */
+        .test-indicators {
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .test-indicator {
+            display: inline-block;
+            width: 32%;
+            padding: 10px;
+            background: #111;
+            font-size: 12px;
+            vertical-align: top;
+        }
+
+        .test-indicator-icon {
+            font-size: 16px;
+        }
+
+        .test-indicator-status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #333;
+        }
+
+        .test-indicator-status.running {
+            background: #00d4ff;
+        }
+
+        .test-indicator-status.complete {
+            background: #00ff88;
+        }
+
+        .test-indicator-status.pending {
+            background: #333;
+        }
+
+        /* System Info Panel */
+        .system-info {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .info-item {
+            display: inline-block;
+            background: #111;
+            padding: 15px 25px;
+            text-align: center;
+            border: 1px solid #333;
+            margin: 5px;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        .info-value.browser {
+            color: #7b2cbf;
+        }
+
+        .info-value.perf-high {
+            color: #00ff88;
+        }
+
+        .info-value.perf-medium {
+            color: #ffaa00;
+        }
+
+        .info-value.perf-low {
+            color: #ff6b6b;
+        }
+
+        .info-value.perf-potato {
+            color: #888;
+        }
+
+        /* Game Selection Screen */
+        #game-screen {
+            display: none;
+            height: 450px;
+            overflow: auto;
+        }
+
+        .games-grid {
+            display: block;
+            min-height: 300px;
+            overflow: auto;
+            /* IE8 scrollbar styling */
+            scrollbar-face-color: #333;
+            scrollbar-track-color: #111;
+            scrollbar-arrow-color: #555;
+            scrollbar-highlight-color: #444;
+            scrollbar-shadow-color: #000;
+            scrollbar-darkshadow-color: #000;
+        }
+
+        /* IE8: Body scrollbar styling */
+        body {
+            scrollbar-face-color: #333;
+            scrollbar-track-color: #111;
+            scrollbar-arrow-color: #555;
+        }
+
+        /* IE8: Clearfix for floated game cards */
+        .games-grid:after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+
+        .game-card {
+            background: #222;
+            border: 1px solid #444;
+            padding: 15px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 15px;
+            margin-right: 15px;
+            width: 44%;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        /* IE6: float-based layout */
+        .game-card {
+            float: left;
+        }
+
+        .game-card-hover {
+            background: #333 !important;
+            border-color: #666 !important;
+        }
+
+        /* IE6: simulate box-shadow with border */
+        .game-card-shadow {
+            border: 2px solid #000;
+        }
+
+        .game-icon {
+            width: 60px;
+            height: 60px;
+            display: block;
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 15px;
+            background: #333;
+            /* IE6 fallback */
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00d4ff', endColorstr='#7b2cbf', GradientType=1);
+        }
+
+        .game-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .game-desc {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .game-meta {
+            display: block;
+        }
+
+        .game-version {
+            font-size: 12px;
+            padding: 4px 10px;
+            background: #003366;
+            color: #00d4ff;
+        }
+
+        .game-version.legacy {
+            background: #663333;
+            color: #ff6b6b;
+        }
+
+        /* Performance Badge */
+        .perf-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: #00ff88;
+            color: #000;
+        }
+
+        .perf-badge.high {
+            background: #00ff88;
+            color: #000;
+        }
+
+        .perf-badge.medium {
+            background: #ffaa00;
+            color: #000;
+        }
+
+        .perf-badge.low {
+            background: #ff6b6b;
+            color: #fff;
+        }
+
+        .perf-badge.potato {
+            background: #666;
+            color: #fff;
+        }
+
+        /* Game Warning Messages */
+        .game-warning {
+            display: block;
+            padding: 8px 12px;
+            margin-top: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            background: #332200;
+            border: 1px solid #664400;
+            color: #ffaa00;
+        }
+
+        .game-warning.critical {
+            background: #330000;
+            border: 1px solid #660000;
+            color: #ff6b6b;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            color: #666;
+            font-size: 12px;
+            clear: both;
+        }
+
+        /* Loading text - IE6 simple animation using filter */
+        .loading-text {
+            filter: alpha(opacity=50);
+        }
+
+        /* Responsive - IE6 doesn't support media queries, use simpler layout */
+    </style>
+    <!--[if IE 6]>
+<style>
+.game-card { width: 40%; margin-right: 1%; }
+.test-indicator { width: 31%; }
+</style>
+<![endif]-->
+    <!--[if IE 7]>
+<style>
+.game-card { width: 43%; }
+</style>
+<![endif]-->
+    <!--[if IE 8]>
+<style>
+.game-card { width: 44%; }
+</style>
+<![endif]-->
+</head>
+
+<body>
+    <!-- IE Local File Warning -->
+    <div id="local-warning" style="text-align:center;color:#ff6b6b;padding:10px;">
+        If the page is blank, click "Allow blocked content" (Internet Explorer security).
+    </div>
+    <script>
+        try {
+            var w = document.getElementById('local-warning');
+            if (w) w.style.display = 'none';
+        } catch (e) {
+            // Keep warning visible if JS fails
+        }
+    </script>
+    <div class="container">
+        <div class="header">
+            <!-- Language Switcher -->
+            <div class="language-switcher">
+                <button class="lang-btn" id="lang-ru" onclick="setLanguage('ru')">
+                    <span class="lang-flag">RU</span>
+                </button>
+                <button class="lang-btn" id="lang-en" onclick="setLanguage('en')">
+                    <span class="lang-flag">EN</span>
+                </button>
+            </div>
+
+            <div class="logo">[GAME] XP Games</div>
+            <div class="tagline" id="tagline">Select Your Game</div>
+        </div>
+
+        <!-- Benchmark Screen -->
+        <div id="benchmark-screen">
+            <div class="benchmark-box">
+                <div class="benchmark-title" id="benchmark-title">Running Performance Test...</div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <div class="benchmark-status" id="benchmark-status">Initializing...</div>
+                <div class="benchmark-detail" id="benchmark-detail">Please wait while we optimize your experience</div>
+
+                <!-- Test Progress Indicators -->
+                <div class="test-indicators">
+                    <div class="test-indicator" id="test-math">
+                        <span class="test-indicator-icon">MATH</span>
+                        <span id="test-math-label">Math</span>
+                        <span class="test-indicator-status" id="test-math-status"></span>
+                    </div>
+                    <div class="test-indicator" id="test-dom">
+                        <span class="test-indicator-icon">DOM</span>
+                        <span id="test-dom-label">DOM</span>
+                        <span class="test-indicator-status" id="test-dom-status"></span>
+                    </div>
+                    <div class="test-indicator" id="test-anim">
+                        <span class="test-indicator-icon">ANIM</span>
+                        <span id="test-anim-label">Animation</span>
+                        <span class="test-indicator-status" id="test-anim-status"></span>
+                    </div>
+                </div>
+
+                <div class="system-info">
+                    <div class="info-item">
+                        <div class="info-label" id="label-browser">Browser</div>
+                        <div class="info-value browser" id="browser-type">Detecting...</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label" id="label-performance">Performance</div>
+                        <div class="info-value perf-high" id="perf-level">Testing...</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label" id="label-score">Score</div>
+                        <div class="info-value" id="perf-score">--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Selection Screen -->
+        <div id="game-screen">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <span class="perf-badge high" id="perf-badge">High Performance</span>
+            </div>
+            <div class="games-grid" id="games-grid"></div>
+        </div>
+
+        <div class="footer">
+            XP Games Launcher &copy; 2024 | <span id="footer-optimized">Optimized for all browsers</span>
+        </div>
+    </div>
+
+    <script>
+        // Console polyfill for legacy browsers
+        if (typeof console === 'undefined') {
+            window.console = {
+                log: function () { },
+                error: function () { },
+                warn: function () { },
+                info: function () { }
+            };
+        }
+
+        // Global error handler
+        window.onerror = function (msg, url, lineNo, columnNo, error) {
+            console.error('[DEBUG] Global error:', msg, 'at line', lineNo);
+            return false;
+        };
+
+        // IE6/IE8 Compatibility: getElementsByClassName polyfill
+        if (!document.getElementsByClassName) {
+            document.getElementsByClassName = function (search) {
+                var d = document, results = [], element;
+                var getElementsByClassName = function (search) {
+                    var elements = d.getElementsByTagName("*"), pattern = new RegExp("(^|\\s)" + search + "(\\s|$)"), results = [];
+                    for (var i = 0, len = elements.length; i < len; i++) {
+                        var el = elements[i];
+                        if (pattern.test(el.className)) {
+                            results.push(el);
+                        }
+                    }
+                    return results;
+                };
+                return getElementsByClassName(search);
+            };
+        }
+
+        // IE6/IE7 Compatibility: Array.indexOf polyfill
+        if (!Array.prototype.indexOf) {
+            Array.prototype.indexOf = function (searchElement, fromIndex) {
+                var O = Object(this);
+                var len = O.length >>> 0;
+                if (len === 0) {
+                    return -1;
+                }
+                var n = fromIndex | 0;
+                if (n >= len) {
+                    return -1;
+                }
+                var k = n < 0 ? len + n : n;
+                while (k < len) {
+                    if (k in O && O[k] === searchElement) {
+                        return k;
+                    }
+                    k++;
+                }
+                return -1;
+            };
+        }
+
+        // IE6 Compatibility: Cookie-based storage (replaces localStorage)
+        var cookieStorage = {
+            get: function (key) {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].replace(/^\s+|\s+$/g, '');
+                    if (cookie.indexOf(key + '=') === 0) {
+                        return cookie.substring(key.length + 1);
+                    }
+                }
+                return null;
+            },
+            set: function (key, value, days) {
+                var expires = '';
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = '; expires=' + date.toGMTString();
+                }
+                document.cookie = key + '=' + value + expires + '; path=/';
+            }
+        };
+
+        // Language System
+        var currentLang = cookieStorage.get('xp_launcher_lang') || 'ru';
+
+        var translations = {
+            ru: {
+                tagline: 'Выберите игру',
+                benchmarkTitle: 'Запуск теста производительности...',
+                benchmarkStatus: 'Инициализация...',
+                benchmarkDetail: 'Пожалуйста, подождите, пока мы оптимизируем ваш опыт',
+                labelBrowser: 'Браузер',
+                labelPerformance: 'Производительность',
+                labelScore: 'Оценка',
+                footerOptimized: 'Оптимизировано для всех браузеров',
+                testMath: 'Математика',
+                testDOM: 'DOM',
+                testAnim: 'Анимация',
+                levels: {
+                    high: 'Высокая производительность',
+                    medium: 'Средняя производительность',
+                    low: 'Низкая производительность',
+                    potato: 'Устаревший режим'
+                },
+                versions: {
+                    modern: 'Современная',
+                    legacy: 'Устаревшая'
+                },
+                warnings: {
+                    tooOld: '! Ваш ПК слишком стар для этого',
+                    lag: '! Возможны лаги'
+                },
+                loading: 'Загрузка...',
+                starting: 'Запуск '
+            },
+            en: {
+                tagline: 'Select Your Game',
+                benchmarkTitle: 'Running Performance Test...',
+                benchmarkStatus: 'Initializing...',
+                benchmarkDetail: 'Please wait while we optimize your experience',
+                labelBrowser: 'Browser',
+                labelPerformance: 'Performance',
+                labelScore: 'Score',
+                footerOptimized: 'Optimized for all browsers',
+                testMath: 'Math',
+                testDOM: 'DOM',
+                testAnim: 'Animation',
+                levels: {
+                    high: 'High Performance',
+                    medium: 'Medium Performance',
+                    low: 'Low Performance',
+                    potato: 'Legacy Mode'
+                },
+                versions: {
+                    modern: 'Modern',
+                    legacy: 'Legacy'
+                },
+                warnings: {
+                    tooOld: '! Your PC is too old for this',
+                    lag: '! You may experience lag'
+                },
+                loading: 'Loading...',
+                starting: 'Starting '
+            }
+        };
+
+        function t(key) {
+            return translations[currentLang][key] || key;
+        }
+
+        function tLevel(level) {
+            return translations[currentLang].levels[level] || level;
+        }
+
+        function tVersion(ver) {
+            return translations[currentLang].versions[ver] || ver;
+        }
+
+        function tWarning(type) {
+            return translations[currentLang].warnings[type] || '';
+        }
+
+        // Language Switcher Functions
+        window.setLanguage = function (lang) {
+            currentLang = lang;
+            cookieStorage.set('xp_launcher_lang', lang, 365);
+            updateLanguageUI();
+            updateUITexts();
+        };
+
+        function updateLanguageUI() {
+            // IE6-compatible - use getElementById instead of querySelectorAll
+            var ruBtn = document.getElementById('lang-ru');
+            var enBtn = document.getElementById('lang-en');
+
+            if (ruBtn) ruBtn.className = 'lang-btn' + (currentLang === 'ru' ? ' active' : '');
+            if (enBtn) enBtn.className = 'lang-btn' + (currentLang === 'en' ? ' active' : '');
+        }
+
+        function updateUITexts() {
+            var el;
+
+            el = document.getElementById('tagline');
+            if (el) el.innerHTML = t('tagline');
+
+            el = document.getElementById('benchmark-title');
+            if (el) el.innerHTML = t('benchmarkTitle');
+
+            el = document.getElementById('label-browser');
+            if (el) el.innerHTML = t('labelBrowser');
+
+            el = document.getElementById('label-performance');
+            if (el) el.innerHTML = t('labelPerformance');
+
+            el = document.getElementById('label-score');
+            if (el) el.innerHTML = t('labelScore');
+
+            el = document.getElementById('footer-optimized');
+            if (el) el.innerHTML = t('footerOptimized');
+
+            el = document.getElementById('test-math-label');
+            if (el) el.innerHTML = t('testMath');
+
+            el = document.getElementById('test-dom-label');
+            if (el) el.innerHTML = t('testDOM');
+
+            el = document.getElementById('test-anim-label');
+            if (el) el.innerHTML = t('testAnim');
+
+            // Update perf level text if already set
+            var perfLevel = document.getElementById('perf-level');
+            if (perfLevel && perfData.level) {
+                perfLevel.innerHTML = tLevel(perfData.level);
+                var badge = document.getElementById('perf-badge');
+                if (badge) {
+                    badge.innerHTML = tLevel(perfData.level);
+                }
+            }
+        }
+
+        // Game Data with Enhanced Descriptions
+        var games = [
+            {
+                name: 'Cell Overload',
+                path: 'Cell Overload/',
+                desc: {
+                    ru: 'Тюрнирная стратегия на сетке 6x6 с механикой массы клеток, взрывами при массе 4, уровнями сложности ИИ 1-7 (Обезьяна до Терминатора), рейтинговой системой ELO, режимами PvP и PvE',
+                    en: 'Turn-based 6x6 grid strategy with cell mass mechanics, explosions at mass 4, AI difficulty levels 1-7 (Monkey to Terminator), ELO rating system, PvP and PvE modes'
+                },
+                icon: '[+]',
+                color1: '#00d4ff',
+                color2: '#7b2cbf'
+            },
+            {
+                name: 'Clicker Tycoon',
+                path: 'Clicker_Tycoon (Sergey)/',
+                desc: {
+                    ru: 'Кликер с механикой перегрева, улучшениями оборудования (Руки → AI Skynet), автодобычей, системой кейсов с 12 уровнями редкости (Серебро до Бесконечности), рулеткой',
+                    en: 'Clicker with heat/overheat mechanic, equipment upgrades (Hands → AI Skynet), auto-miners, case system with 12 rarity tiers (Silver to Infinity), roulette mechanics'
+                },
+                icon: '[$]',
+                color1: '#ffd700',
+                color2: '#ff6b00'
+            },
+            {
+                name: 'Granny',
+                path: 'Granny/',
+                desc: {
+                    ru: 'ФПС хоррор с укрытиями в кроватях/шафа, механикой дверей, ловушками, системой выносливости, механикой открытия выхода, ИИ бабушки с состояниями патрулирования/поиска/преследования, жупсцерами и кровью',
+                    en: "First-person 3D horror with hiding in beds/wardrobes, door mechanics, traps, stamina system, exit opening mechanic, Granny AI with patrol/search/chase states, jumpscare and blood effects"
+                },
+                icon: '[!]',
+                color2: '#ff006e',
+                color1: '#7b2cbf'
+            },
+            {
+                name: 'Night Racer',
+                path: 'Night Racer/',
+                desc: {
+                    ru: 'Кастомизация автомобиля с гаражом, системой частей (двигатель/колеса/бампер/покрытие), покраской, рулеткой для частей, уровнями редкости (Обычный до Мифический), нитро, ежедневными миссиями, лидербордами',
+                    en: 'Car customization with garage, parts system (engine/wheels/bumper/coating), paint system, case roulette for parts, rarity tiers (Common to Mythic), nitro boost, daily missions, leaderboards'
+                },
+                icon: '[>]',
+                color1: '#ff006e',
+                color2: '#ff6b00'
+            },
+            {
+                name: 'Rasteniya',
+                path: 'Rasteniya_Sergeya/',
+                desc: {
+                    ru: 'Защита в стиле Plants vs Zombies с гибридной системой скрещивания (100+ комбинаций), улучшениями оружия (пугало до анигилятора), волнами врагов (зомби-кролики, осы, танки, титаны), порталом в галактики, условием победы: купить вселенную',
+                    en: 'Plants vs Zombies style defense with hybrid crossbreeding system (100+ combinations), weapon upgrades (scarecrow to annihilator), enemy waves (zombie rabbits, wasps, tanks, titans), portal to galaxies, victory condition: buy the universe'
+                },
+                icon: '[*]',
+                color1: '#00ff88',
+                color2: '#00d4ff'
+            },
+            {
+                name: 'School RPG',
+                path: 'School-RPG/',
+                desc: {
+                    ru: 'Битвальный RPG с сюжетным/PvP/бесконечным режимами, конкретными боссами (Ларина Олеговна с математическими задачами, Директор, Наталья Викторовна с криком), системой навыков, лидербордами Firebase, магазином скинов',
+                    en: 'Battle RPG with story/PvP/endless modes, specific bosses (Larina Olegovna math equations, Director, Natalia Viktorovna screamer), skill system, Firebase leaderboards, skin shop'
+                },
+                icon: '[RPG]',
+                color1: '#7b2cbf',
+                color2: '#ff006e'
+            },
+            {
+                name: 'The Deepest Dunk',
+                path: 'The Deepest Dunk/',
+                desc: {
+                    ru: 'Бесконечный падение в Бесконечное Стекло, выбор печенья, две механики (СУХОЕ - быстрое/хрупкое vs МОКРОЕ - поглощение молока), глубина в миллиметрах, система комбо, баффы от молока, локальные рекорды',
+                    en: 'Endless fall into Infinite Glass, cookie selection, two mechanics (DRY fast/fragile vs SOGGY milk absorption), depth in millimeters, combo system, milk buffs, local high scores'
+                },
+                icon: '[v]',
+                color1: '#ff6b00',
+                color2: '#ffaa00'
+            },
+            {
+                name: 'StarBear',
+                path: 'StarBear/',
+                desc: {
+                    ru: 'Хардкорный космический симулятор выживания. Прыгайте по звездам, избегайте комет и ловушек. Система прокачки, уникальные персонажи и процедурная генерация.',
+                    en: 'Hardcore space survival simulator. Jump between stars, avoid comets and traps. Upgrade system, unique characters, and procedural level generation.'
+                },
+                icon: '[B]',
+                color1: '#00ffcc',
+                color2: '#00aaff'
+            },
+            {
+                name: 'Kuzibaeva',
+                path: 'Kuzibaeva/',
+                desc: {
+                    ru: 'Хоррор-выживание в стиле FNAF. Продержитесь 5 ночей. Используйте двери, свет, планшет и пирожки для защиты от Кузибаевой и компании.',
+                    en: 'FNAF-style survival horror. Survive 5 nights using doors, lights, tablet, and pies for protection against Kuzibaeva and friends.'
+                },
+                icon: '[K]',
+                color1: '#ff0000',
+                color2: '#440000'
+            }
+        ];
+
+        // Browser Detection
+        var browserInfo = {
+            isIE6: false,
+            isIE7: false,
+            isIE8: false,
+            isLegacy: false,
+            isLegacyOS: false,
+            lowHardwareHint: false,
+            browserName: 'Modern Browser'
+        };
+
+        function parseMajorVersion(ua, regex) {
+            var match = ua.match(regex);
+            if (!match || !match[1]) return 0;
+            var major = parseInt(match[1], 10);
+            return isNaN(major) ? 0 : major;
+        }
+
+        function hasLegacyFeatureGaps() {
+            var hasAddEvent = typeof window.addEventListener === 'function';
+            var hasQuerySelector = typeof document.querySelector === 'function';
+            var hasJSON = typeof window.JSON !== 'undefined';
+            var hasRAF = typeof window.requestAnimationFrame === 'function' ||
+                typeof window.webkitRequestAnimationFrame === 'function' ||
+                typeof window.mozRequestAnimationFrame === 'function' ||
+                typeof window.msRequestAnimationFrame === 'function';
+            var hasCanvas = false;
+            try {
+                var canvas = document.createElement('canvas');
+                hasCanvas = !!(canvas && canvas.getContext);
+            } catch (e) {
+                hasCanvas = false;
+            }
+            return !(hasAddEvent && hasQuerySelector && hasJSON && hasRAF && hasCanvas);
+        }
+
+        function isLegacyOSUserAgent(ua) {
+            if (!ua) return false;
+
+            // Windows XP/2003/Vista/7 are forced to legacy mode.
+            if (/Windows XP|Windows NT 5\.1|Windows NT 5\.2|Windows NT 6\.0|Windows NT 6\.1/i.test(ua)) {
+                return true;
+            }
+
+            // Old macOS versions (<= 10.11) are treated as legacy.
+            var macMatch = ua.match(/Mac OS X (\d+)[_.](\d+)/i);
+            if (macMatch && macMatch[1] && macMatch[2]) {
+                var macMajor = parseInt(macMatch[1], 10);
+                var macMinor = parseInt(macMatch[2], 10);
+                if (!isNaN(macMajor) && !isNaN(macMinor)) {
+                    if (macMajor < 10 || (macMajor === 10 && macMinor <= 11)) {
+                        return true;
+                    }
+                }
+            }
+
+            // Linux legacy signal: 32-bit/very old CPU arches in UA.
+            if (/Linux/i.test(ua) && (/(i[3-6]86|x86_32|armv6|armv7l)/i.test(ua))) {
+                return true;
+            }
+
+            return false;
+        }
+
+        (function detectBrowser() {
+            var ua = navigator.userAgent || '';
+            var majorVersion = 0;
+            if (ua.indexOf('MSIE 6') > -1) {
+                browserInfo.isIE6 = true;
+                browserInfo.isLegacy = true;
+                browserInfo.browserName = 'IE6';
+            } else if (ua.indexOf('MSIE 7') > -1) {
+                browserInfo.isIE7 = true;
+                browserInfo.isLegacy = true;
+                browserInfo.browserName = 'IE7';
+            } else if (ua.indexOf('MSIE 8') > -1) {
+                browserInfo.isIE8 = true;
+                browserInfo.isLegacy = true;
+                browserInfo.browserName = 'IE8';
+            } else if (ua.indexOf('MSIE 9') > -1) {
+                browserInfo.isLegacy = true;
+                browserInfo.browserName = 'IE9';
+            } else if (ua.indexOf('Trident/') > -1 || ua.indexOf('MSIE') > -1) {
+                browserInfo.isLegacy = true;
+                browserInfo.browserName = 'Internet Explorer';
+            } else if (ua.indexOf('Edge/') > -1) {
+                browserInfo.isLegacy = true;
+                browserInfo.browserName = 'Edge Legacy';
+            } else if (ua.indexOf('Edg/') > -1) {
+                majorVersion = parseMajorVersion(ua, /Edg\/(\d+)/i);
+                browserInfo.browserName = majorVersion ? ('Edge ' + majorVersion) : 'Edge';
+                if (majorVersion && majorVersion < 90) {
+                    browserInfo.isLegacy = true;
+                }
+            } else if (ua.indexOf('Firefox') > -1) {
+                majorVersion = parseMajorVersion(ua, /Firefox\/(\d+)/i);
+                browserInfo.browserName = majorVersion ? ('Firefox ' + majorVersion) : 'Firefox';
+                if (majorVersion && majorVersion < 78) {
+                    browserInfo.isLegacy = true;
+                }
+            } else if (ua.indexOf('Chrome') > -1) {
+                majorVersion = parseMajorVersion(ua, /Chrome\/(\d+)/i);
+                browserInfo.browserName = majorVersion ? ('Chrome ' + majorVersion) : 'Chrome';
+                if (majorVersion && majorVersion < 80) {
+                    browserInfo.isLegacy = true;
+                }
+            } else if (ua.indexOf('Safari') > -1) {
+                majorVersion = parseMajorVersion(ua, /Version\/(\d+)/i);
+                browserInfo.browserName = majorVersion ? ('Safari ' + majorVersion) : 'Safari';
+                if (majorVersion && majorVersion < 13) {
+                    browserInfo.isLegacy = true;
+                }
+            }
+
+            if (hasLegacyFeatureGaps()) {
+                browserInfo.isLegacy = true;
+            }
+
+            if (isLegacyOSUserAgent(ua)) {
+                browserInfo.isLegacy = true;
+                browserInfo.isLegacyOS = true;
+            }
+
+            var hwThreads = navigator.hardwareConcurrency || 0;
+            var hwMemory = navigator.deviceMemory || 0;
+            if ((hwThreads && hwThreads <= 2) || (hwMemory && hwMemory <= 2)) {
+                browserInfo.lowHardwareHint = true;
+            }
+
+            var el = document.getElementById('browser-type');
+            if (el) el.innerHTML = browserInfo.browserName;
+        })();
+
+        // Performance Benchmark with Multiple Tests
+        var perfData = {
+            score: 0,
+            level: 'high',
+            version: 'modern/',
+            testScores: {
+                math: 0,
+                dom: 0,
+                anim: 0
+            }
+        };
+
+        function runBenchmark() {
+            var progressBar = document.getElementById('progress-bar');
+            var status = document.getElementById('benchmark-status');
+            var detail = document.getElementById('benchmark-detail');
+
+            var steps = [
+                { pct: 10, msg: 'Initializing benchmark...', dtl: 'Preparing test environment' },
+                { pct: 25, msg: 'Running math operations test...', dtl: 'Testing CPU arithmetic performance' },
+                { pct: 45, msg: 'Running DOM manipulation test...', dtl: 'Testing browser rendering speed' },
+                { pct: 65, msg: 'Running animation test...', dtl: 'Testing graphics performance' },
+                { pct: 85, msg: 'Calculating results...', dtl: 'Analyzing combined performance' },
+                { pct: 100, msg: 'Complete!', dtl: 'Ready to play' }
+            ];
+
+            var currentStep = 0;
+
+            function updateProgress() {
+                if (currentStep < steps.length) {
+                    progressBar.style.width = steps[currentStep].pct + '%';
+                    status.innerHTML = steps[currentStep].msg;
+                    detail.innerHTML = steps[currentStep].dtl;
+                    currentStep++;
+                    setTimeout(updateProgress, 400);
+                } else {
+                    finishBenchmark();
+                }
+            }
+
+            // Adaptive Benchmark - starts light and scales based on performance
+            function doBenchmark() {
+                // Initialize adaptive difficulty coefficient
+                var benchmarkDifficulty = 1.0;
+                var isPotato = false;
+                var isUltraLegacy = !!browserInfo.isIE6;
+
+                // Helper: adaptive math test
+                function runMathTest(iterations) {
+                    var startTime = new Date().getTime();
+                    var x = 0;
+                    for (var j = 0; j < iterations; j++) {
+                        x += Math.sqrt(j) * Math.sin(j) + Math.cos(j) * Math.pow(j, 0.5);
+                    }
+                    return new Date().getTime() - startTime;
+                }
+
+                // Helper: adaptive DOM test
+                function runDOMTest(iterations) {
+                    var domStart = new Date().getTime();
+                    var testContainer = document.createElement('div');
+                    testContainer.style.display = 'none';
+                    document.body.appendChild(testContainer);
+
+                    for (var k = 0; k < iterations; k++) {
+                        var el = document.createElement('div');
+                        el.innerHTML = 'test' + k;
+                        testContainer.appendChild(el);
+                    }
+
+                    testContainer.innerHTML = '';
+                    if (testContainer.parentNode) {
+                        testContainer.parentNode.removeChild(testContainer);
+                    }
+                    return new Date().getTime() - domStart;
+                }
+
+                // Helper: adaptive animation test
+                function runAnimTest(iterations) {
+                    var animStart = new Date().getTime();
+                    var transforms = [];
+                    for (var m = 0; m < iterations; m++) {
+                        var transform = 'translate(' + (m % 100) + 'px, ' + (m % 50) + 'px)';
+                        transforms[transforms.length] = transform;
+                    }
+                    return new Date().getTime() - animStart;
+                }
+
+                // Test 1: Math Operations - Start with minimal iterations
+                setTestStatus('test-math-status', 'running');
+
+                var mathIterations = 1; // Start very light for very old PCs
+                var mathTime = runMathTest(mathIterations);
+
+                // Adaptive: if fast (< 100ms), increase and test again
+                if (mathTime < 100 && !browserInfo.isLegacy) {
+                    var mathIterations2 = 1000;
+                    var mathTime2 = runMathTest(mathIterations2);
+                    if (mathTime2 < 3000) {
+                        // Device is fast, use full iterations
+                        mathIterations = browserInfo.isLegacy ? 30000 : 150000;
+                        mathTime = runMathTest(mathIterations);
+                        benchmarkDifficulty = 1.0;
+                    } else {
+                        // Medium device, use reduced iterations
+                        mathIterations = 50000;
+                        mathTime = runMathTest(mathIterations);
+                        benchmarkDifficulty = 0.5;
+                    }
+                } else if (mathTime > 3000) {
+                    // Very slow - classify as potato immediately
+                    isPotato = true;
+                    benchmarkDifficulty = 0.1;
+                }
+
+                perfData.testScores.math = mathTime;
+                setTestStatus('test-math-status', 'complete');
+
+                // Test 2: DOM Manipulation
+                setTestStatus('test-dom-status', 'running');
+
+                var domIterations = isUltraLegacy ? 1 : (isPotato ? 1 : (browserInfo.isLegacy ? 5 : 10));
+                var domTime = runDOMTest(domIterations);
+
+                // Adaptive: scale if fast
+                if (!isPotato && domTime < 100) {
+                    var domIterations2 = isPotato ? 50 : 500;
+                    var domTime2 = runDOMTest(domIterations2);
+                    if (domTime2 > 3000) {
+                        isPotato = true;
+                        benchmarkDifficulty = Math.min(benchmarkDifficulty, 0.1);
+                    }
+                } else if (domTime > 3000) {
+                    isPotato = true;
+                    benchmarkDifficulty = Math.min(benchmarkDifficulty, 0.1);
+                }
+
+                perfData.testScores.dom = domTime;
+                setTestStatus('test-dom-status', 'complete');
+
+                // Test 3: Animation Performance
+                setTestStatus('test-anim-status', 'running');
+
+                var animIterations = isUltraLegacy ? 1 : (isPotato ? 1 : (browserInfo.isLegacy ? 10 : 20));
+                var animTime = runAnimTest(animIterations);
+
+                // Adaptive: scale if fast
+                if (!isPotato && animTime < 100) {
+                    var animIterations2 = isPotato ? 100 : 1000;
+                    var animTime2 = runAnimTest(animIterations2);
+                    if (animTime2 > 3000) {
+                        isPotato = true;
+                        benchmarkDifficulty = Math.min(benchmarkDifficulty, 0.1);
+                    }
+                } else if (animTime > 3000) {
+                    isPotato = true;
+                    benchmarkDifficulty = Math.min(benchmarkDifficulty, 0.1);
+                }
+
+                perfData.testScores.anim = animTime;
+                setTestStatus('test-anim-status', 'complete');
+
+                // Calculate combined score (weighted average)
+                // Math has higher weight because CPU bottlenecks affect every game mode.
+                var mathScore = Math.max(0, 100 - mathTime * 0.12);
+                var domScore = Math.max(0, 100 - domTime * 0.25);
+                var animScore = Math.max(0, 100 - animTime * 0.20);
+
+                var combinedScore = (mathScore * 0.55 + domScore * 0.225 + animScore * 0.225);
+                perfData.score = combinedScore;
+                var forcedLowByCpu = (mathTime >= 700);
+
+                // Determine performance level by benchmark only.
+                if (isUltraLegacy) {
+                    // IE6: force safest preset to avoid heavy game paths on weak hardware.
+                    perfData.level = 'potato';
+                    isPotato = true;
+                    combinedScore = Math.min(combinedScore, 20);
+                    console.log('[DEBUG] Forcing potato level for IE6');
+                } else if (isPotato) {
+                    perfData.level = 'potato';
+                    console.log('[DEBUG] Setting benchmark potato level');
+                } else if (forcedLowByCpu) {
+                    perfData.level = 'low';
+                    console.log('[DEBUG] Setting benchmark low level (CPU bound)');
+                } else if (combinedScore >= 75) {
+                    perfData.level = 'high';
+                    console.log('[DEBUG] Setting benchmark high level');
+                } else if (combinedScore >= 55 && mathTime < 500) {
+                    perfData.level = 'medium';
+                    console.log('[DEBUG] Setting benchmark medium level');
+                } else if (combinedScore >= 35) {
+                    perfData.level = 'low';
+                    console.log('[DEBUG] Setting benchmark low level');
+                } else {
+                    perfData.level = 'potato';
+                    console.log('[DEBUG] Setting benchmark potato level (fallback)');
+                }
+
+                // Check URL override
+                var qs = document.location.search.match(/[?&]quality=(\w+)/);
+                if (qs) {
+                    var forcedQuality = (qs[1] || '').toLowerCase();
+                    console.log('[DEBUG] URL quality override detected:', forcedQuality);
+                    if (forcedQuality === 'high' || forcedQuality === 'medium' || forcedQuality === 'low' || forcedQuality === 'potato') {
+                        // Keep benchmark level untouched; override only launch quality hint.
+                        perfData.manualQuality = forcedQuality;
+                    }
+                }
+
+                // Build choice: legacy on old environment OR non-high performance profile.
+                var legacyByEnvironment = browserInfo.isLegacy || browserInfo.isLegacyOS;
+                var effectiveQuality = perfData.manualQuality || perfData.level;
+                var legacyByPerformance = (effectiveQuality === 'medium' || effectiveQuality === 'low' || effectiveQuality === 'potato');
+                perfData.version = (legacyByEnvironment || legacyByPerformance) ? 'legacy/' : 'modern/';
+
+                console.log('[DEBUG] Final perfData after all checks:', perfData);
+
+                // Update UI
+                var perfEl = document.getElementById('perf-level');
+                var scoreEl = document.getElementById('perf-score');
+                var badgeEl = document.getElementById('perf-badge');
+
+                perfEl.className = 'info-value perf-' + perfData.level;
+                scoreEl.innerHTML = Math.round(combinedScore) + '/100';
+
+                perfEl.innerHTML = tLevel(perfData.level);
+                badgeEl.className = 'perf-badge ' + perfData.level;
+                badgeEl.innerHTML = tLevel(perfData.level);
+
+                console.log('[DEBUG] Benchmark calculations complete, perfData:', perfData);
+
+                // Show game screen
+                console.log('[DEBUG] Benchmark complete, scheduling showGameScreen');
+                try {
+                    setTimeout(function () {
+                        showGameScreen();
+                    }, 800);
+                } catch (e) {
+                    console.error('[DEBUG] Error scheduling showGameScreen:', e);
+                    // Fallback: show immediately
+                    showGameScreen();
+                }
+            }
+
+            // Helper function to set test status - IE6 compatible
+            function setTestStatus(id, status) {
+                var el = document.getElementById(id);
+                if (el) {
+                    el.className = 'test-indicator-status ' + status;
+                }
+            }
+
+            updateProgress();
+
+            // Run benchmark after first progress update
+            setTimeout(doBenchmark, 800);
+        }
+
+        function finishBenchmark() {
+            // Already handled in doBenchmark
+        }
+
+        function showGameScreen() {
+            console.log('[DEBUG] showGameScreen() called');
+
+            // Force hide benchmark screen
+            var el = document.getElementById('benchmark-screen');
+            if (el) {
+                el.style.display = 'none';
+                el.style.visibility = 'hidden';
+                console.log('[DEBUG] benchmark-screen hidden');
+            }
+
+            // Force show game screen
+            el = document.getElementById('game-screen');
+            if (el) {
+                el.style.display = 'block';
+                el.style.visibility = 'visible';
+                console.log('[DEBUG] game-screen shown');
+            }
+
+            // Ensure container is visible
+            var containers = document.getElementsByClassName('container');
+            var container = containers.length ? containers[0] : null;
+            if (container) {
+                container.style.visibility = 'visible';
+            }
+
+            console.log('[DEBUG] Calling renderGames()');
+            renderGames();
+
+            // Force repaint for legacy browsers
+            document.body.style.visibility = 'visible';
+        }
+
+        function renderGames() {
+            console.log('[DEBUG] renderGames() started');
+
+            // Validate perfData
+            if (!perfData) {
+                console.error('[DEBUG] perfData is undefined!');
+                return;
+            }
+            console.log('[DEBUG] perfData:', perfData);
+
+            var grid = document.getElementById('games-grid');
+            console.log('[DEBUG] games-grid element:', grid);
+            if (!grid) {
+                console.error('[DEBUG] games-grid element not found!');
+                return;
+            }
+            var html = '';
+
+            // Games that show lag warning in legacy mode
+            var lagWarningGames = ['Night Racer', 'School RPG', 'The Deepest Dunk'];
+            var isLegacy = perfData.version === 'legacy/';
+
+            for (var i = 0; i < games.length; i++) {
+                var g = games[i];
+
+                var version = perfData.version;
+                var versionText = isLegacy ? tVersion('legacy') : tVersion('modern');
+                var versionClass = isLegacy ? 'legacy' : '';
+
+                // Get localized description - safer null checks
+                var desc = (g && g.desc && g.desc[currentLang]) ? g.desc[currentLang] : (g && g.desc && g.desc['ru'] ? g.desc['ru'] : '');
+
+                // Generate warning if in legacy mode
+                var warningHtml = '';
+                if (isLegacy) {
+                    // Granny: critical warning (PC too old)
+                    if (g.name === 'Granny') {
+                        warningHtml = '<span class="game-warning critical">' + tWarning('tooOld') + '</span>';
+                    }
+                    // Other resource-heavy games: lag warning
+                    else if (lagWarningGames.indexOf(g.name) !== -1) {
+                        warningHtml = '<span class="game-warning lag">' + tWarning('lag') + '</span>';
+                    }
+                }
+
+                // Build HTML string - IE6 compatible
+                html += '<div class="game-card game-card-shadow" onclick="launchGame(\'' + escapePath(g.path) + '\',\'' + version + '\')">';
+                html += '<div class="game-icon">' + g.icon + '</div>';
+                html += '<div class="game-name">' + g.name + '</div>';
+                html += '<div class="game-desc">' + desc + '</div>';
+                html += warningHtml;
+                html += '<div class="game-meta">';
+                html += '<span class="game-version ' + versionClass + '">' + versionText + '</span>';
+                html += '<span style="color:#777;font-size:20px;">&#9654;</span>';
+                html += '</div>';
+                html += '</div>';
+            }
+
+            // Set grid HTML with try/catch fallback (Priority 3)
+            try {
+                grid.innerHTML = html;
+            } catch (ex) {
+                console.error('[DEBUG] renderGames innerHTML failed:', ex);
+                // fallback: progressively append nodes
+                for (var i = 0; i < games.length; i++) {
+                    try {
+                        var div = document.createElement('div');
+                        div.className = 'game-card game-card-shadow';
+                        div.onclick = (function (path, ver, qual) { return function () { launchGame(path, ver, qual); }; })(games[i].path, perfData.version, perfData.level);
+                        div.innerHTML = '<div class="game-icon">' + games[i].icon + '</div><div class="game-name">' + games[i].name + '</div>';
+                        grid.appendChild(div);
+                    } catch (e2) { }
+                }
+            }
+            console.log('[DEBUG] Games rendered, HTML length:', html.length);
+
+            // Call addHoverEffects after renderGames (Priority 4)
+            setTimeout(addHoverEffects, 50);
+        }
+
+        // Helper function to escape quotes in game paths
+        function escapePath(str) {
+            return (str || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+        }
+
+        // Global function for launching games - IE6 compatible
+        window.launchGame = function (gamePath, version, quality) {
+            // DEBUG: Log URL construction details
+            console.log('[DEBUG] launchGame called with:');
+            console.log('  gamePath:', gamePath);
+            console.log('  version:', version);
+
+            // Get quality from parameter or from global perfData
+            var qualityLevel = quality || (perfData && perfData.manualQuality) || (perfData && perfData.level) || 'high';
+            console.log('  quality:', qualityLevel);
+
+            // Build URL - most games use lower-case folders, but some keep Legacy/Modern.
+            var versionFolder = version;
+            if (gamePath === 'Kuzibaeva/' || gamePath === 'StarBear/') {
+                if (version === 'legacy/') {
+                    versionFolder = 'Legacy/';
+                } else if (version === 'modern/') {
+                    versionFolder = 'Modern/';
+                }
+            }
+            var url = gamePath + versionFolder + 'index.html';
+
+            // Add quality parameter if specified and not 'high' (high is default)
+            if (qualityLevel && qualityLevel !== 'high') {
+                url += '?quality=' + qualityLevel;
+            }
+
+            console.log('[DEBUG] Final URL:', url);
+            // Show loading indicator before redirect
+            var loadingHtml = '<div style="text-align:center;padding:100px;color:#fff;font-family:sans-serif;">' +
+                '<h1>' + t('loading') + '</h1>' +
+                '<p>' + t('starting') + gamePath + '</p>' +
+                '</div>';
+            document.body.innerHTML = loadingHtml;
+            // Direct redirect (IE6 compatible)
+            setTimeout(function () {
+                document.location.href = url;
+            }, 100);
+        };
+
+        // Add hover effects for IE6 using attachEvent
+        if (document.attachEvent) {
+            // We'll set this up after games are rendered
+        }
+
+        // Initialize language UI
+        updateLanguageUI();
+        updateUITexts();
+
+        // Add simple hover effect for game cards - IE6 compatible
+        function addHoverEffects() {
+            var cards = document.getElementsByClassName('game-card');
+            for (var i = 0; i < cards.length; i++) {
+                var card = cards[i];
+
+                // IE6 hover using onmouseover/onmouseout
+                card.onmouseover = function () {
+                    if (this.className.indexOf('game-card-hover') === -1) {
+                        this.className = this.className + ' game-card-hover';
+                    }
+                };
+                card.onmouseout = function () {
+                    this.className = this.className.replace(' game-card-hover', '');
+                };
+            }
+        }
+
+        // Start benchmark
+        console.log('[DEBUG] Starting benchmark...');
+        try {
+            runBenchmark();
+        } catch (e) {
+            console.error('[DEBUG] Error in runBenchmark:', e);
+        }
+
+        // Add hover effects after a delay to ensure DOM is ready
+        setTimeout(addHoverEffects, 1000);
+    </script>
+</body>
+
+</html>

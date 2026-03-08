@@ -1,0 +1,464 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ru">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>ШКОЛЬНАЯ РПГ: Ultimate (IE8)</title>
+
+    <!-- Firebase disabled for IE6 offline mode - loaded as regular script -->
+    <script type="text/javascript">
+    // Initialize offline stub
+    window.loginOrRegister = null;
+    window.firebaseReady = false;
+    window.useLocalMode = true;
+    </script>
+    
+    <!-- IE8 Polyfills - loaded before game.js -->
+    <!--[if lt IE 9]>
+    <script src="../../ie8-polyfills.js"></script>
+    <![endif]-->
+
+    <!-- IE8 Specific Styles -->
+    <!--[if IE 8]>
+    <style>
+        .inline-block { display: inline-block; zoom: 1; }
+        .opacity-50 { filter: alpha(opacity=50); }
+    </style>
+    <![endif]-->
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Settings Bar -->
+    <div class="settings-bar">
+        <span id="connection-status" class="connection-status" style="display:none; margin-right: 10px; color: #fbbf24; font-size: 12px;"></span>
+        <button class="setting-btn" onclick="toggleLang()" id="lang-btn">RU</button>
+        <button class="setting-btn" onclick="toggleMute()" id="mute-btn">(O)</button>
+    </div>
+
+    <!-- Menu Screen -->
+    <div class="menu-screen" id="menu-screen">
+        <div class="menu-content">
+            <div class="menu-title" id="menu-title">ШКОЛЬНАЯ РПГ<br>Ultimate Edition</div>
+            <div class="menu-subtitle" id="menu-subtitle">Ranked Fix: Precise Balance</div>
+
+            <!-- Auth Section -->
+            <div id="auth-section" class="auth-section">
+                <div class="menu-section-title">Вход / Регистрация (Любой режим)</div>
+                <input type="text" id="auth-name" class="menu-input" maxlength="15" placeholder="Имя (Логин)">
+                <input type="password" id="auth-pass" class="menu-input" maxlength="20"
+                    placeholder="Пароль (для защиты)">
+                <button class="menu-btn story" onclick="attemptLogin()">
+                    <span class="name">ВОЙТИ / СОЗДАТЬ</span>
+                </button>
+                <div id="auth-msg" class="auth-msg"></div>
+            </div>
+
+            <!-- Main Menu Container -->
+            <div id="main-menu-container" style="display: none;">
+                <!-- Player Stats -->
+                <div class="player-stats-menu">
+                    <div class="stat-item" style="width: 100%; text-align: center; margin-bottom: 10px;">
+                        <span id="player-name-display" style="font-weight: bold; color: #fbbf24;">Ученик</span>
+                        <span style="margin-left: 10px; color: #86efac;">RP: <span id="rp-display">0</span></span>
+                    </div>
+                    <div class="stat-item">
+                        <span>HP:</span><span id="menu-hp">120</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>MP:</span><span id="menu-mp">50</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>[P]:</span><span id="menu-item-0">x1</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>[C]:</span><span id="menu-item-1">x1</span>
+                    </div>
+                </div>
+
+                <!-- Game Modes -->
+                <div class="menu-section">
+                    <div class="menu-section-title">РЕЖИМЫ</div>
+                    <div class="menu-buttons">
+                        <button class="menu-btn story" onclick="startBattle('story')">
+                            <span class="emoji">[S]</span>
+                            <div class="info">
+                                <span class="name">СЮЖЕТ</span>
+                                <span class="desc" id="story-progress">Уровень 1: Егор</span>
+                            </div>
+                        </button>
+                        <button class="menu-btn pvp" onclick="startPvP()">
+                            <span class="emoji">[P]</span>
+                            <div class="info">
+                                <span class="name">PvP</span>
+                                <span class="desc">Игрок vs Игрок (1 экран)</span>
+                            </div>
+                        </button>
+                        <button class="menu-btn endless" onclick="showEndlessMenu()">
+                            <span class="emoji">[E]</span>
+                            <div class="info">
+                                <span class="name">БЕСКОНЕЧНЫЙ</span>
+                                <span class="desc">Выживание без лечения</span>
+                            </div>
+                        </button>
+                        <button class="menu-btn" id="btn-shop" style="border-color: #a855f7; background: #6b21a8;"
+                            onclick="openShop()">
+                            <span class="emoji">[$]</span>
+                            <div class="info">
+                                <span class="name" id="shop-name">МАГАЗИН СКИНОВ</span>
+                                <span class="desc" id="shop-desc">Трать RP на образы</span>
+                            </div>
+                        </button>
+                        <button class="menu-btn" id="btn-daily" style="border-color: #fbbf24; background: #d97706;"
+                            onclick="openDailyMenu()">
+                            <span class="emoji">[D]</span>
+                            <div class="info">
+                                <span class="name" id="daily-name">ЕЖЕДНЕВНЫЙ БОНУС</span>
+                                <span class="desc" id="daily-desc">Заходи и получай RP!</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Boss Buttons -->
+                <div class="menu-section">
+                    <div class="menu-section-title">ОТДЕЛЬНЫЕ БОССЫ</div>
+                    <div class="menu-buttons">
+                        <button class="menu-btn" id="btn-larisa" onclick="startBattle('larisa')">
+                            <span class="emoji">[L]</span>
+                            <div class="info">
+                                <span class="name">Лариса Олеговна</span>
+                                <span class="desc">Математичка - Уравнения</span>
+                            </div>
+                        </button>
+                        <button class="menu-btn" id="btn-director" onclick="startBattle('director')">
+                            <span class="emoji">[D]</span>
+                            <div class="info">
+                                <span class="name">Дмитрий Сергеевич</span>
+                                <span class="desc">Директор - Власть</span>
+                            </div>
+                        </button>
+                        <button class="menu-btn" id="btn-music" onclick="startBattle('music')">
+                            <span class="emoji">[M]</span>
+                            <div class="info">
+                                <span class="name">Лилия Васильевна</span>
+                                <span class="desc">Учитель Музыки - Песни</span>
+                            </div>
+                        </button>
+                        <button class="menu-btn" id="btn-natalia" onclick="startBattle('natalia')">
+                            <span class="emoji">[N]</span>
+                            <div class="info">
+                                <span class="name">Наталья Викторовна</span>
+                                <span class="desc">Крикунья - СПАМ X!</span>
+                            </div>
+                        </button>
+                        <button class="menu-btn" id="btn-makar" onclick="startBattle('makar')">
+                            <span class="emoji">[m]</span>
+                            <div class="info">
+                                <span class="name">Макар</span>
+                                <span class="desc">Мелкий - Быстрый</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bottom Buttons -->
+                <div class="menu-section" style="margin-top: 15px;">
+                    <button class="menu-btn" id="btn-lb" onclick="showLeaderboard()"
+                        style="width: 300px; text-align: center;">
+                        [!] Таблица рекордов (Fair Play)
+                    </button>
+                    <button class="menu-btn" id="btn-save" onclick="exportSave()"
+                        style="width: 300px; text-align: center;">
+                        [S] Сохранить в файл
+                    </button>
+                    <button class="menu-btn" id="btn-load" onclick="triggerImport()"
+                        style="width: 300px; text-align: center;">
+                        [L] Загрузить из файла
+                    </button>
+                    <button class="menu-btn" id="btn-reset" onclick="resetProgress()"
+                        style="width: 300px; background: #7f1d1d; text-align: center;">
+                        [R] Сбросить прогресс
+                    </button>
+                    <input type="file" id="import-file" style="display: none;" onchange="importSave(this)"
+                        accept=".json">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shop Modal -->
+    <div class="modal-overlay" id="shop-modal">
+        <div class="modal-content">
+            <div class="modal-title">[$] МАГАЗИН</div>
+            <div style="color: #fbbf24; margin-bottom: 10px; font-size: 0.8rem;" id="shop-balance">
+                БАЛАНС: <span id="shop-rp-display">0</span> RP
+            </div>
+            <div class="shop-grid" id="shop-grid">
+                <!-- Generated by JS -->
+            </div>
+            <input type="file" id="custom-skin-input" accept="image/*" style="display: none;">
+            <button class="modal-btn"
+                onclick="document.getElementById('shop-modal').style.display='none';">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div class="game-wrapper" id="game-wrapper" style="display: none;">
+        <div class="speedrun-timer" id="speedrun-timer">00:00:000</div>
+        <button class="back-btn" id="back-btn" onclick="goToMenu()">Меню</button>
+
+        <div class="header-info">
+            <span id="level-display">УРОВЕНЬ 1</span>
+            <div class="header-stats">
+                <span>HP:</span><span id="header-hp">120</span>
+                <span style="margin-left: 12px;">MP:</span><span id="header-mp">50</span>
+            </div>
+            <span id="enemy-name-display">ЕГОР</span>
+        </div>
+
+        <div class="battle-arena" id="arena">
+            <!-- Speech Bubbles -->
+            <div id="bubble-player" class="speech-bubble" style="display: none;"></div>
+            <div id="bubble-enemy" class="speech-bubble" style="display: none;"></div>
+
+            <!-- Special Bar (for Larisa) -->
+            <div class="special-bar-container" id="special-bar-container" style="display: none;">
+                <div class="special-bar-label">
+                    <span id="special-bar-label-text">[E] УРАВНЕНИЕ</span>
+                    <span id="special-bar-percent">0%</span>
+                </div>
+                <div class="special-bar-wrap">
+                    <div class="special-bar-val" id="special-bar-val" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <!-- Battle Scene -->
+            <div class="sprite-container">
+                <!-- Player -->
+                <div class="player-sprite" id="player-sprite">O</div>
+                <img src="" class="player-custom-img" id="player-custom-img" style="display: none;">
+
+                <!-- Minion Container -->
+                <div class="minion-container" id="minion-container" style="display: none;">
+                    <div class="minion-sprite" id="minion-sprite">[E]</div>
+                    <div class="minion-bar-wrap">
+                        <div class="minion-bar-fill" id="minion-hp-bar" style="width: 100%;"></div>
+                    </div>
+                </div>
+
+                <!-- Enemy -->
+                <div class="enemy-sprite" id="enemy-sprite">E</div>
+            </div>
+
+            <!-- HP/MP Bars -->
+            <div class="bar-container">
+                <div class="bar-label">Player HP</div>
+                <div class="bar-wrap">
+                    <div class="bar-fill player-hp" id="p-hp-bar" style="width: 100%;"></div>
+                    <div class="bar-text"><span>HP</span><span id="p-hp-txt">120</span></div>
+                </div>
+            </div>
+
+            <div class="bar-container">
+                <div class="bar-label">Player MP</div>
+                <div class="bar-wrap">
+                    <div class="bar-fill player-mp" id="p-mp-bar" style="width: 50%;"></div>
+                    <div class="bar-text" style="color: #60a5fa;"><span>MP</span><span id="p-mp-txt">50</span></div>
+                </div>
+            </div>
+
+            <div class="bar-container">
+                <div class="bar-label">Enemy HP</div>
+                <div class="bar-wrap">
+                    <div class="bar-fill enemy-hp" id="e-hp-bar" style="width: 100%;"></div>
+                    <div class="bar-text"><span id="e-name-ui">ВРАГ</span><span id="e-hp-txt">100</span></div>
+                </div>
+            </div>
+
+            <!-- PvP MP Bar -->
+            <div class="bar-container" id="pvp-mp-container" style="display: none;">
+                <div class="bar-label">Enemy MP</div>
+                <div class="bar-wrap">
+                    <div class="bar-fill player-mp" id="e-mp-bar" style="width: 50%;"></div>
+                    <div class="bar-text" style="color: #60a5fa;"><span>MP</span><span id="e-mp-txt">50</span></div>
+                </div>
+            </div>
+
+            <!-- Target Selection -->
+            <div class="target-selection" id="target-selection" style="display: none;">
+                <button class="target-btn" onclick="selectTarget('enemy')">
+                    <span id="target-enemy-emoji">E</span>
+                    <span id="target-enemy-name">Враг</span>
+                </button>
+                <button class="target-btn" onclick="selectTarget('minion')">
+                    <span>[E]</span>
+                    <span id="target-minion-name">Уравнение</span>
+                </button>
+            </div>
+
+            <!-- Log -->
+            <div class="battle-log" id="log">Бой начинается!</div>
+
+            <!-- Controls -->
+            <div class="action-panel" id="action-panel">
+                <div class="action-buttons">
+                    <button class="item-btn" id="item-0">
+                        [P] Пирожок
+                        <span class="item-count" id="count-0">1</span>
+                    </button>
+                    <button class="item-btn" id="item-1">
+                        [C] Шпора
+                        <span class="item-count" id="count-1">1</span>
+                    </button>
+                </div>
+
+                <div class="action-buttons" style="clear: both;">
+                    <button class="skill-btn" id="btn-0">
+                        <span class="btn-name">Подзатыльник</span>
+                        <span class="btn-cost">0 MP</span>
+                    </button>
+                    <button class="skill-btn" id="btn-1">
+                        <span class="btn-name">Фокус</span>
+                        <span class="btn-cost">+40 MP</span>
+                    </button>
+                    <button class="skill-btn" id="btn-2">
+                        <span class="btn-name">Удар Ранцем</span>
+                        <span class="btn-cost">35 MP</span>
+                    </button>
+                    <button class="skill-btn" id="btn-3">
+                        <span class="btn-name">Звонок Маме</span>
+                        <span class="btn-cost">80 MP</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Baba Valya Attacks Container -->
+            <div id="baba-valya-attacks-container"></div>
+        </div>
+    </div>
+
+    <!-- Scream Battle Overlay -->
+    <div class="scream-overlay" id="scream-overlay" style="display: none;">
+        <div class="scream-title" id="scream-title">БИТВА КРИКОВ!</div>
+        <div class="scream-bar-container">
+            <div class="scream-bar-player" id="scream-bar-player" style="width: 50%;"></div>
+            <div class="scream-bar-enemy" id="scream-bar-enemy" style="width: 50%;"></div>
+            <div class="scream-divider"></div>
+            <div class="scream-timer" id="scream-timer">15</div>
+        </div>
+        <div class="scream-damage">
+            <span id="scream-dmg-player">-0</span>
+            <span id="scream-dmg-enemy">-0</span>
+        </div>
+        <div class="scream-instruction" id="scream-instr">ЖМИ КНОПКУ ЧТОБЫ ОРАТЬ!</div>
+        <div class="scream-key" id="scream-key" onclick="handleScreamMouseDown()">X</div>
+    </div>
+
+    <!-- Endless Selection Modal -->
+    <div class="modal-overlay" id="endless-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-title" id="endless-title">БЕСКОНЕЧНЫЙ РЕЖИМ</div>
+            <div style="font-size: 0.8rem; color: #94a3b8; text-align: center; margin-bottom: 10px;" id="endless-sub">
+                Выберите противника. HP/MP не восстанавливаются!
+            </div>
+            <div style="text-align: center;">
+                <button class="selection-btn" onclick="startEndless('random')" style="width: 80%;">[?]
+                    Случайные</button>
+                <button class="selection-btn" onclick="startEndless('story_0')" style="width: 80%;">[E] Егор</button>
+                <button class="selection-btn" onclick="startEndless('story_1')" style="width: 80%;">[V] Вадим</button>
+                <button class="selection-btn" onclick="startEndless('story_2')" style="width: 80%;">[M]
+                    Марьванна</button>
+                <button class="selection-btn" onclick="startEndless('makar')" style="width: 80%;">[m] Макар</button>
+                <button class="selection-btn" onclick="startEndless('director')" style="width: 80%;">[D]
+                    Директор</button>
+                <button class="selection-btn" onclick="startEndless('larisa')" style="width: 80%;">[L] Лариса
+                    О.</button>
+                <button class="selection-btn" onclick="startEndless('music')" style="width: 80%;">[S] Лилия В.</button>
+                <button class="selection-btn" onclick="startEndless('natalia')" style="width: 80%;">[N] Наталья
+                    В.</button>
+            </div>
+            <button class="modal-btn" id="btn-endless-cancel"
+                onclick="document.getElementById('endless-modal').style.display='none';">ОТМЕНА</button>
+        </div>
+    </div>
+
+    <!-- Daily Reward Modal -->
+    <div class="modal-overlay" id="daily-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-title" id="daily-title">ЕЖЕДНЕВНЫЕ НАГРАДЫ</div>
+            <div id="daily-grid" class="daily-grid" style="margin-top: 20px;">
+                <!-- Generated by JS -->
+            </div>
+            <button class="modal-btn" id="daily-claim-btn" onclick="claimDailyReward()" disabled>ЗАБРАТЬ</button>
+            <button class="modal-btn"
+                onclick="document.getElementById('daily-modal').style.display='none';">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal" style="display: none;">
+        <div class="modal-content">
+            <div style="font-size: 4rem; margin-bottom: 15px" id="modal-emoji">!</div>
+            <div class="modal-title" id="modal-title">ПОБЕДА!</div>
+            <div style="text-align: center; color: #ccc; max-width: 280px; margin-bottom: 15px" id="modal-desc"></div>
+            <button class="modal-btn" id="modal-btn">ДАЛЬШЕ</button>
+            <button class="modal-btn" id="modal-btn-menu" onclick="goToMenu()">В МЕНЮ</button>
+        </div>
+    </div>
+
+    <!-- Hardcore Confirmation Modal -->
+    <div class="modal-overlay" id="hardcore-modal" style="display: none;">
+        <div class="modal-content">
+            <div style="font-size: 4rem; margin-bottom: 15px">X</div>
+            <div class="modal-title" id="hc-title" style="color: #ef4444;">Вы уверены? Будет больно.</div>
+            <div style="margin-top: 20px;">
+                <button class="modal-btn" id="hardcore-yes" style="margin-bottom: 10px;">Да, я готов(а)</button>
+                <button class="modal-btn" id="hardcore-no">Нет, я передумал(а)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div class="modal-overlay" id="leaderboard-modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-title" id="lb-title">ТАБЛИЦА РЕКОРДОВ</div>
+
+            <select id="filter-select" class="filter-select" onchange="window.reloadLeaderboard()">
+                <option value="all" id="lb-opt-all">Все записи</option>
+                <option value="wins" id="lb-opt-wins">Только победы</option>
+                <option value="losses" id="lb-opt-losses">Только поражения</option>
+            </select>
+
+            <div style="width: 100%; max-height: 300px; overflow-y: auto;">
+                <table class="leaderboard-table" id="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th id="lb-th-name">Имя</th>
+                            <th id="lb-th-enemy">Режим/Враг</th>
+                            <th id="lb-th-pts">PTS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 15px;">
+                <button class="modal-btn" id="lb-btn-close"
+                    onclick="document.getElementById('leaderboard-modal').style.display='none';">ЗАКРЫТЬ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offline Firebase Stub -->
+    <script type="text/javascript" src="firebase.js"></script>
+
+    <!-- Game Script -->
+    <script src="game.js"></script>
+</body>
+
+</html>

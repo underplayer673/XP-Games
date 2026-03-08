@@ -1,0 +1,1528 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GRANNY 3D: FINAL FIX</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+            /* Убирает скролл и полосы */
+            position: fixed;
+            /* Фиксирует экран на мобильных */
+            font-family: 'Segoe UI', 'Tahoma', 'Verdana', 'Arial Unicode MS', 'Arial', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            image-rendering: pixelated;
+        }
+
+        /* РРќРўР•Р Р¤Р•Р™РЎ */
+        #ui,
+        #start-screen,
+        #end-screen,
+        #jumpscare-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            /* UI прозрачен для кликов, если не переопределено */
+        }
+
+        #start-screen,
+        #end-screen {
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            pointer-events: auto;
+            /* Меню кликабельно */
+            text-align: center;
+        }
+
+        #end-screen {
+            display: none;
+            /* Скрыто по умолчанию */
+            z-index: 200;
+        }
+
+        /* РљРќРћРџРљР Р РўР•РљРЎРў */
+        h1 {
+            font-size: 40px;
+            margin: 10px;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        p {
+            color: #aaa;
+            margin: 5px;
+        }
+
+        button {
+            background: #333;
+            color: white;
+            border: 2px solid white;
+            padding: 15px 30px;
+            font-size: 20px;
+            font-family: inherit;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        button:active {
+            background: #666;
+        }
+
+        #lang-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.5);
+            margin: 0;
+            z-index: 150;
+        }
+
+        #sound-btn {
+            position: absolute;
+            top: 48px;
+            right: 10px;
+            padding: 5px 10px;
+            font-size: 18px;
+            background: rgba(0, 0, 0, 0.5);
+            margin: 0;
+            z-index: 150;
+        }
+
+        /* ЭФФЕКТЫ */
+        #blood,
+        #hiding-overlay,
+        #bed-overlay,
+        .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        #blood {
+            box-shadow: inset 0 0 100px rgba(255, 0, 0, 0);
+            transition: box-shadow 0.2s;
+            mix-blend-mode: multiply;
+            z-index: 2;
+        }
+
+        .vignette {
+            background: radial-gradient(circle, transparent 50%, black 100%);
+            z-index: 1;
+        }
+
+        #hiding-overlay {
+            display: none;
+            background: repeating-linear-gradient(90deg, #1a0d00 0, #1a0d00 50px, transparent 50px, transparent 55px);
+            box-shadow: inset 0 0 150px black;
+            z-index: 5;
+        }
+
+        #bed-overlay {
+            display: none;
+            background: linear-gradient(to bottom, black 0%, transparent 40%);
+            box-shadow: inset 0 -50px 100px black;
+            z-index: 5;
+        }
+
+        /* JUMPSCARE */
+        #jumpscare-overlay {
+            display: none;
+            background: black;
+            z-index: 150;
+        }
+
+        #jumpscare-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            animation: shake 0.1s infinite;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translate(1px, 1px) rotate(0deg);
+            }
+
+            25% {
+                transform: translate(-3px, 0px) rotate(1deg);
+            }
+
+            50% {
+                transform: translate(-1px, 2px) rotate(-1deg);
+            }
+
+            75% {
+                transform: translate(3px, 1px) rotate(-1deg);
+            }
+
+            100% {
+                transform: translate(1px, -2px) rotate(-1deg);
+            }
+        }
+
+        /* РЎРћРћР‘Р©Р•РќРРЇ Р’ РР“Р Р• */
+        #interact-msg {
+            position: absolute;
+            bottom: 25%;
+            color: white;
+            font-size: 20px;
+            display: none;
+            text-shadow: 1px 1px 0 #000;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+            z-index: 10;
+        }
+
+        #trap-msg {
+            position: absolute;
+            bottom: 35%;
+            width: 100%;
+            text-align: center;
+            color: yellow;
+            font-weight: bold;
+            font-size: 24px;
+            display: none;
+            text-shadow: 2px 2px 0 #000;
+            animation: blink 0.5s infinite;
+            z-index: 10;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* ENERGY */
+        #stamina {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 90;
+            pointer-events: none;
+            color: white;
+            font-size: 12px;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        #stamina-bar {
+            width: 160px;
+            height: 10px;
+            border: 1px solid white;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        #stamina-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #f1d54e, #d17a15);
+            transition: width 0.1s;
+        }
+
+        /* РњРћР‘РР›Р¬РќРћР• РЈРџР РђР’Р›Р•РќРР• */
+        #mobile-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 50;
+            pointer-events: none;
+            display: none;
+        }
+
+        .touch-zone {
+            position: absolute;
+            bottom: 0;
+            height: 50%;
+            width: 50%;
+            pointer-events: auto;
+        }
+
+        #zone-move {
+            left: 0;
+        }
+
+        #zone-look {
+            right: 0;
+        }
+
+        #btn-interact {
+            position: absolute;
+            bottom: 80px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            border-radius: 50%;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+            backdrop-filter: blur(5px);
+        }
+
+        #btn-interact:active {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        #joystick-outline {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: none;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+        }
+
+        #joystick-knob {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            left: 30px;
+            top: 30px;
+        }
+
+        /* EXIT OPEN */
+        #exit-open {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 80;
+            color: white;
+            font-size: 14px;
+            text-shadow: 1px 1px 0 #000;
+            display: none;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        #exit-open-bar {
+            width: 180px;
+            height: 8px;
+            border: 1px solid white;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        #exit-open-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #6fd0ff, #2b79ff);
+            transition: width 0.05s;
+        }
+
+        #difficulty-wrap {
+            margin: 10px auto 12px;
+            max-width: 540px;
+        }
+
+        #difficulty-label {
+            color: #d7d7d7;
+            font-size: 14px;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        #difficulty-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .diff-btn {
+            background: rgba(0, 0, 0, 0.55);
+            color: #e8e8e8;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 92px;
+            margin-top: 0;
+        }
+
+        .diff-btn.active {
+            border-color: #ff5555;
+            box-shadow: 0 0 10px rgba(255, 60, 60, 0.55);
+            color: #fff;
+            background: rgba(120, 10, 10, 0.55);
+        }
+    </style>
+</head>
+
+<body>
+    <button id="lang-btn" onclick="toggleLang()">EN</button>
+    <button id="sound-btn" onclick="toggleSound()">SOUND: ON</button>
+
+    <div id="blood"></div>
+    <div class="vignette"></div>
+    <div id="hiding-overlay"></div>
+    <div id="bed-overlay"></div>
+
+    <div id="jumpscare-overlay">
+        <img id="jumpscare-img" src="" alt="SCREAM">
+    </div>
+
+    <div id="ui">
+        <div id="trap-msg">YOU ARE TRAPPED!</div>
+        <div id="interact-msg">Press HAND to Hide</div>
+    </div>
+    <div id="stamina">
+        <div>ENERGY</div>
+        <div id="stamina-bar">
+            <div id="stamina-fill"></div>
+        </div>
+    </div>
+
+    <!-- START MENU -->
+    <div id="start-screen">
+        <h1 id="txt-title" style="color: red;">GRANNY 3D</h1>
+        <h2 id="txt-start">TAP TO START</h2>
+        <div id="difficulty-wrap">
+            <div id="difficulty-label">DIFFICULTY</div>
+            <div id="difficulty-buttons">
+                <button class="diff-btn" data-diff="easy">EASY</button>
+                <button class="diff-btn active" data-diff="normal">NORMAL</button>
+                <button class="diff-btn" data-diff="medium">MEDIUM</button>
+                <button class="diff-btn" data-diff="hard">HARD</button>
+                <button class="diff-btn" data-diff="hell">HELL</button>
+            </div>
+        </div>
+        <p id="txt-controls">WASD / Touch Left = Move (Shift Run)<br>Mouse / Touch Right = Look</p>
+        <button id="btn-start">PLAY</button>
+    </div>
+
+    <!-- END MENU (WIN/LOSS) -->
+    <div id="end-screen">
+        <h1 id="end-title">GAME OVER</h1>
+        <button id="btn-restart" onclick="location.reload()">PLAY AGAIN</button>
+    </div>
+
+    <div id="mobile-controls">
+        <div id="zone-move" class="touch-zone"></div>
+        <div id="zone-look" class="touch-zone"></div>
+        <div id="btn-interact" onmousedown="interactHoldStart()" onmouseup="interactHoldEnd()"
+            onmouseleave="interactHoldEnd()" ontouchstart="interactHoldStart()" ontouchend="interactHoldEnd()"
+            ontouchcancel="interactHoldEnd()">✋</div>
+        <div id="joystick-outline">
+            <div id="joystick-knob"></div>
+        </div>
+    </div>
+
+    <div id="exit-open">
+        <div id="exit-open-text">OPENING EXIT...</div>
+        <div id="exit-open-bar">
+            <div id="exit-open-fill"></div>
+        </div>
+    </div>
+
+    <canvas id="game"></canvas>
+
+    <script>
+        // --- Р›РћРљРђР›РР—РђР¦РРЇ ---
+        let lang = 'en';
+        const texts = {
+            en: {
+                start: "TAP TO START",
+                controls: "Left Side: Move | Right Side: Look | Button: Action | Shift: Run",
+                trap: "YOU ARE TRAPPED! SHE HEARS YOU!",
+                hide: "Tap HAND to Hide",
+                leave: "Tap HAND to Leave",
+                openDoor: "Tap HAND to Open Door",
+                closeDoor: "Tap HAND to Close Door",
+                openExit: "Hold HAND to Open Exit",
+                openingExit: "OPENING EXIT...",
+                exit: "YOU ESCAPED!",
+                death: "YOU DIED",
+                btnPlay: "PLAY",
+                btnAgain: "PLAY AGAIN",
+                difficulty: "DIFFICULTY",
+                diffEasy: "EASY",
+                diffNormal: "NORMAL",
+                diffMedium: "MEDIUM",
+                diffHard: "HARD",
+                diffHell: "HELL",
+                soundOn: "SOUND: ON",
+                soundOff: "SOUND: OFF"
+            },
+            ru: {
+                start: "НАЖМИ ИГРАТЬ",
+                controls: "Слева: Ходить | Справа: Обзор | Кнопка: Действие | Shift: Бег",
+                trap: "ТЫ В КАПКАНЕ! ОНА СЛЫШИТ!",
+                hide: "Жми РУКУ чтобы спрятаться",
+                leave: "Жми РУКУ чтобы выйти",
+                openDoor: "Жми РУКУ чтобы открыть дверь",
+                closeDoor: "Жми РУКУ чтобы закрыть дверь",
+                openExit: "Зажми РУКУ чтобы открыть выход",
+                openingExit: "ОТКРЫВАЕТСЯ ВЫХОД...",
+                exit: "ТЫ СБЕЖАЛ!",
+                death: "ТЫ ПОГИБ",
+                btnPlay: "ИГРАТЬ",
+                btnAgain: "ИГРАТЬ СНОВА",
+                difficulty: "СЛОЖНОСТЬ",
+                diffEasy: "ЛЁГКАЯ",
+                diffNormal: "ОБЫЧНАЯ",
+                diffMedium: "СРЕДНЯЯ",
+                diffHard: "СЛОЖНАЯ",
+                diffHell: "АДСКАЯ",
+                soundOn: "ЗВУК: ВКЛ",
+                soundOff: "ЗВУК: ВЫКЛ"
+            }
+        };
+
+        function toggleLang() {
+            lang = lang === 'en' ? 'ru' : 'en';
+            document.getElementById('lang-btn').innerText = lang.toUpperCase();
+            updateText();
+        }
+
+        function updateText() {
+            const t = texts[lang];
+            document.getElementById('txt-start').innerText = t.start;
+            document.getElementById('txt-controls').innerText = t.controls;
+            document.getElementById('trap-msg').innerText = t.trap;
+            document.getElementById('exit-open-text').innerText = t.openingExit;
+            document.getElementById('btn-start').innerText = t.btnPlay;
+            document.getElementById('btn-restart').innerText = t.btnAgain;
+            document.getElementById('difficulty-label').innerText = t.difficulty;
+            const diffButtons = document.querySelectorAll('.diff-btn');
+            for (let i = 0; i < diffButtons.length; i++) {
+                const btn = diffButtons[i];
+                const d = btn.getAttribute('data-diff');
+                if (d === 'easy') btn.innerText = t.diffEasy;
+                else if (d === 'normal') btn.innerText = t.diffNormal;
+                else if (d === 'medium') btn.innerText = t.diffMedium;
+                else if (d === 'hard') btn.innerText = t.diffHard;
+                else if (d === 'hell') btn.innerText = t.diffHell;
+            }
+            updateSoundButton();
+        }
+
+        // --- Р”Р’РР–РћРљ ---
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d', { alpha: false });
+        // РСЃРїРѕР»СЊР·СѓРµРј СЂРµР°Р»СЊРЅС‹Рµ СЂР°Р·РјРµСЂС‹ РѕРєРЅР°
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        window.addEventListener('resize', () => {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        });
+
+        // Карта: 1=Стена, 0=Пусто, 2=Кровать, 3=Шкаф, 4=Выход, 5=Дверь
+        const map = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 1],
+            [1, 0, 0, 0, 0, 0, 1, 0, 3, 3, 3, 0, 0, 0, 0, 1],
+            [1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1],
+            [1, 2, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1],
+            [1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
+
+        let traps = [
+            { x: 3.5, y: 2.5, active: true },
+            { x: 8.5, y: 8.5, active: true },
+            { x: 10.5, y: 2.5, active: true },
+            { x: 6.5, y: 12.5, active: true }
+        ];
+
+        let doors = [];
+
+        let player = { x: 2.5, y: 2.5, dir: 0, rotSpeed: 0.04, trapped: false, trapTimer: 0, isHidden: false, hidingType: null, wasSeenHiding: false };
+        let granny = { x: 12.5, y: 12.5, dir: 0, speed: 0.03, state: 'patrol', speedBoost: 1, lastSeenX: null, lastSeenY: null, searchTimer: 0 };
+        let keys = {};
+        let zBuffer = [];
+        let audioCtx;
+        let masterGain;
+        let isMuted = false;
+        let gameState = 'start';
+        const SOUND_STORAGE_KEY = 'granny_muted';
+        let noiseBuffer;
+        let music = { mode: 'ambient', step: 0, nextTime: 0, timer: null };
+        let VIEW_DISTANCE = 10;
+        let SEARCH_TIME = 6.0;
+        let SEARCH_SPEED = 0.6;
+        let DOOR_OPEN_TIME = 0.35;
+        let EXIT_OPEN_TIME = 1.5;
+        let EXIT_MIN_DISTANCE = 8;
+        let MAX_DOORS = 6;
+        let WALK_SPEED = 0.025;
+        let RUN_MULT = 2.2;
+        let STAMINA_MAX = 100;
+        let STAMINA_DRAIN = 22;
+        let STAMINA_RECOVER = 16;
+        let BASE_GRANNY_SPEED = 0.03;
+        let CHASE_SPEED_BOOST = 3.0;
+        const FRAME_DT = 0.016;
+        let stamina = STAMINA_MAX;
+        let exitOpen = false;
+        let exitOpening = false;
+        let exitTimer = 0;
+        let interactHeld = false;
+        let currentDifficulty = 'normal';
+        const DIFFICULTY_PRESETS = {
+            easy: { viewDistance: 9.0, searchTime: 4.5, searchSpeed: 0.52, doorOpenTime: 0.3, exitOpenTime: 1.1, exitMinDistance: 7, maxDoors: 5, walkSpeed: 0.026, runMult: 2.3, staminaMax: 110, staminaDrain: 16, staminaRecover: 20, grannySpeed: 0.024, chaseBoost: 2.4 },
+            normal: { viewDistance: 10.0, searchTime: 6.0, searchSpeed: 0.6, doorOpenTime: 0.35, exitOpenTime: 1.5, exitMinDistance: 8, maxDoors: 6, walkSpeed: 0.025, runMult: 2.2, staminaMax: 100, staminaDrain: 22, staminaRecover: 16, grannySpeed: 0.03, chaseBoost: 3.0 },
+            medium: { viewDistance: 10.8, searchTime: 7.0, searchSpeed: 0.68, doorOpenTime: 0.45, exitOpenTime: 1.8, exitMinDistance: 9, maxDoors: 7, walkSpeed: 0.024, runMult: 2.1, staminaMax: 100, staminaDrain: 24, staminaRecover: 15, grannySpeed: 0.032, chaseBoost: 3.2 },
+            hard: { viewDistance: 11.8, searchTime: 8.5, searchSpeed: 0.78, doorOpenTime: 0.55, exitOpenTime: 2.2, exitMinDistance: 10, maxDoors: 8, walkSpeed: 0.024, runMult: 2.0, staminaMax: 95, staminaDrain: 28, staminaRecover: 13, grannySpeed: 0.035, chaseBoost: 3.6 },
+            hell: { viewDistance: 13.0, searchTime: 10.0, searchSpeed: 0.92, doorOpenTime: 0.7, exitOpenTime: 2.8, exitMinDistance: 11, maxDoors: 10, walkSpeed: 0.023, runMult: 1.9, staminaMax: 90, staminaDrain: 33, staminaRecover: 11, grannySpeed: 0.04, chaseBoost: 4.2 }
+        };
+
+        function applyDifficulty(diffId) {
+            const preset = DIFFICULTY_PRESETS[diffId] || DIFFICULTY_PRESETS.normal;
+            currentDifficulty = DIFFICULTY_PRESETS[diffId] ? diffId : 'normal';
+            VIEW_DISTANCE = preset.viewDistance;
+            SEARCH_TIME = preset.searchTime;
+            SEARCH_SPEED = preset.searchSpeed;
+            DOOR_OPEN_TIME = preset.doorOpenTime;
+            EXIT_OPEN_TIME = preset.exitOpenTime;
+            EXIT_MIN_DISTANCE = preset.exitMinDistance;
+            MAX_DOORS = preset.maxDoors;
+            WALK_SPEED = preset.walkSpeed;
+            RUN_MULT = preset.runMult;
+            STAMINA_MAX = preset.staminaMax;
+            STAMINA_DRAIN = preset.staminaDrain;
+            STAMINA_RECOVER = preset.staminaRecover;
+            BASE_GRANNY_SPEED = preset.grannySpeed;
+            CHASE_SPEED_BOOST = preset.chaseBoost;
+            granny.speed = BASE_GRANNY_SPEED;
+            const diffButtons = document.querySelectorAll('.diff-btn');
+            for (let i = 0; i < diffButtons.length; i++) {
+                const btn = diffButtons[i];
+                if (btn.getAttribute('data-diff') === currentDifficulty) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+        }
+
+        // --- Р“Р РђР¤РРљРђ ---
+        function createTexture(color, noise = true) {
+            const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+            const x = c.getContext('2d'); x.fillStyle = color; x.fillRect(0, 0, 64, 64);
+            if (noise) {
+                for (let i = 0; i < 400; i++) {
+                    x.fillStyle = `rgba(0,0,0,${Math.random() * 0.3})`;
+                    x.fillRect(Math.random() * 64, Math.random() * 64, 2, 2);
+                }
+            }
+            x.strokeStyle = 'rgba(0,0,0,0.5)'; x.strokeRect(0, 0, 64, 64);
+            return c;
+        }
+
+        // Страшное лицо для скримера
+        function createFaceUrl() {
+            const c = document.createElement('canvas'); c.width = 256; c.height = 256;
+            const x = c.getContext('2d');
+            x.fillStyle = '#050505'; x.fillRect(0, 0, 256, 256);
+            x.fillStyle = '#bbb'; x.beginPath(); x.ellipse(128, 128, 90, 110, 0, 0, Math.PI * 2); x.fill();
+            x.fillStyle = '#000'; x.beginPath(); x.arc(90, 110, 25, 0, Math.PI * 2); x.fill();
+            x.beginPath(); x.arc(166, 110, 25, 0, Math.PI * 2); x.fill();
+            x.fillStyle = '#f00'; x.beginPath(); x.arc(90, 110, 4, 0, Math.PI * 2); x.fill();
+            x.beginPath(); x.arc(166, 110, 4, 0, Math.PI * 2); x.fill();
+            x.fillStyle = '#000'; x.beginPath(); x.ellipse(128, 180, 30, 40, 0, 0, Math.PI * 2); x.fill();
+            x.fillStyle = '#ff9';
+            for (let i = 0; i < 5; i++) { x.fillRect(105 + i * 10, 160, 8, 10); x.fillRect(105 + i * 10, 190, 8, 10); }
+            x.fillStyle = 'rgba(180,0,0,0.7)'; x.beginPath(); x.moveTo(128, 180); x.lineTo(100, 256); x.lineTo(156, 256); x.fill();
+            return c.toDataURL();
+        }
+
+        // Спрайт Гренни (ингейм)
+        function createGrannySprite() {
+            const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+            const x = c.getContext('2d');
+            x.fillStyle = '#888'; x.fillRect(40, 40, 48, 88);
+            x.fillStyle = '#ccc'; x.beginPath(); x.arc(64, 40, 25, 0, Math.PI * 2); x.fill();
+            x.fillStyle = '#eee'; x.beginPath(); x.arc(64, 35, 28, Math.PI, 0); x.fill();
+            x.fillStyle = '#632'; x.translate(90, 70); x.rotate(-0.5); x.fillRect(0, 0, 10, 50); x.setTransform(1, 0, 0, 1, 0, 0);
+            x.fillStyle = '#000'; x.beginPath(); x.arc(56, 38, 4, 0, Math.PI * 2); x.fill(); x.beginPath(); x.arc(72, 38, 4, 0, Math.PI * 2); x.fill();
+            x.fillStyle = 'white'; x.beginPath(); x.arc(56, 38, 1, 0, Math.PI * 2); x.fill(); x.beginPath(); x.arc(72, 38, 1, 0, Math.PI * 2); x.fill();
+            return c;
+        }
+
+        // Спрайт Капкана
+        function createTrapSprite() {
+            const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+            const x = c.getContext('2d');
+            x.strokeStyle = '#888'; x.lineWidth = 3; x.beginPath(); x.arc(32, 40, 20, 0, Math.PI * 2); x.stroke();
+            x.fillStyle = '#222'; x.fill();
+            x.fillStyle = '#aaa';
+            for (let i = 0; i < 8; i++) { let ang = (i / 8) * Math.PI * 2; x.beginPath(); x.arc(32 + Math.cos(ang) * 20, 40 + Math.sin(ang) * 20, 3, 0, Math.PI * 2); x.fill(); }
+            x.fillStyle = '#a00'; x.beginPath(); x.arc(32, 40, 5, 0, Math.PI * 2); x.fill();
+            return c;
+        }
+
+        function createDoorTexture() {
+            const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+            const x = c.getContext('2d');
+            x.fillStyle = '#5b3a1c'; x.fillRect(0, 0, 64, 64);
+            x.fillStyle = '#6d4a24';
+            for (let i = 0; i < 64; i += 8) x.fillRect(i, 0, 4, 64);
+            x.fillStyle = '#d2b48c'; x.beginPath(); x.arc(50, 32, 4, 0, Math.PI * 2); x.fill();
+            x.strokeStyle = 'rgba(0,0,0,0.4)'; x.strokeRect(0, 0, 64, 64);
+            return c;
+        }
+
+        const texWall = createTexture('#555');
+        const texBed = createTexture('#334488');
+        const texWardrobe = createTexture('#5c3a21');
+        const texExit = createTexture('#420');
+        const xCtx = texExit.getContext('2d'); xCtx.fillStyle = '#f00'; xCtx.font = 'bold 20px Arial'; xCtx.fillText('EXIT', 10, 35);
+        const texDoor = createDoorTexture();
+
+        const texGranny = createGrannySprite();
+        const texTrap = createTrapSprite();
+        document.getElementById('jumpscare-img').src = createFaceUrl();
+
+        // --- Р›РћР“РРљРђ ---
+        function setupLevel() {
+            for (let y = 0; y < map.length; y++) for (let x = 0; x < map[0].length; x++) if (map[y][x] === 4 || map[y][x] === 5) map[y][x] = 0;
+            const edgeCells = [];
+            const allEmpty = [];
+            let bestExit = null;
+            let bestExitDist = -1;
+            for (let y = 1; y < map.length - 1; y++) {
+                for (let x = 1; x < map[0].length - 1; x++) {
+                    if (map[y][x] !== 0) continue;
+                    const dist = Math.hypot(x - player.x, y - player.y);
+                    allEmpty.push({ x, y, dist });
+                    if (x === 1 || x === map[0].length - 2 || y === 1 || y === map.length - 2) {
+                        edgeCells.push({ x, y, dist });
+                        if (dist > bestExitDist) { bestExitDist = dist; bestExit = { x, y }; }
+                    }
+                }
+            }
+            let exitPos = null;
+            if (edgeCells.length) {
+                edgeCells.sort((a, b) => b.dist - a.dist);
+                const farthestDist = edgeCells[0].dist;
+                const minAllowed = Math.max(EXIT_MIN_DISTANCE, farthestDist * 0.82);
+                const topFar = edgeCells.filter(c => c.dist >= minAllowed);
+                if (topFar.length) exitPos = topFar[Math.floor(Math.random() * topFar.length)];
+                else exitPos = edgeCells[0];
+            } else if (bestExit) {
+                exitPos = bestExit;
+            } else if (allEmpty.length) {
+                exitPos = allEmpty.reduce((a, b) => a.dist > b.dist ? a : b);
+            }
+            if (exitPos) map[exitPos.y][exitPos.x] = 4;
+            granny.state = 'patrol';
+            granny.speed = BASE_GRANNY_SPEED;
+            granny.speedBoost = 1;
+            granny.searchTimer = 0;
+            granny.lastSeenX = null;
+            granny.lastSeenY = null;
+            player.wasSeenHiding = false;
+            doors = [];
+            for (let y = 1; y < map.length - 1; y++) {
+                for (let x = 1; x < map[0].length - 1; x++) {
+                    if (!isDoorWallCell(x, y)) continue;
+                    doors.push({ x, y, open: false, opening: false, timer: 0 });
+                }
+            }
+            if (doors.length) doors.sort(() => Math.random() - 0.5);
+            doors = doors.slice(0, Math.min(MAX_DOORS, doors.length));
+            for (let i = 0; i < doors.length; i++) map[doors[i].y][doors[i].x] = 5;
+            exitOpen = false;
+            exitOpening = false;
+            exitTimer = 0;
+            stamina = STAMINA_MAX;
+            staminaFill.style.width = '100%';
+
+            const minSpawnDistance = 9;
+            const candidates = [];
+            let best = null;
+            let bestDist = -1;
+
+            for (let gy = 1; gy < map.length - 1; gy++) {
+                for (let gx = 1; gx < map[0].length - 1; gx++) {
+                    if (map[gy][gx] !== 0) continue;
+                    const dist = Math.hypot(gx - player.x, gy - player.y);
+                    if (dist >= minSpawnDistance) candidates.push({ gx, gy });
+                    if (dist > bestDist) { bestDist = dist; best = { gx, gy }; }
+                }
+            }
+
+            const pick = candidates.length
+                ? candidates[Math.floor(Math.random() * candidates.length)]
+                : best;
+
+            granny.x = pick.gx + 0.5;
+            granny.y = pick.gy + 0.5;
+        }
+
+        function loadSoundState() {
+            try {
+                const saved = localStorage.getItem(SOUND_STORAGE_KEY);
+                if (saved === '1') isMuted = true;
+                else if (saved === '0') isMuted = false;
+            } catch (e) { }
+        }
+
+        function saveSoundState() {
+            try {
+                localStorage.setItem(SOUND_STORAGE_KEY, isMuted ? '1' : '0');
+            } catch (e) { }
+        }
+
+        function ensureAudioGraph() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (!masterGain) {
+                masterGain = audioCtx.createGain();
+                masterGain.gain.value = isMuted ? 0 : 1;
+                masterGain.connect(audioCtx.destination);
+            }
+        }
+
+        function initNoiseBuffer() {
+            if (noiseBuffer || !audioCtx) return;
+            const bufferSize = audioCtx.sampleRate * 1;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            noiseBuffer = buffer;
+        }
+
+        function midiToFreq(midi) {
+            return 440 * Math.pow(2, (midi - 69) / 12);
+        }
+
+        function scheduleTone(time, midi, duration, type, gainValue, detune = 0) {
+            if (midi === null) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(midiToFreq(midi), time);
+            if (detune) osc.detune.setValueAtTime(detune, time);
+            gain.gain.setValueAtTime(0.0001, time);
+            gain.gain.exponentialRampToValueAtTime(gainValue, time + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+            osc.connect(gain);
+            gain.connect(masterGain);
+            osc.start(time);
+            osc.stop(time + duration + 0.05);
+        }
+
+        function scheduleKick(time, gainValue) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(120, time);
+            osc.frequency.exponentialRampToValueAtTime(40, time + 0.08);
+            gain.gain.setValueAtTime(0.0001, time);
+            gain.gain.exponentialRampToValueAtTime(gainValue, time + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.12);
+            osc.connect(gain);
+            gain.connect(masterGain);
+            osc.start(time);
+            osc.stop(time + 0.15);
+        }
+
+        function scheduleNoise(time, duration, gainValue, highPass = 1000) {
+            if (!noiseBuffer) return;
+            const src = audioCtx.createBufferSource();
+            const filter = audioCtx.createBiquadFilter();
+            const gain = audioCtx.createGain();
+            src.buffer = noiseBuffer;
+            filter.type = 'highpass';
+            filter.frequency.setValueAtTime(highPass, time);
+            gain.gain.setValueAtTime(0.0001, time);
+            gain.gain.exponentialRampToValueAtTime(gainValue, time + 0.005);
+            gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+            src.connect(filter);
+            filter.connect(gain);
+            gain.connect(masterGain);
+            src.start(time);
+            src.stop(time + duration + 0.05);
+        }
+
+        function updateSoundButton() {
+            const label = isMuted ? texts[lang].soundOff : texts[lang].soundOn;
+            const icon = isMuted ? '🔇' : '🔊';
+            const btn = document.getElementById('sound-btn');
+            btn.innerText = icon;
+            btn.setAttribute('title', label);
+            btn.setAttribute('aria-label', label);
+        }
+
+        function toggleSound() {
+            isMuted = !isMuted;
+            ensureAudioGraph();
+            masterGain.gain.value = isMuted ? 0 : 1;
+            if (!isMuted && audioCtx.state === 'suspended') audioCtx.resume();
+            saveSoundState();
+            updateSoundButton();
+        }
+
+        function getMusicPattern(mode) {
+            if (mode === 'chase') {
+                return {
+                    bpm: 36,
+                    steps: 16,
+                    bass: [33, null, null, null, 39, null, null, null, 33, null, null, null, 39, null, null, null],
+                    lead: [45, null, null, null, 46, null, null, null, 45, null, null, null, 46, null, null, null],
+                    bassLen: 1.8,
+                    leadLen: 1.2,
+                    noise: [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0],
+                    noiseGain: 0.06,
+                    noiseHP: 900
+                };
+            }
+            return {
+                bpm: 48,
+                steps: 16,
+                bass: [31, null, null, null, 33, null, null, null, 29, null, null, null, 31, null, null, null],
+                lead: [52, null, 55, null, null, 57, null, 55, null, 52, null, 55, null, 59, null, 57],
+                bassLen: 1.6,
+                leadLen: 0.9,
+                noise: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                noiseGain: 0.03,
+                noiseHP: 1300
+            };
+        }
+
+        function getPatternValue(arr, step) {
+            if (!arr || arr.length === 0) return null;
+            return arr[step % arr.length];
+        }
+
+        function scheduleMusicStep(pattern, step, time, stepDur) {
+            const bassNote = getPatternValue(pattern.bass, step);
+            const leadNote = getPatternValue(pattern.lead, step);
+            const doKick = getPatternValue(pattern.kick, step) === 1;
+            const doHat = getPatternValue(pattern.hat, step) === 1;
+            const doNoise = getPatternValue(pattern.noise, step) === 1;
+            const bassLen = pattern.bassLen || 0.9;
+            const leadLen = pattern.leadLen || 0.6;
+
+            if (bassNote !== null) scheduleTone(time, bassNote, stepDur * bassLen, 'triangle', 0.12);
+            if (leadNote !== null) scheduleTone(time, leadNote, stepDur * leadLen, 'square', 0.07, -10);
+            if (doKick) scheduleKick(time, 0.2);
+            if (doHat) scheduleNoise(time, stepDur * 0.15, 0.04, 1400);
+            if (doNoise) scheduleNoise(time, stepDur * 0.5, pattern.noiseGain || 0.04, pattern.noiseHP || 1200);
+        }
+
+        function musicScheduler() {
+            if (!audioCtx || !masterGain) return;
+            const pattern = getMusicPattern(music.mode);
+            const stepDur = 60 / pattern.bpm / 2;
+            const horizon = audioCtx.currentTime + 0.25;
+            while (music.nextTime < horizon) {
+                scheduleMusicStep(pattern, music.step, music.nextTime, stepDur);
+                music.nextTime += stepDur;
+                music.step = (music.step + 1) % pattern.steps;
+            }
+        }
+
+        function startMusic(mode) {
+            ensureAudioGraph();
+            initNoiseBuffer();
+            music.mode = mode;
+            music.step = 0;
+            music.nextTime = audioCtx.currentTime + 0.05;
+            if (!music.timer) {
+                music.timer = setInterval(musicScheduler, 25);
+            }
+        }
+
+        function setMusicMode(mode) {
+            if (music.mode === mode) return;
+            music.mode = mode;
+            music.step = 0;
+            music.nextTime = audioCtx.currentTime + 0.05;
+        }
+
+        function playSound(type) {
+            ensureAudioGraph();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(masterGain);
+            const now = audioCtx.currentTime;
+
+            if (type === 'scream') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, now); osc.frequency.linearRampToValueAtTime(800, now + 0.1);
+                gain.gain.setValueAtTime(0.8, now); gain.gain.linearRampToValueAtTime(0, now + 1.5);
+                osc.start(now); osc.stop(now + 1.5);
+            } else if (type === 'trap') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(700, now);
+                osc.frequency.exponentialRampToValueAtTime(90, now + 0.18);
+                gain.gain.setValueAtTime(0.0001, now);
+                gain.gain.exponentialRampToValueAtTime(0.5, now + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+                osc.start(now);
+                osc.stop(now + 0.25);
+                scheduleNoise(now + 0.01, 0.08, 0.15, 600);
+            } else if (type === 'hideWardrobe') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.exponentialRampToValueAtTime(160, now + 0.18);
+                gain.gain.setValueAtTime(0.0001, now);
+                gain.gain.exponentialRampToValueAtTime(0.2, now + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+                osc.start(now);
+                osc.stop(now + 0.25);
+                scheduleNoise(now + 0.03, 0.1, 0.06, 900);
+            } else if (type === 'hideBed') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(140, now);
+                osc.frequency.exponentialRampToValueAtTime(90, now + 0.15);
+                gain.gain.setValueAtTime(0.0001, now);
+                gain.gain.exponentialRampToValueAtTime(0.25, now + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.22);
+            } else if (type === 'exit') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(260, now);
+                osc.frequency.exponentialRampToValueAtTime(180, now + 0.2);
+                gain.gain.setValueAtTime(0.0001, now);
+                gain.gain.exponentialRampToValueAtTime(0.35, now + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.32);
+                scheduleNoise(now + 0.02, 0.12, 0.08, 700);
+            }
+        }
+
+        // --- РЈРџР РђР’Р›Р•РќРР• ---
+        let joystick = { active: false, dx: 0, dy: 0, originX: 0, originY: 0 };
+        let touchLook = { active: false, lastX: 0 };
+        const zoneMove = document.getElementById('zone-move');
+        const zoneLook = document.getElementById('zone-look');
+        const joyKnob = document.getElementById('joystick-knob');
+        const joyOutline = document.getElementById('joystick-outline');
+        const staminaFill = document.getElementById('stamina-fill');
+        const exitOpenBox = document.getElementById('exit-open');
+        const exitOpenFill = document.getElementById('exit-open-fill');
+
+        zoneMove.addEventListener('touchstart', e => {
+            e.preventDefault(); const t = e.changedTouches[0]; joystick.active = true; joystick.originX = t.clientX; joystick.originY = t.clientY; joystick.id = t.identifier;
+            joyOutline.style.display = 'block'; joyOutline.style.left = t.clientX + 'px'; joyOutline.style.top = t.clientY + 'px'; joyKnob.style.transform = `translate(0px, 0px)`;
+        });
+        zoneMove.addEventListener('touchmove', e => {
+            e.preventDefault(); if (!joystick.active) return;
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                if (e.changedTouches[i].identifier === joystick.id) {
+                    const t = e.changedTouches[i];
+                    let dx = t.clientX - joystick.originX; let dy = t.clientY - joystick.originY;
+                    const dist = Math.min(50, Math.hypot(dx, dy));
+                    const angle = Math.atan2(dy, dx);
+                    joystick.dx = (Math.cos(angle) * dist) / 50; joystick.dy = (Math.sin(angle) * dist) / 50;
+                    joyKnob.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px)`;
+                }
+            }
+        });
+        zoneMove.addEventListener('touchend', e => {
+            for (let i = 0; i < e.changedTouches.length; i++) { if (e.changedTouches[i].identifier === joystick.id) { joystick.active = false; joystick.dx = 0; joystick.dy = 0; joyOutline.style.display = 'none'; } }
+        });
+        zoneMove.addEventListener('touchcancel', e => {
+            for (let i = 0; i < e.changedTouches.length; i++) { if (e.changedTouches[i].identifier === joystick.id) { joystick.active = false; joystick.dx = 0; joystick.dy = 0; joyOutline.style.display = 'none'; } }
+        });
+
+        zoneLook.addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; touchLook.active = true; touchLook.lastX = t.clientX; touchLook.id = t.identifier; });
+        zoneLook.addEventListener('touchmove', e => {
+            e.preventDefault(); if (!touchLook.active) return;
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                if (e.changedTouches[i].identifier === touchLook.id) {
+                    const t = e.changedTouches[i]; const deltaX = t.clientX - touchLook.lastX;
+                    player.dir += deltaX * 0.005; touchLook.lastX = t.clientX;
+                }
+            }
+        });
+        zoneLook.addEventListener('touchend', e => { for (let i = 0; i < e.changedTouches.length; i++) if (e.changedTouches[i].identifier === touchLook.id) touchLook.active = false; });
+        zoneLook.addEventListener('touchcancel', e => { for (let i = 0; i < e.changedTouches.length; i++) if (e.changedTouches[i].identifier === touchLook.id) touchLook.active = false; });
+        window.addEventListener('keydown', e => {
+            const k = e.key.toLowerCase();
+            keys[k] = true;
+            if (k === 'e') interactHoldStart();
+        });
+        window.addEventListener('keyup', e => {
+            const k = e.key.toLowerCase();
+            keys[k] = false;
+            if (k === 'e') interactHoldEnd();
+        });
+        window.addEventListener('blur', () => { keys = {}; interactHeld = false; });
+
+        // --- Р Р•РќР”Р•Р РРќР“ ---
+        function castRays() {
+            const renderScale = 4; // Оптимизация
+            ctx.fillStyle = '#0a0a0a'; ctx.fillRect(0, 0, width, height / 2);
+            const grad = ctx.createLinearGradient(0, height / 2, 0, height); grad.addColorStop(0, '#000'); grad.addColorStop(1, '#1b1b1b');
+            ctx.fillStyle = grad; ctx.fillRect(0, height / 2, width, height / 2);
+
+            for (let x = 0; x < width; x += renderScale) {
+                const cameraX = 2 * x / width - 1;
+                const rayDirX = Math.cos(player.dir) + Math.cos(player.dir + Math.PI / 2) * 0.66 * cameraX;
+                const rayDirY = Math.sin(player.dir) + Math.sin(player.dir + Math.PI / 2) * 0.66 * cameraX;
+
+                let mapX = Math.floor(player.x), mapY = Math.floor(player.y);
+                let sideDistX, sideDistY;
+                const deltaDistX = Math.abs(1 / rayDirX), deltaDistY = Math.abs(1 / rayDirY);
+                const stepX = rayDirX < 0 ? -1 : 1, stepY = rayDirY < 0 ? -1 : 1;
+                sideDistX = (rayDirX < 0 ? player.x - mapX : mapX + 1.0 - player.x) * deltaDistX;
+                sideDistY = (rayDirY < 0 ? player.y - mapY : mapY + 1.0 - player.y) * deltaDistY;
+
+                let hit = 0, side = 0, tileType = 0, raySteps = 0;
+                while (hit === 0 && raySteps < 64) {
+                    raySteps++;
+                    if (sideDistX < sideDistY) { sideDistX += deltaDistX; mapX += stepX; side = 0; }
+                    else { sideDistY += deltaDistY; mapY += stepY; side = 1; }
+                    if (mapY < 0 || mapY >= map.length || mapX < 0 || mapX >= map[0].length) { hit = 1; tileType = 1; break; }
+                    const tile = map[mapY][mapX];
+                    if (tile > 0) {
+                        if (tile === 5) {
+                            const door = getDoorAt(mapX, mapY);
+                            if (door && door.open) continue;
+                        }
+                        hit = 1; tileType = tile;
+                    }
+                }
+
+                let perpWallDist = side === 0 ? (mapX - player.x + (1 - stepX) / 2) / rayDirX : (mapY - player.y + (1 - stepY) / 2) / rayDirY;
+                for (let k = 0; k < renderScale; k++) zBuffer[x + k] = perpWallDist;
+
+                const lineHeight = Math.floor(height / perpWallDist);
+                let drawStart = -lineHeight / 2 + height / 2;
+                let drawEnd = lineHeight / 2 + height / 2;
+
+                let tex = tileType === 2 ? texBed : tileType === 3 ? texWardrobe : tileType === 4 ? texExit : tileType === 5 ? texDoor : texWall;
+                let wallX = side === 0 ? player.y + perpWallDist * rayDirY : player.x + perpWallDist * rayDirX;
+                wallX -= Math.floor(wallX);
+                let texX = Math.floor(wallX * 64);
+                let light = 1 / (perpWallDist * 0.1); if (player.isHidden) light *= 0.2; if (light > 1) light = 1;
+
+                ctx.globalAlpha = light;
+                ctx.drawImage(tex, texX, 0, 1, 64, x, drawStart, renderScale, drawEnd - drawStart);
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        function drawSprites() {
+            let sprites = [{ x: granny.x, y: granny.y, tex: texGranny }];
+            traps.forEach(t => { if (t.active) sprites.push({ x: t.x, y: t.y, tex: texTrap }); });
+            sprites.forEach(s => s.dist = Math.hypot(player.x - s.x, player.y - s.y));
+            sprites.sort((a, b) => b.dist - a.dist);
+            const renderScale = 4;
+
+            sprites.forEach(sprite => {
+                const spriteX = sprite.x - player.x; const spriteY = sprite.y - player.y;
+                const invDet = 1.0 / (0.66 * Math.cos(player.dir + Math.PI / 2) * Math.sin(player.dir) - Math.cos(player.dir) * 0.66 * Math.sin(player.dir + Math.PI / 2));
+                const transformX = invDet * (Math.sin(player.dir) * spriteX - Math.cos(player.dir) * spriteY);
+                const transformY = invDet * (-Math.cos(player.dir) * 0.66 * spriteX + -Math.sin(player.dir) * 0.66 * spriteY);
+
+                if (transformY > 0) {
+                    const spriteScreenX = Math.floor((width / 2) * (1 + transformX / transformY));
+                    const spriteHeight = Math.abs(Math.floor(height / transformY));
+                    const spriteWidth = Math.abs(Math.floor(height / transformY));
+                    let spriteTop = -spriteHeight / 2 + height / 2;
+                    let drawH = spriteHeight;
+                    if (sprite.tex === texTrap) { drawH = spriteHeight / 2; spriteTop = (height / 2) + (spriteHeight / 2.5); }
+
+                    let drawStartX = -spriteWidth / 2 + spriteScreenX;
+                    let drawEndX = spriteWidth / 2 + spriteScreenX;
+                    if (drawStartX < 0) drawStartX = 0; if (drawEndX > width) drawEndX = width;
+
+                    // FIX: Рисуем полосками для правильной текстуры
+                    for (let stripe = drawStartX; stripe < drawEndX; stripe += renderScale) {
+                        if (transformY < zBuffer[Math.floor(stripe)]) {
+                            const texX = Math.floor((stripe - (-spriteWidth / 2 + spriteScreenX)) * sprite.tex.width / spriteWidth);
+                            let light = 1 / (transformY * 0.1); if (player.isHidden) light *= 0.2;
+                            ctx.globalAlpha = Math.min(1, light);
+                            ctx.drawImage(sprite.tex, texX, 0, 1, sprite.tex.height, stripe, spriteTop, renderScale, drawH);
+                            ctx.globalAlpha = 1;
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- РР“Р РћР’РћР™ Р¦РРљР› ---
+        function getDoorAt(gx, gy) {
+            for (let i = 0; i < doors.length; i++) {
+                if (doors[i].x === gx && doors[i].y === gy) return doors[i];
+            }
+            return null;
+        }
+
+        function isTrapCell(gx, gy) {
+            for (let i = 0; i < traps.length; i++) {
+                if (Math.floor(traps[i].x) === gx && Math.floor(traps[i].y) === gy) return true;
+            }
+            return false;
+        }
+
+        function isCornerCell(gx, gy) {
+            if (map[gy][gx] !== 0) return false;
+            const up = map[gy - 1][gx] === 0;
+            const down = map[gy + 1][gx] === 0;
+            const left = map[gy][gx - 1] === 0;
+            const right = map[gy][gx + 1] === 0;
+            const count = (up ? 1 : 0) + (down ? 1 : 0) + (left ? 1 : 0) + (right ? 1 : 0);
+            if (count !== 2) return false;
+            return (up || down) && (left || right);
+        }
+
+        function isDoorWallCell(gx, gy) {
+            if (map[gy][gx] !== 1) return false;
+            const leftEmpty = map[gy][gx - 1] === 0;
+            const rightEmpty = map[gy][gx + 1] === 0;
+            const upEmpty = map[gy - 1][gx] === 0;
+            const downEmpty = map[gy + 1][gx] === 0;
+            const upWall = map[gy - 1][gx] === 1;
+            const downWall = map[gy + 1][gx] === 1;
+            const leftWall = map[gy][gx - 1] === 1;
+            const rightWall = map[gy][gx + 1] === 1;
+            const horizontalDoor = leftEmpty && rightEmpty && upWall && downWall;
+            const verticalDoor = upEmpty && downEmpty && leftWall && rightWall;
+            return horizontalDoor || verticalDoor;
+        }
+
+        function getTileAt(x, y) {
+            if (x < 0 || x >= map[0].length || y < 0 || y >= map.length) return 1;
+            const gx = Math.floor(x), gy = Math.floor(y);
+            const t = map[gy][gx];
+            if (t === 5) {
+                const door = getDoorAt(gx, gy);
+                if (door && door.open) return 0;
+            }
+            return t;
+        }
+
+        function checkWall(x, y) {
+            const t = getTileAt(x, y);
+            if (t === 4) return !exitOpen;
+            return t === 1 || t === 2 || t === 3 || t === 5;
+        }
+
+        function tryOpenDoorAt(x, y) {
+            const gx = Math.floor(x), gy = Math.floor(y);
+            if (gx < 0 || gx >= map[0].length || gy < 0 || gy >= map.length) return false;
+            if (map[gy][gx] !== 5) return false;
+            const door = getDoorAt(gx, gy);
+            if (door && !door.open) {
+                if (!door.opening) { door.opening = true; door.timer = DOOR_OPEN_TIME; }
+                return true;
+            }
+            return false;
+        }
+
+        function hasLineOfSight(ax, ay, bx, by) {
+            const dx = bx - ax;
+            const dy = by - ay;
+            const dist = Math.hypot(dx, dy);
+            if (dist <= 0.01) return true;
+            const steps = Math.ceil(dist / 0.1);
+            for (let i = 1; i < steps; i++) {
+                const t = i / steps;
+                const x = ax + dx * t;
+                const y = ay + dy * t;
+                if (checkWall(x, y)) return false;
+            }
+            return true;
+        }
+
+        function interactHoldStart() {
+            if (gameState !== 'play') return;
+            if (interactHeld) return;
+            interactHeld = true;
+            interactStart();
+        }
+
+        function interactHoldEnd() {
+            interactHeld = false;
+        }
+
+        let lastInteractTime = 0;
+        function interactStart() {
+            if (Date.now() - lastInteractTime < 300) return;
+            lastInteractTime = Date.now();
+            if (gameState !== 'play') return;
+            const frontX = Math.floor(player.x + Math.cos(player.dir) * 0.8);
+            const frontY = Math.floor(player.y + Math.sin(player.dir) * 0.8);
+            if (frontY < 0 || frontY >= map.length || frontX < 0 || frontX >= map[0].length) return;
+            const door = getDoorAt(frontX, frontY);
+            if (door && !player.isHidden) {
+                if (door.open) {
+                    if (Math.floor(player.x) === door.x && Math.floor(player.y) === door.y) return;
+                    door.open = false; door.opening = false; door.timer = 0;
+                } else if (!door.opening) {
+                    door.opening = true; door.timer = DOOR_OPEN_TIME;
+                }
+                return;
+            }
+            const block = map[frontY][frontX];
+            if (!player.isHidden) {
+                if (block === 2 || block === 3) {
+                    const distToGranny = Math.hypot(player.x - granny.x, player.y - granny.y);
+                    const grannySeesNow = distToGranny <= VIEW_DISTANCE && hasLineOfSight(granny.x, granny.y, player.x, player.y);
+                    player.wasSeenHiding = grannySeesNow;
+                    if (grannySeesNow) {
+                        granny.state = 'chase';
+                        granny.lastSeenX = player.x;
+                        granny.lastSeenY = player.y;
+                        granny.searchTimer = 0;
+                    } else if (granny.state === 'chase') {
+                        granny.state = 'search';
+                        granny.searchTimer = SEARCH_TIME;
+                    }
+                    player.isHidden = true; player.hidingType = block === 2 ? 'bed' : 'wardrobe';
+                    player.dir = Math.atan2(player.y - (frontY + 0.5), player.x - (frontX + 0.5));
+                    if (player.hidingType === 'wardrobe') {
+                        document.getElementById('hiding-overlay').style.display = 'block';
+                        playSound('hideWardrobe');
+                    } else {
+                        document.getElementById('bed-overlay').style.display = 'block';
+                        playSound('hideBed');
+                    }
+                    document.getElementById('mobile-controls').style.opacity = '0.5';
+                }
+            } else {
+                player.isHidden = false; player.hidingType = null;
+                player.wasSeenHiding = false;
+                document.getElementById('bed-overlay').style.display = 'none';
+                document.getElementById('hiding-overlay').style.display = 'none';
+                document.getElementById('mobile-controls').style.opacity = '1';
+            }
+        }
+
+        function triggerJumpscare() {
+            gameState = 'jumpscare';
+            document.getElementById('mobile-controls').style.display = 'none';
+            document.getElementById('jumpscare-overlay').style.display = 'flex';
+            playSound('scream');
+            setTimeout(() => {
+                document.getElementById('jumpscare-overlay').style.display = 'none';
+                showEndScreen(false);
+            }, 1600);
+        }
+
+        function showEndScreen(win) {
+            gameState = 'end';
+            const screen = document.getElementById('end-screen');
+            const title = document.getElementById('end-title');
+            screen.style.display = 'flex';
+            exitOpenBox.style.display = 'none';
+            if (win) { title.innerText = texts[lang].exit; title.style.color = "lime"; }
+            else { title.innerText = texts[lang].death; title.style.color = "red"; }
+        }
+
+        function update() {
+            if (gameState !== 'play') return;
+
+            doors.forEach(d => {
+                if (d.opening) {
+                    d.timer -= FRAME_DT;
+                    if (d.timer <= 0) { d.opening = false; d.open = true; }
+                }
+            });
+            const hasMoveInput = keys['w'] || keys['s'] || joystick.active;
+            const joyRun = joystick.active && Math.hypot(joystick.dx, joystick.dy) > 0.8;
+            const isRunning = (keys['shift'] || joyRun) && stamina > 0 && hasMoveInput && !player.isHidden && !player.trapped;
+            stamina += (isRunning ? -STAMINA_DRAIN : STAMINA_RECOVER) * FRAME_DT;
+            if (stamina < 0) stamina = 0;
+            if (stamina > STAMINA_MAX) stamina = STAMINA_MAX;
+            staminaFill.style.width = (stamina / STAMINA_MAX * 100).toFixed(1) + '%';
+
+            // Move
+            if (!player.isHidden && !player.trapped) {
+                let moveStep = WALK_SPEED * (isRunning ? RUN_MULT : 1);
+                let dx = 0, dy = 0;
+                if (keys['w']) { dx += Math.cos(player.dir) * moveStep; dy += Math.sin(player.dir) * moveStep; }
+                if (keys['s']) { dx -= Math.cos(player.dir) * moveStep; dy -= Math.sin(player.dir) * moveStep; }
+                if (keys['a']) player.dir -= player.rotSpeed;
+                if (keys['d']) player.dir += player.rotSpeed;
+                if (joystick.active) {
+                    dx += Math.cos(player.dir) * joystick.dy * moveStep * 1.5 - Math.sin(player.dir) * joystick.dx * moveStep * 1.5;
+                    dy += Math.sin(player.dir) * joystick.dy * moveStep * 1.5 + Math.cos(player.dir) * joystick.dx * moveStep * 1.5;
+                }
+                if (!checkWall(player.x + dx + Math.sign(dx) * 0.3, player.y)) player.x += dx;
+                if (!checkWall(player.x, player.y + dy + Math.sign(dy) * 0.3)) player.y += dy;
+            }
+
+            const frontX = Math.floor(player.x + Math.cos(player.dir)), frontY = Math.floor(player.y + Math.sin(player.dir));
+            const holdingInteract = interactHeld;
+            const wasExitOpening = exitOpening;
+            if (!exitOpen && !player.isHidden && !player.trapped && holdingInteract && map[frontY][frontX] === 4) {
+                exitOpening = true;
+                if (!wasExitOpening) playSound('exit');
+                exitTimer += FRAME_DT;
+                const progress = Math.min(1, exitTimer / EXIT_OPEN_TIME);
+                exitOpenFill.style.width = (progress * 100).toFixed(1) + '%';
+                exitOpenBox.style.display = 'block';
+                if (exitTimer >= EXIT_OPEN_TIME) {
+                    exitOpening = false;
+                    exitOpen = true;
+                    showEndScreen(true);
+                    return;
+                }
+            } else {
+                exitOpening = false;
+                exitTimer = 0;
+                exitOpenFill.style.width = '0%';
+                exitOpenBox.style.display = 'none';
+            }
+
+            // Interact UI
+            const uiMsg = document.getElementById('interact-msg');
+            if (!player.trapped) {
+                const door = getDoorAt(frontX, frontY);
+                if (door && !player.isHidden) {
+                    uiMsg.style.display = 'block';
+                    uiMsg.innerText = door.open ? texts[lang].closeDoor : texts[lang].openDoor;
+                } else if (map[frontY][frontX] === 4 && !exitOpen) {
+                    uiMsg.style.display = 'block'; uiMsg.innerText = texts[lang].openExit;
+                } else if (map[frontY][frontX] === 2 || map[frontY][frontX] === 3) {
+                    uiMsg.style.display = 'block'; uiMsg.innerText = player.isHidden ? texts[lang].leave : texts[lang].hide;
+                } else if (!player.isHidden) uiMsg.style.display = 'none';
+            }
+
+            // Traps
+            if (!player.trapped && !player.isHidden) {
+                traps.forEach(t => {
+                    if (t.active && Math.hypot(player.x - t.x, player.y - t.y) < 0.4) {
+                        t.active = false; player.trapped = true; player.trapTimer = 4.0;
+                        playSound('trap'); document.getElementById('trap-msg').style.display = 'block';
+                        granny.state = 'chase'; granny.speedBoost = CHASE_SPEED_BOOST;
+                    }
+                });
+            } else if (player.trapped) {
+                player.trapTimer -= 0.016;
+                if (player.trapTimer <= 0) { player.trapped = false; document.getElementById('trap-msg').style.display = 'none'; granny.speedBoost = 1.0; }
+            }
+
+            // Granny AI
+            const dist = Math.hypot(player.x - granny.x, player.y - granny.y);
+            const canSeePlayer = !player.isHidden && dist <= VIEW_DISTANCE && hasLineOfSight(granny.x, granny.y, player.x, player.y);
+            if (dist < 0.6 && (!player.isHidden || player.wasSeenHiding)) { triggerJumpscare(); return; }
+
+            if (map[Math.floor(player.y)][Math.floor(player.x)] === 4 && exitOpen) { showEndScreen(true); return; }
+
+            let targetX = granny.x, targetY = granny.y;
+            if (player.trapped || player.wasSeenHiding || canSeePlayer) {
+                granny.state = 'chase';
+                granny.lastSeenX = player.x;
+                granny.lastSeenY = player.y;
+                granny.searchTimer = 0;
+            } else if (granny.state === 'chase') {
+                granny.state = 'search';
+                granny.searchTimer = SEARCH_TIME;
+            }
+
+            let speedMult = 1;
+            if (granny.state === 'chase') {
+                targetX = player.x; targetY = player.y;
+                speedMult = 1.5;
+            } else if (granny.state === 'search') {
+                granny.searchTimer -= 0.016;
+                speedMult = SEARCH_SPEED;
+                if (granny.lastSeenX !== null) {
+                    targetX = granny.lastSeenX; targetY = granny.lastSeenY;
+                    if (Math.hypot(granny.x - targetX, granny.y - targetY) < 0.5) {
+                        granny.lastSeenX = null; granny.lastSeenY = null;
+                    }
+                } else {
+                    targetX = granny.x + Math.cos(granny.dir); targetY = granny.y + Math.sin(granny.dir);
+                    if (Math.random() < 0.02) granny.dir += Math.random() - 0.5;
+                }
+                if (granny.searchTimer <= 0) granny.state = 'patrol';
+            } else {
+                granny.state = 'patrol';
+                targetX = granny.x + Math.cos(granny.dir); targetY = granny.y + Math.sin(granny.dir);
+                if (Math.random() < 0.02) granny.dir += Math.random() - 0.5;
+            }
+
+            let gs = granny.speed * speedMult * granny.speedBoost;
+            let ang = Math.atan2(targetY - granny.y, targetX - granny.x);
+            let gdx = Math.cos(ang) * gs, gdy = Math.sin(ang) * gs;
+            if (!checkWall(granny.x + gdx, granny.y)) granny.x += gdx;
+            else {
+                const opened = tryOpenDoorAt(granny.x + gdx, granny.y);
+                if (!opened) granny.dir += Math.PI / 2;
+            }
+            if (!checkWall(granny.x, granny.y + gdy)) granny.y += gdy;
+            else { tryOpenDoorAt(granny.x, granny.y + gdy); }
+
+            const desiredMusicMode = granny.state === 'chase' ? 'chase' : 'ambient';
+            setMusicMode(desiredMusicMode);
+        }
+
+        function loop() {
+            if (gameState === 'play') { update(); castRays(); drawSprites(); }
+            requestAnimationFrame(loop);
+        }
+
+        document.getElementById('btn-start').addEventListener('click', () => {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('mobile-controls').style.display = 'block';
+            ensureAudioGraph();
+            startMusic('ambient');
+            updateText(); setupLevel(); gameState = 'play'; loop();
+        });
+
+        const diffButtons = document.querySelectorAll('.diff-btn');
+        for (let i = 0; i < diffButtons.length; i++) {
+            diffButtons[i].addEventListener('click', () => {
+                if (gameState !== 'start') return;
+                applyDifficulty(diffButtons[i].getAttribute('data-diff'));
+            });
+        }
+
+        loadSoundState();
+        updateSoundButton();
+        applyDifficulty('normal');
+    </script>
+</body>
+
+</html>

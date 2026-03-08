@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Deepest Dunk</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&family=Playfair+Display:ital,wght@1,700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Фоновая музыка -->
+    <audio id="bg-music" src="Music.mp3" loop preload="auto"></audio>
+
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="ui-overlay">
+
+            <div id="top-controls">
+                <button id="lang-toggle" class="ui-btn">RU</button>
+                <button id="master-mute-btn" class="ui-btn">🔊</button>
+            </div>
+
+            <!-- Экран начальной настройки аудио -->
+            <div id="audio-setup-screen" class="overlay-screen">
+                <button id="quick-close-audio" class="close-x">×</button>
+                <h2 class="title" data-en="Sound Settings" data-ru="Настройки Звука">Sound Settings</h2>
+                <p class="subtitle" data-en="Music & Sounds enabled by default" data-ru="Музыка и звуки включены">Music
+                    & Sounds enabled by default</p>
+
+                <div class="setup-buttons">
+                    <button id="audio-start-btn" data-en="PLAY" data-ru="ИГРАТЬ">PLAY</button>
+                    <button id="audio-mute-start-btn" data-en="PLAY MUTED" data-ru="БЕЗ ЗВУКА">PLAY MUTED</button>
+                </div>
+            </div>
+
+            <div id="start-screen" class="overlay-screen hidden">
+                <h1 class="title" data-en="The Deepest Dunk" data-ru="Глубокое Погружение">The Deepest Dunk</h1>
+                <div id="champion-badge" class="hidden" data-en="🏆 YOU ARE A CHAMPION" data-ru="🏆 ВЫ ЧЕМПИОН!">🏆 YOU
+                    ARE A CHAMPION</div>
+                <p class="subtitle" data-en="Reach the bottom of the Infinite Glass"
+                    data-ru="Достигни дна Бесконечного Стакана">Reach the bottom of the Infinite Glass</p>
+
+                <div class="instructions">
+                    <div class="instruction-item">
+                        <span class="key">DRY (Release)</span>
+                        <p data-en="Fall fast, but very fragile." data-ru="Падай быстро, но ты хрупок.">Fall fast, but
+                            very fragile.</p>
+                    </div>
+                    <div class="instruction-item">
+                        <span class="key">SOGGY (Hold Space)</span>
+                        <p data-en="Absorb milk to become soft." data-ru="Впитывай молоко, чтобы стать мягким.">
+                            Absorb milk to become soft.</p>
+                    </div>
+                </div>
+
+                <button id="start-btn" data-en="SELECT COOKIE" data-ru="ВЫБРАТЬ ПЕЧЕНЬЕ">SELECT COOKIE</button>
+            </div>
+
+            <div id="selection-screen" class="overlay-screen hidden">
+                <h2 class="title" data-en="Choose Your Cookie" data-ru="Выбор Печенья">Choose Your Cookie</h2>
+                <div id="cookie-grid">
+                    <!-- Cards injected by JS -->
+                </div>
+            </div>
+
+            <div id="game-over-screen" class="overlay-screen hidden">
+                <h2 id="death-reason"></h2>
+                <p id="final-depth"></p>
+                <div id="high-scores" class="hidden">
+                    <h3 data-en="Local Records" data-ru="Ваши Рекорды">Local Records</h3>
+                    <ul id="score-list"></ul>
+                </div>
+
+                <div class="game-over-buttons">
+                    <button id="btn-retry" data-en="DUNK AGAIN" data-ru="ЕЩЕ РАЗ">DUNK AGAIN</button>
+                    <button id="btn-change-skin" data-en="CHANGE COOKIE" data-ru="СМЕНИТЬ ПЕЧЕНЬЕ">CHANGE
+                        COOKIE</button>
+                    <button id="btn-menu" data-en="MENU" data-ru="МЕНЮ">MENU</button>
+                </div>
+            </div>
+
+            <div id="victory-screen" class="hidden">
+                <h1 data-en="YOU WON!" data-ru="ВЫ ПОБЕДИЛИ!">YOU WON!</h1>
+            </div>
+
+            <div id="vignette"></div>
+            <div id="mint-vignette"></div>
+
+            <div id="hud" class="hidden">
+                <div class="depth-meter">
+                    <span id="depth-value">0</span>mm
+                </div>
+                <div class="status-bars">
+                    <div class="bar-container">
+                        <div id="hp-bar" class="bar"></div>
+                        <span data-en="Integrity" data-ru="Целостность">Integrity</span>
+                    </div>
+                    <div id="buffs-panel"></div>
+                    <div id="combo-panel" class="combo-panel">
+                        <div id="combo-text" data-en="COMBO x1" data-ru="КОМБО x1">COMBO x1</div>
+                        <div class="combo-timer">
+                            <div id="combo-timer-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- МОБИЛЬНОЕ УПРАВЛЕНИЕ (Показывается только на тач-устройствах) -->
+            <div id="mobile-controls" class="hidden-desktop">
+                <div id="touch-left" class="touch-zone"></div>
+                <div id="touch-right" class="touch-zone"></div>
+                <button id="touch-action-btn" data-en="ACTION" data-ru="ДЕЙСТВИЕ">ACTION</button>
+            </div>
+
+            <div id="bottom-settings">
+                <div class="settings-row">
+                    <div class="setting-group">
+                        <input type="checkbox" id="chk-music" checked>
+                        <label for="chk-music" data-en="Music" data-ru="Музыка">Music</label>
+                        <div class="slider-container" id="music-slider-container">
+                            <input type="range" id="vol-music" min="0" max="100" value="20">
+                            <span id="val-music">20%</span>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <input type="checkbox" id="chk-sfx" checked>
+                        <label for="chk-sfx" data-en="Sounds" data-ru="Звуки">Sounds</label>
+                        <div class="slider-container" id="sfx-slider-container">
+                            <input type="range" id="vol-sfx" min="0" max="100" value="100">
+                            <span id="val-sfx">100%</span>
+                        </div>
+                    </div>
+                    <div class="setting-group master-group">
+                        <span data-en="Master Vol" data-ru="Общ. Громкость">Master Vol</span>
+                        <input type="range" id="vol-master" min="0" max="100" value="100">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

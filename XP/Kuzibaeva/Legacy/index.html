@@ -1,0 +1,707 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>KUZIBAEVA: XP LEGACY [V3.0]</title>
+    <style type="text/css">
+        /* --- СТИЛИ ДЛЯ IE6-8 / XP --- */
+        body {
+            background-color: #000;
+            margin: 0; padding: 0;
+            font-family: "Courier New", Courier, monospace;
+            color: #0F0;
+            overflow: hidden;
+            font-size: 14px;
+        }
+
+        /* Эффект старого монитора */
+        #monitor-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABZJREFUeNpiYGBgOP///38Gxv///wMAMxkGq/v242AAAAAASUVORK5CYII='); /* Полоски сканлайна */
+            pointer-events: none; /* Пропускает клики (для новых браузеров) */
+            z-index: 9999;
+            opacity: 0.3;
+        }
+
+        .vignette-edge {
+            position: absolute;
+            background: #000;
+            z-index: 1;
+            filter: alpha(opacity=35);
+            opacity: 0.35;
+        }
+        #v-top { top: 0; left: 0; width: 100%; height: 70px; }
+        #v-bottom { bottom: 0; left: 0; width: 100%; height: 90px; }
+        #v-left { top: 0; left: 0; width: 70px; height: 100%; }
+        #v-right { top: 0; right: 0; width: 70px; height: 100%; }
+
+        /* Базовый контейнер */
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: none;
+            background: #111;
+        }
+        
+        /* Кнопки в стиле ретро */
+        .sys-btn {
+            background: #000; color: #0F0; border: 2px solid #0F0;
+            padding: 10px; font-weight: bold; cursor: pointer;
+            text-transform: uppercase; font-family: "Courier New", monospace;
+        }
+        .sys-btn:hover { background: #0F0; color: #000; }
+        .sys-btn.active { background: #0F0; color: #000; }
+
+        /* === МЕНЮ === */
+        #menu-view { text-align: center; padding-top: 50px; display: block; }
+        .diff-box { border: 1px solid #333; width: 400px; margin: 20px auto; padding: 10px; }
+        
+        /* === ОФИС === */
+        #office-view { background: #050505; }
+        
+        /* ДВЕРИ */
+        .door-frame {
+            position: absolute; top: 10%; width: 15%; height: 80%;
+            border: 4px solid #333; background: #000;
+            overflow: hidden;
+        }
+        #d-left { left: 5%; }
+        #d-right { right: 5%; }
+        
+        /* Металлическая заслонка */
+        .door-metal {
+            position: absolute; top: 0; left: 0; width: 100%; height: 0%; /* Открыта */
+            background: #444; border-bottom: 5px solid red;
+            transition: height 0.2s; /* Для новых браузеров, старые просто переключат */
+        }
+        
+        /* Пульт управления дверью */
+        .door-panel {
+            position: absolute; top: 40%; width: 60px;
+            background: #222; border: 2px solid #555; padding: 5px;
+            text-align: center; z-index: 100;
+        }
+        #p-left { left: 22%; }
+        #p-right { right: 22%; }
+        
+        .ctrl-btn {
+            display: block; width: 100%; margin-bottom: 5px;
+            border: 1px solid #777; color: #777; cursor: pointer;
+            font-size: 11px; padding: 4px 0; background: #111;
+        }
+        .btn-door-on { background: #500 !important; color: white !important; border-color: red !important; }
+        .btn-light-on { background: #EEE !important; color: black !important; }
+
+        /* Враги в проеме */
+        .monster {
+            width: 100%; height: 100%; display: none;
+            color: red; font-weight: bold; font-size: 20px;
+            text-align: center; padding-top: 100px;
+            background: #111;
+        }
+
+        /* Щиток */
+        #electric-panel {
+            position: absolute; bottom: 20%; right: 35%;
+            width: 80px; height: 100px; border: 2px solid #555;
+            background: #222; cursor: pointer; color: #555;
+            text-align: center; padding-top: 10px;
+        }
+        #electric-panel.broken { border-color: red; background: #300; color: red; }
+
+        /* Электро Кузи */
+        #electro-kuzi {
+            position: absolute; top: 5%; left: 45%;
+            width: 100px; height: 100px;
+            background: yellow; border: 2px dashed red;
+            color: black; font-weight: bold; text-align: center;
+            display: none; cursor: crosshair; z-index: 200;
+            padding-top: 30px;
+        }
+
+        /* HUD */
+        #hud-bottom {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 80px;
+            background: #050505; border-top: 2px solid #FFF; z-index: 300;
+            padding: 10px; box-sizing: border-box;
+            color: #FFF;
+            filter: progid:DXImageTransform.Microsoft.Glow(Color=#FFFFFF, Strength=1);
+        }
+        #hud-bottom span { color: #FFF; }
+        #tablet-trigger {
+            position: absolute; bottom: 10px; left: 50%; margin-left: -100px;
+            width: 200px; text-align: center;
+        }
+
+        /* === ПЛАНШЕТ === */
+        #tablet-view { background: #001100; border: 10px solid #333; box-sizing: border-box; }
+        
+        #cam-screen {
+            position: absolute; top: 20px; left: 20px; right: 250px; bottom: 20px;
+            border: 2px solid #0F0; background: #000;
+            color: #0F0; text-align: center; padding-top: 20px;
+        }
+        
+        #map-container {
+            position: absolute; top: 20px; right: 20px; width: 220px; bottom: 20px;
+            border: 1px solid #0F0; padding: 5px; background: #000;
+        }
+        
+        .map-btn {
+            width: 90%; margin: 5px auto; display: block;
+            background: #002200; border: 1px solid #0F0; color: #0F0;
+            padding: 5px; cursor: pointer; text-align: center;
+        }
+        .map-btn.active { background: #0F0; color: #000; font-weight: bold; }
+
+        #liquidate-btn {
+            margin-top: 30px; border: 2px double red; color: red;
+            background: #200; font-weight: bold;
+        }
+        #liquidate-btn:hover { background: #500; color: white; }
+
+        /* Спец элементы планшета */
+        #maxim-status { border: 1px solid #fff; width: 50%; margin: 20px auto; height: 20px; display: none; }
+        #maxim-fill { background: orange; height: 100%; width: 0%; }
+        #feed-maxim { margin-top: 10px; color: yellow; cursor: pointer; text-decoration: underline; display: none; }
+        #battery-pickup { 
+            width: 50px; height: 30px; background: cyan; color: black; 
+            margin: 50px auto; cursor: pointer; display: none; border: 1px solid white;
+        }
+
+        /* === ФИНАЛ === */
+        .end-screen { text-align: center; padding-top: 100px; display: none; z-index: 9000; }
+
+        body.compact-ui { font-size: 12px; }
+        body.compact-ui .diff-box { width: 86%; }
+        body.compact-ui .door-panel { width: 48px; top: 35%; }
+        body.compact-ui #electric-panel { right: 28%; bottom: 24%; width: 68px; height: 82px; }
+        body.compact-ui #electro-kuzi { left: 38%; width: 80px; height: 70px; padding-top: 18px; }
+        body.compact-ui #hud-bottom { height: 96px; padding: 8px; }
+        body.compact-ui #tablet-trigger { position: static; margin: 6px auto 0; width: 92%; }
+        body.compact-ui #cam-screen { left: 10px; right: 10px; top: 10px; bottom: 150px; }
+        body.compact-ui #map-container { left: 10px; right: 10px; width: auto; top: auto; bottom: 10px; height: 120px; overflow: auto; }
+        body.compact-ui .map-btn { width: 96%; }
+    </style>
+</head>
+<body>
+
+    <div id="v-top" class="vignette-edge"></div>
+    <div id="v-bottom" class="vignette-edge"></div>
+    <div id="v-left" class="vignette-edge"></div>
+    <div id="v-right" class="vignette-edge"></div>
+    <div id="monitor-overlay"></div>
+
+    <!-- 1. МЕНЮ -->
+    <div id="menu-view" class="screen">
+        <h1 style="color:red; font-size:40px;">5 NIGHTS WITH KUZIBAEVA</h1>
+        <h2>PROJECT: XP LEGACY (V3.0)</h2>
+        
+        <div class="diff-box">
+            <p>ВЫБЕРИТЕ РЕЖИМ:</p>
+            <button class="sys-btn" id="btn-easy" onclick="Game.setDiff('easy')">ИЗИ</button>
+            <button class="sys-btn active" id="btn-norm" onclick="Game.setDiff('normal')">НОРМА</button>
+            <button class="sys-btn" id="btn-hard" onclick="Game.setDiff('hard')">ХАРД</button>
+            <div id="diff-desc" style="color:#777; font-size:11px; margin-top:5px;">Баланс: Обычный.</div>
+        </div>
+
+        <br>
+        <button class="sys-btn" onclick="Game.start(1)">НОЧЬ 1</button>
+        <button class="sys-btn" onclick="Game.start(2)">НОЧЬ 2</button>
+        <button class="sys-btn" onclick="Game.start(3)">НОЧЬ 3</button>
+        <button class="sys-btn" onclick="Game.start(4)">НОЧЬ 4</button>
+        <button class="sys-btn" style="color:red; border-color:red;" onclick="Game.start(5)">НОЧЬ 5</button>
+    </div>
+
+    <!-- 2. ОФИС (ИГРА) -->
+    <div id="office-view" class="screen">
+        <div style="text-align:center; color:#222; padding-top:20px; font-size:40px;">ОФИС ОХРАНЫ</div>
+
+        <!-- Дверь ЛЕВАЯ -->
+        <div class="door-frame" id="d-left">
+            <div id="mon-l" class="monster"></div> <!-- Монстр -->
+            <div id="metal-l" class="door-metal"></div> <!-- Железная дверь -->
+        </div>
+        <div class="door-panel" id="p-left">
+            <div id="btn-door-l" class="ctrl-btn" onclick="Game.toggleDoor('l')">DOOR</div>
+            <div id="btn-light-l" class="ctrl-btn" onclick="Game.toggleLight('l')">LIGHT</div>
+        </div>
+
+        <!-- Дверь ПРАВАЯ -->
+        <div class="door-frame" id="d-right">
+            <div id="mon-r" class="monster"></div> <!-- Монстр -->
+            <div id="metal-r" class="door-metal"></div> <!-- Железная дверь -->
+        </div>
+        <div class="door-panel" id="p-right">
+            <div id="btn-door-r" class="ctrl-btn" onclick="Game.toggleDoor('r')">DOOR</div>
+            <div id="btn-light-r" class="ctrl-btn" onclick="Game.toggleLight('r')">LIGHT</div>
+        </div>
+
+        <!-- Интерактив -->
+        <div id="electric-panel" onclick="Game.fixPanel()">
+            ⚡<br>PANEL<br><span id="panel-status">OK</span>
+        </div>
+        <div id="electro-kuzi" onclick="Game.hitElectro()">ЭЛЕКТРО<br>КУЗИ!<br>(ЖМИ)</div>
+
+        <!-- HUD -->
+        <div id="hud-bottom">
+            <div style="float:left">
+                ЭНЕРГИЯ: <span id="ui-energy" style="font-size:20px">100</span>%<br>
+                <div style="font-size:10px; color:#555">РАСХОД: <span id="ui-usage">|</span></div>
+            </div>
+            <div style="float:right; text-align:right">
+                <span id="ui-time" style="font-size:20px">12:00</span> AM<br>
+                Night <span id="ui-night">1</span>
+            </div>
+            
+            <div id="tablet-trigger">
+                <button class="sys-btn" style="width:100%" onclick="Game.openTablet()">[ ОТКРЫТЬ ПЛАНШЕТ ]</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. ПЛАНШЕТ -->
+    <div id="tablet-view" class="screen">
+        <div id="cam-screen">
+            <h2 id="cam-title">CAM 1</h2>
+            
+            <!-- Содержимое камеры -->
+            <div id="cam-visual" style="margin-top:50px; font-size:24px; color:#333;">...</div>
+            
+            <!-- Статус врагов -->
+            <div id="cam-warning" style="color:red; font-weight:bold; font-size:30px; margin-top:20px;"></div>
+
+            <!-- UI Максима -->
+            <div id="maxim-status"><div id="maxim-fill"></div></div>
+            <div id="feed-maxim" onclick="Game.feedMaxim()">[ ПОКОРМИТЬ ОГУРЦОМ ]</div>
+
+            <!-- Батарейка -->
+            <div id="battery-pickup" onclick="Game.getBattery()">BATTERY<br>+10%</div>
+        </div>
+
+        <div id="map-container">
+            <div class="map-btn active" id="btn-c1" onclick="Game.setCam(1)">CAM 01 (Холл)</div>
+            <div class="map-btn" id="btn-c2" onclick="Game.setCam(2)">CAM 02 (Склад)</div>
+            <div class="map-btn" id="btn-c3" onclick="Game.setCam(3)">CAM 03 (Кухня)</div>
+            <div class="map-btn" id="btn-c4" onclick="Game.setCam(4)">CAM 04 (Максим)</div>
+            <div class="map-btn" id="btn-c5" onclick="Game.setCam(5)">CAM 05 (Галерея)</div>
+            <div class="map-btn" id="btn-c6" onclick="Game.setCam(6)">CAM 06 (WC)</div>
+            <div class="map-btn" id="btn-c7" onclick="Game.setCam(7)">CAM 07 (Л.Дверь)</div>
+            <div class="map-btn" id="btn-c8" onclick="Game.setCam(8)">CAM 08 (Щиток)</div>
+            
+            <div class="map-btn" id="liquidate-btn" onclick="Game.liquidate()">
+                ☢️ ЛИКВИДАЦИЯ ☢️<br>
+                <span style="font-size:9px">ЦЕНА: 75% EN</span>
+            </div>
+
+            <button class="sys-btn" style="width:100%; margin-top:20px;" onclick="Game.closeTablet()">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
+    <!-- 4. КОНЕЦ -->
+    <div id="end-lose" class="screen end-screen" style="background:#200;">
+        <h1 style="color:red; font-size:50px;">GAME OVER</h1>
+        <h2 id="death-msg" style="color:white;">...</h2>
+        <button class="sys-btn" onclick="location.reload()">МЕНЮ</button>
+    </div>
+    
+    <div id="end-win" class="screen end-screen" style="background:#020;">
+        <h1 style="color:gold; font-size:60px;">6:00 AM</h1>
+        <h2 style="color:white;">СМЕНА СДАНА</h2>
+        <button class="sys-btn" onclick="location.reload()">МЕНЮ</button>
+    </div>
+
+    <script type="text/javascript">
+        /* ЛОГИКА ИГРЫ (XP COMPATIBLE) */
+        window.onerror = function () { return true; };
+
+        function applyLegacyLayout() {
+            var w = document.documentElement.clientWidth || document.body.clientWidth || 800;
+            var cls = document.body.className || '';
+            var hasCompact = cls.indexOf('compact-ui') !== -1;
+            if (w < 760) {
+                if (!hasCompact) document.body.className = cls ? (cls + ' compact-ui') : 'compact-ui';
+            } else if (hasCompact) {
+                document.body.className = cls.replace(/\bcompact-ui\b/g, '').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
+            }
+        }
+        
+        var Game = {
+            night: 1,
+            diff: 'normal',
+            state: 'menu', // menu, office, tablet
+            
+            // Ресурсы
+            energy: 100,
+            time: 0,
+            
+            // Состояние офиса
+            doors: { l: false, r: false },
+            lights: { l: false, r: false },
+            panelBroken: false,
+            
+            // Враги
+            kuzi: { loc: 1, lvl: 0, dead: false },
+            anya: { loc: 0, lvl: 0, stage: 0, berserk: false, dead: false },
+            maxim: { fatigue: 0, sleeping: false },
+            electro: false,
+            
+            // Разное
+            currCam: 1,
+            batteryAvail: false,
+            timerMain: null,
+            timerAI: null,
+
+            // --- НАСТРОЙКИ ---
+            setDiff: function(d) {
+                this.diff = d;
+                document.getElementById('btn-easy').className = 'sys-btn';
+                document.getElementById('btn-norm').className = 'sys-btn';
+                document.getElementById('btn-hard').className = 'sys-btn';
+                
+                var id = (d=='easy'?'btn-easy':(d=='hard'?'btn-hard':'btn-norm'));
+                document.getElementById(id).className = 'sys-btn active';
+                
+                var txt = "Баланс: Обычный";
+                if(d=='easy') txt = "ИЗИ: Медленные враги, Энергия тратится медленно";
+                if(d=='hard') txt = "ХАРД: Агрессия, Энергия улетает, Поломки";
+                document.getElementById('diff-desc').innerHTML = txt;
+            },
+
+            // --- ЗАПУСК ---
+            start: function(n) {
+                this.night = n;
+                this.resetVars();
+                
+                // Настройка сложности AI
+                var baseLvl = n * 2;
+                if(this.diff == 'easy') baseLvl = 1;
+                if(this.diff == 'hard') baseLvl = n * 3 + 5;
+                if(n == 5) baseLvl = 20;
+
+                this.kuzi.lvl = baseLvl;
+                this.anya.lvl = (n >= 2) ? baseLvl : 0;
+                
+                // UI
+                document.getElementById('menu-view').style.display = 'none';
+                document.getElementById('office-view').style.display = 'block'; // Показываем офис
+                document.getElementById('ui-night').innerHTML = n;
+                this.updateVisuals();
+
+                // Таймеры
+                var self = this;
+                this.timerMain = setInterval(function(){ self.loop(); }, 1000); // Секунда
+                this.timerAI = setInterval(function(){ self.ai(); }, 4000); // Ход AI
+                this.state = 'office';
+            },
+
+            resetVars: function() {
+                this.energy = 100;
+                this.time = 0;
+                this.doors = {l:false, r:false};
+                this.lights = {l:false, r:false};
+                this.panelBroken = false;
+                this.kuzi = {loc:1, lvl:0, dead:false};
+                this.anya = {loc:0, lvl:0, stage:0, berserk:false, dead:false};
+                this.maxim = {fatigue:0, sleeping:false};
+                this.electro = false;
+                this.batteryAvail = false;
+                this.currCam = 1;
+            },
+
+            // --- ЦИКЛ ---
+            loop: function() {
+                if(this.state == 'menu') return;
+                
+                // Время
+                this.time++;
+                var h = Math.floor(this.time / 60);
+                if(h==0) h=12;
+                document.getElementById('ui-time').innerHTML = h + ":00 AM";
+                if(this.time >= 360) { this.win(); return; }
+
+                // Энергия
+                var usage = 1;
+                if(this.doors.l) usage++;
+                if(this.doors.r) usage++;
+                if(this.lights.l) usage++;
+                if(this.lights.r) usage++;
+                if(this.state == 'tablet') usage++;
+                
+                var drain = usage * 0.2; // База
+                if(this.diff == 'easy') drain = usage * 0.05;
+                if(this.diff == 'hard') drain = usage * 0.35;
+                if(this.electro) drain += 0.5;
+                if(this.maxim.sleeping) drain += 0.2; // Штраф за Максима
+                
+                this.energy -= drain;
+                if(this.energy <= 0) { this.energy = 0; this.lose("ЭЛЕКТРИЧЕСТВО КОНЧИЛОСЬ"); return; }
+                
+                document.getElementById('ui-energy').innerHTML = Math.floor(this.energy);
+                // Полоски расхода
+                var bars = "|";
+                for(var i=0; i<usage; i++) bars += "|";
+                document.getElementById('ui-usage').innerHTML = bars;
+
+                // Механики
+                if(this.night >= 2 && !this.maxim.sleeping) {
+                    this.maxim.fatigue += (this.diff=='hard' ? 2 : 1);
+                    if(this.maxim.fatigue >= 100) {
+                        this.maxim.fatigue = 100;
+                        this.maxim.sleeping = true;
+                    }
+                }
+
+                // Рандом события
+                if(!this.panelBroken && (this.night==5 || this.diff=='hard') && Math.random() < 0.02) {
+                    this.breakPanel();
+                }
+                if(!this.batteryAvail && Math.random() < 0.01) {
+                    this.batteryAvail = true;
+                }
+
+                // Обновить планшет если открыт
+                if(this.state == 'tablet') this.renderCam();
+            },
+
+            // --- AI ---
+            ai: function() {
+                if(this.state == 'menu') return;
+
+                // 1. Кузибаева (Маршрут 1..8 -> Атака)
+                if(!this.kuzi.dead && Math.random()*20 < this.kuzi.lvl) {
+                    this.kuzi.loc++;
+                    if(this.kuzi.loc > 8) { // Атака
+                        var side = (Math.random() > 0.5) ? 'l' : 'r';
+                        if(this.doors[side]) {
+                            this.kuzi.loc = 1; // Ушла
+                        } else {
+                            this.lose("КУЗИБАЕВА ПОЙМАЛА ТЕБЯ (" + (side=='l'?'слева':'справа') + ")");
+                        }
+                    }
+                }
+
+                // 2. Аня (Stage: 0->1->3->Attack)
+                if(!this.anya.dead && this.night >= 2 && Math.random()*20 < this.anya.lvl) {
+                    if(this.anya.stage == 0) this.anya.stage = 1;
+                    else if(this.anya.stage == 1) this.anya.stage = 3;
+                    else if(this.anya.stage == 3) {
+                        var side = 'l'; // По дефолту слева
+                        if(this.anya.berserk) side = (Math.random() > 0.5) ? 'l' : 'r'; // Берсерк бьет везде
+                        
+                        if(this.doors[side]) {
+                            this.anya.stage = 0;
+                        } else {
+                            this.lose("АНЯ ("+(this.anya.berserk?"ЯРОСТЬ":"ОБЫЧНАЯ")+") СЪЕЛА ТЕБЯ");
+                        }
+                    }
+                }
+
+                // 3. Электро
+                if(!this.electro && this.night >= 3 && Math.random() < 0.05) {
+                    this.electro = true;
+                    document.getElementById('electro-kuzi').style.display = 'block';
+                }
+            },
+
+            // --- УПРАВЛЕНИЕ ОФИСОМ ---
+            toggleDoor: function(s) {
+                if(this.panelBroken) return;
+                this.doors[s] = !this.doors[s];
+                this.updateVisuals();
+            },
+            
+            toggleLight: function(s) {
+                if(this.panelBroken) return;
+                if(!this.lights[s]) this.energy -= 1; // Штраф за фонарик
+                this.lights[s] = !this.lights[s];
+                this.updateVisuals();
+            },
+
+            updateVisuals: function() {
+                // Двери (меняем высоту металла)
+                document.getElementById('metal-l').style.height = this.doors.l ? '100%' : '0%';
+                document.getElementById('metal-r').style.height = this.doors.r ? '100%' : '0%';
+                
+                // Кнопки
+                document.getElementById('btn-door-l').className = this.doors.l ? 'ctrl-btn btn-door-on' : 'ctrl-btn';
+                document.getElementById('btn-door-r').className = this.doors.r ? 'ctrl-btn btn-door-on' : 'ctrl-btn';
+                document.getElementById('btn-light-l').className = this.lights.l ? 'ctrl-btn btn-light-on' : 'ctrl-btn';
+                document.getElementById('btn-light-r').className = this.lights.r ? 'ctrl-btn btn-light-on' : 'ctrl-btn';
+
+                // Монстры в окнах (если свет)
+                var seeKuziL = (this.kuzi.loc == 7 && this.lights.l);
+                var seeKuziR = (this.kuzi.loc == 8 && this.lights.r);
+                var seeAnyaL = (this.anya.stage == 3 && this.lights.l);
+                var seeAnyaR = (this.anya.stage == 3 && this.anya.berserk && this.lights.r);
+
+                var ml = document.getElementById('mon-l');
+                var mr = document.getElementById('mon-r');
+                
+                ml.style.display = 'none'; mr.style.display = 'none';
+
+                if(seeKuziL) { ml.innerHTML = "KUZI"; ml.style.display = 'block'; ml.style.color = 'green'; }
+                else if(seeAnyaL) { ml.innerHTML = "ANYA"; ml.style.display = 'block'; ml.style.color = 'purple'; }
+
+                if(seeKuziR) { mr.innerHTML = "KUZI"; mr.style.display = 'block'; mr.style.color = 'green'; }
+                else if(seeAnyaR) { mr.innerHTML = "ANYA"; mr.style.display = 'block'; mr.style.color = 'red'; }
+            },
+
+            hitElectro: function() {
+                this.electro = false;
+                document.getElementById('electro-kuzi').style.display = 'none';
+            },
+
+            fixPanel: function() {
+                if(this.panelBroken) {
+                    this.panelBroken = false;
+                    document.getElementById('electric-panel').className = '';
+                    document.getElementById('panel-status').innerHTML = "OK";
+                }
+            },
+            
+            breakPanel: function() {
+                this.panelBroken = true;
+                this.doors.l = false; this.doors.r = false;
+                this.updateVisuals();
+                document.getElementById('electric-panel').className = 'broken';
+                document.getElementById('panel-status').innerHTML = "ERR";
+            },
+
+            // --- ПЛАНШЕТ ---
+            openTablet: function() {
+                if(this.panelBroken) return;
+                this.state = 'tablet';
+                // СКРЫВАЕМ ОФИС, ПОКАЗЫВАЕМ ПЛАНШЕТ
+                document.getElementById('office-view').style.display = 'none';
+                document.getElementById('tablet-view').style.display = 'block';
+                this.renderCam();
+            },
+
+            closeTablet: function() {
+                this.state = 'office';
+                document.getElementById('tablet-view').style.display = 'none';
+                document.getElementById('office-view').style.display = 'block';
+            },
+
+            setCam: function(n) {
+                this.currCam = n;
+                this.renderCam();
+            },
+
+            renderCam: function() {
+                // Подсветка кнопок
+                for(var i=1; i<=8; i++) document.getElementById('btn-c'+i).className = 'map-btn';
+                document.getElementById('btn-c'+this.currCam).className = 'map-btn active';
+
+                var title = document.getElementById('cam-title');
+                var vis = document.getElementById('cam-visual');
+                var warn = document.getElementById('cam-warning');
+                
+                title.innerHTML = "CAM 0" + this.currCam;
+                warn.innerHTML = "";
+                vis.innerHTML = "";
+                
+                // Скрываем спец элементы
+                document.getElementById('maxim-status').style.display = 'none';
+                document.getElementById('feed-maxim').style.display = 'none';
+                document.getElementById('battery-pickup').style.display = 'none';
+
+                // Контент
+                if(this.currCam == 4) { // Максим
+                    vis.innerHTML = "МАКСИМ: " + (this.maxim.sleeping ? "💤 СПИТ" : "🔨 РАБОТАЕТ");
+                    document.getElementById('maxim-status').style.display = 'block';
+                    document.getElementById('maxim-fill').style.width = this.maxim.fatigue + "%";
+                    if(!this.maxim.sleeping) document.getElementById('feed-maxim').style.display = 'block';
+                } else if(this.currCam == 8) { // Щиток
+                     vis.innerHTML = "КОРИДОР / ЩИТОК";
+                     if(this.batteryAvail) document.getElementById('battery-pickup').style.display = 'block';
+                } else {
+                    vis.innerHTML = "КОМНАТА " + this.currCam;
+                }
+
+                // Враги
+                if(this.kuzi.loc == this.currCam && !this.kuzi.dead) {
+                    warn.innerHTML = "⚠️ ОБНАРУЖЕНА КУЗИБАЕВА";
+                }
+                if(this.anya.stage == 1 && (this.currCam==2 || this.currCam==3) && !this.anya.dead) {
+                    warn.innerHTML = "⚠️ ОБНАРУЖЕНА АНЯ";
+                }
+            },
+
+            feedMaxim: function() {
+                if(this.maxim.sleeping) return;
+                this.maxim.fatigue = 0;
+                this.renderCam();
+            },
+
+            getBattery: function() {
+                this.energy += 10; 
+                if(this.energy > 100) this.energy = 100;
+                this.batteryAvail = false;
+                this.renderCam();
+            },
+
+            liquidate: function() {
+                if(this.energy < 75) { alert("ТРЕБУЕТСЯ 75% ЭНЕРГИИ"); return; }
+                
+                var target = null;
+                if(this.kuzi.loc == this.currCam && !this.kuzi.dead) target = 'kuzi';
+                else if(this.anya.stage > 0 && !this.anya.dead) target = 'anya';
+                else if(!this.kuzi.dead) target = 'kuzi'; // Дефолт
+
+                if(!target) { alert("ВРАГИ НЕ НАЙДЕНЫ"); return; }
+
+                this.energy -= 75;
+                document.getElementById('cam-screen').style.background = 'white'; // Вспышка
+                var self = this;
+                setTimeout(function(){ document.getElementById('cam-screen').style.background = '#000'; self.renderCam(); }, 200);
+
+                if(target == 'kuzi') {
+                    this.kuzi.dead = true;
+                    this.kuzi.loc = -999;
+                    alert("КУЗИБАЕВА УСТРАНЕНА. АНЯ В ЯРОСТИ!");
+                    this.anya.berserk = true;
+                    this.anya.lvl = 20;
+                } else {
+                    this.anya.dead = true;
+                    this.anya.stage = -999;
+                    alert("АНЯ УСТРАНЕНА.");
+                }
+            },
+
+            // --- ФИНАЛ ---
+            lose: function(msg) {
+                this.state = 'menu'; // Стоп логика
+                clearInterval(this.timerMain);
+                clearInterval(this.timerAI);
+                
+                document.getElementById('office-view').style.display = 'none';
+                document.getElementById('tablet-view').style.display = 'none';
+                document.getElementById('end-lose').style.display = 'block';
+                document.getElementById('death-msg').innerHTML = msg;
+            },
+
+            win: function() {
+                this.state = 'menu';
+                clearInterval(this.timerMain);
+                clearInterval(this.timerAI);
+                
+                document.getElementById('office-view').style.display = 'none';
+                document.getElementById('tablet-view').style.display = 'none';
+                document.getElementById('end-win').style.display = 'block';
+            }
+        };
+
+        if (window.attachEvent) {
+            window.attachEvent('onload', applyLegacyLayout);
+            window.attachEvent('onresize', applyLegacyLayout);
+        } else if (window.addEventListener) {
+            window.addEventListener('load', applyLegacyLayout, false);
+            window.addEventListener('resize', applyLegacyLayout, false);
+        } else {
+            window.onload = applyLegacyLayout;
+            window.onresize = applyLegacyLayout;
+        }
+    </script>
+</body>
+</html>

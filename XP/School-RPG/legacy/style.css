@@ -1,0 +1,1442 @@
+/* === SCHOOL RPG: IE8 OPTIMIZED CSS === */
+/* Полная оптимизация для Internet Explorer 8 */
+
+/* --- Base --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: content-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #1e293b;
+    min-height: 100%;
+    text-align: center;
+    overflow-x: hidden;
+    color: white;
+    background-color: #0f172a;
+}
+
+/* --- Menu Screen --- */
+.menu-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #1e293b;
+    text-align: center;
+    z-index: 2000;
+    overflow: auto;
+    padding: 20px;
+}
+
+.menu-screen.hidden {
+    display: none;
+}
+
+.menu-title {
+    font-family: Arial, sans-serif;
+    font-size: 1.1rem;
+    color: #fbbf24;
+    text-align: center;
+    line-height: 2;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.menu-subtitle {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-top: -15px;
+    margin-bottom: 20px;
+}
+
+.menu-section {
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.menu-section-title {
+    font-family: Arial, sans-serif;
+    font-size: 0.55rem;
+    color: #64748b;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.menu-buttons {
+    margin: 0 auto;
+    width: 300px;
+}
+
+.menu-btn {
+    background: #374151;
+    border: 3px solid #4b5563;
+    padding: 12px 15px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.menu-btn:hover {
+    border-color: #fbbf24;
+}
+
+.menu-btn .emoji {
+    font-size: 1.5rem;
+    float: left;
+    margin-right: 12px;
+}
+
+.menu-btn .info {
+    display: block;
+    overflow: hidden;
+}
+
+.menu-btn .name {
+    font-size: 0.9rem;
+    display: block;
+}
+
+.menu-btn .desc {
+    font-size: 0.65rem;
+    color: #9ca3af;
+    display: block;
+}
+
+.menu-input {
+    background: #1f2937;
+    border: 3px solid #4b5563;
+    padding: 12px 15px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 1rem;
+    width: 300px;
+    text-align: center;
+    margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.menu-input:focus {
+    outline: none;
+    border-color: #fbbf24;
+}
+
+.menu-btn.story {
+    border-color: #22c55e;
+    background: #166534;
+}
+
+.menu-btn.story:hover {
+    border-color: #4ade80;
+}
+
+.menu-btn.pvp {
+    border-color: #ef4444;
+    background: #991b1b;
+}
+
+.menu-btn.pvp:hover {
+    border-color: #fca5a5;
+}
+
+.menu-btn.endless {
+    border-color: #a855f7;
+    background: #6b21a8;
+}
+
+.menu-btn.endless:hover {
+    border-color: #d8b4fe;
+}
+
+.player-stats-menu {
+    background: #000;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.stat-item {
+    display: inline;
+    margin: 0 10px;
+}
+
+.back-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #000;
+    border: 2px solid #4b5563;
+    padding: 8px 12px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 100;
+}
+
+.back-btn:hover {
+    border-color: #fbbf24;
+}
+
+body.hardcore {
+    background-color: #450a0a;
+}
+
+body.hardcore .menu-btn.story {
+    background: #7f1d1d;
+    border-color: #dc2626;
+}
+
+body.hardcore .menu-btn.story:hover {
+    border-color: #f87171;
+}
+
+body.hardcore .battle-arena {
+    border-color: #7f1d1d;
+    background: #290808;
+}
+
+body.hardcore .player-hp {
+    background: #dc2626;
+}
+
+.speedrun-timer {
+    position: absolute;
+    top: 2px;
+    right: 10px;
+    font-family: Arial, sans-serif;
+    font-size: 0.8rem;
+    color: #fbbf24;
+    z-index: 100;
+    display: none;
+}
+
+/* --- Settings Bar --- */
+.settings-bar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 3000;
+}
+
+.setting-btn {
+    background: #1f2937;
+    border: 2px solid #4b5563;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: 0.6rem;
+    margin-left: 5px;
+}
+
+.setting-btn:hover {
+    border-color: #fbbf24;
+}
+
+.setting-btn.active {
+    background: #fbbf24;
+    color: black;
+    border-color: white;
+}
+
+.connection-status {
+    font-size: 11px;
+    padding: 4px 8px;
+    background: #000000;
+    margin-right: 5px;
+}
+
+/* --- Shop Styles --- */
+.shop-grid {
+    width: 500px;
+    max-height: 50%;
+    overflow: auto;
+    padding: 5px;
+    margin: 0 auto;
+}
+
+.shop-grid:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.shop-item {
+    background: #1f2937;
+    border: 2px solid #4b5563;
+    padding: 10px;
+    cursor: pointer;
+    float: left;
+    width: 150px;
+    margin: 5px;
+    text-align: center;
+}
+
+.shop-item:hover {
+    border-color: white;
+}
+
+.shop-item.owned {
+    border-color: #22c55e;
+}
+
+.shop-item.equipped {
+    border-color: #fbbf24;
+    background: #374151;
+}
+
+.shop-item .preview {
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+.shop-item .preview-img {
+    width: 45px;
+    height: 45px;
+}
+
+.shop-item .price {
+    font-size: 0.6rem;
+    color: #fbbf24;
+    font-weight: bold;
+}
+
+.shop-item .name {
+    font-size: 0.55rem;
+    color: #ccc;
+    margin-bottom: 3px;
+    text-align: center;
+}
+
+/* --- Leaderboard --- */
+.leaderboard-table {
+    width: 500px;
+    border-collapse: collapse;
+    font-size: 0.7rem;
+    margin: 15px auto 0;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+    padding: 6px 8px;
+    text-align: left;
+    border: 1px solid #333;
+}
+
+.leaderboard-table th {
+    font-family: Arial, sans-serif;
+    font-size: 0.5rem;
+    color: #fbbf24;
+    background: #1f2937;
+}
+
+.leaderboard-table tr:nth-child(even) {
+    background: #1a1a2e;
+}
+
+.leaderboard-table .hardcore-entry td {
+    color: #fca5a5;
+    font-weight: bold;
+}
+
+.leaderboard-table .win-row td {
+    color: #86efac;
+}
+
+.filter-select {
+    background: #1f2937;
+    color: white;
+    border: 2px solid #4b5563;
+    padding: 8px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    margin-bottom: 10px;
+    width: 500px;
+}
+
+.score-val {
+    font-weight: bold;
+    color: #fbbf24;
+}
+
+/* --- UI Layout --- */
+.game-wrapper {
+    position: relative;
+    width: 600px;
+    padding: 10px;
+    margin: 0 auto;
+    display: none;
+}
+
+.header-info {
+    margin-bottom: 10px;
+    font-family: Arial, sans-serif;
+    font-size: 0.65rem;
+    color: #fbbf24;
+    padding: 0 10px;
+}
+
+.header-info:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.header-stats {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: white;
+    background: #333;
+    padding: 4px 12px;
+    border: 1px solid #555;
+    float: left;
+}
+
+.header-stats span {
+    margin: 0 5px;
+}
+
+.battle-arena {
+    background: #1e2937;
+    border: 4px solid #475569;
+    padding: 15px;
+    position: relative;
+}
+
+.shake-screen {
+    /* IE8 doesn't support animations - use JS instead */
+    position: relative;
+    left: 0;
+}
+
+.flash-red {
+    /* IE8 doesn't support animations - use JS instead */
+    background-color: transparent;
+}
+
+/* --- Special Bar --- */
+.special-bar-container {
+    margin-bottom: 12px;
+    display: none;
+}
+
+.special-bar-container.show {
+    display: block;
+}
+
+.special-bar-label {
+    font-size: 0.7rem;
+    color: #f59e0b;
+    margin-bottom: 4px;
+}
+
+.special-bar-label:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.special-bar-label span {
+    float: left;
+}
+
+.special-bar-label span:last-child {
+    float: right;
+}
+
+.special-bar-wrap {
+    background: #1f2937;
+    height: 10px;
+    border: 2px solid #f59e0b;
+    overflow: hidden;
+}
+
+.special-bar-val {
+    height: 100%;
+    background: #f59e0b;
+    width: 0%;
+}
+
+/* --- Scream Battle Overlay --- */
+.scream-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: none;
+    z-index: 3000;
+    text-align: center;
+}
+
+.scream-overlay.show {
+    display: block;
+}
+
+.scream-title {
+    font-family: Arial, sans-serif;
+    font-size: 1.5rem;
+    color: #fbbf24;
+    margin-bottom: 20px;
+    margin-top: 100px;
+    font-weight: bold;
+}
+
+.scream-timer {
+    font-family: Arial, sans-serif;
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 30px;
+}
+
+.scream-bar-container {
+    width: 90%;
+    max-width: 500px;
+    height: 60px;
+    background: #1f2937;
+    border: 4px solid #fbbf24;
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto 30px auto;
+}
+
+.scream-bar-player {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: #22c55e;
+    width: 50%;
+}
+
+.scream-bar-enemy {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    background: #ef4444;
+    width: 50%;
+}
+
+.scream-divider {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: #fbbf24;
+    margin-left: -2px;
+}
+
+.scream-key {
+    width: 120px;
+    height: 120px;
+    background: #374151;
+    border: 4px solid #fbbf24;
+    margin: 0 auto 20px auto;
+    font-family: Arial, sans-serif;
+    font-size: 3rem;
+    color: white;
+    cursor: pointer;
+    line-height: 120px;
+    text-align: center;
+}
+
+.scream-key.pressed {
+    background: #fbbf24;
+    color: black;
+}
+
+.scream-damage {
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    color: white;
+    margin-top: 10px;
+}
+
+.scream-damage span {
+    margin: 0 20px;
+}
+
+/* --- Sprites --- */
+.sprite-container {
+    text-align: center;
+    padding: 20px 0;
+    position: relative;
+}
+
+.sprite-container:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.player-sprite, .enemy-sprite {
+    font-size: 4rem;
+    display: inline;
+    margin: 0 50px;
+}
+
+.player-sprite {
+    float: left;
+    margin-left: 50px;
+}
+
+.enemy-sprite {
+    float: right;
+    margin-right: 50px;
+}
+
+.player-sprite.dead, .enemy-sprite.dead {
+    filter: alpha(opacity=30);
+    opacity: 0.3;
+}
+
+.player-custom-img {
+    width: 80px;
+    height: 80px;
+    float: left;
+    margin-left: 50px;
+    display: none;
+}
+
+.player-custom-img.dead {
+    filter: alpha(opacity=30);
+    opacity: 0.3;
+}
+
+/* --- HP/MP Bars --- */
+.bar-container {
+    margin: 10px 0;
+}
+
+.bar-label {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    margin-bottom: 2px;
+}
+
+.bar-wrap {
+    background: #1f2937;
+    height: 20px;
+    border: 2px solid #4b5563;
+    overflow: hidden;
+    position: relative;
+}
+
+.bar-fill {
+    height: 100%;
+    width: 100%;
+}
+
+.player-hp {
+    background: #ef4444;
+}
+
+.player-mp {
+    background: #3b82f6;
+}
+
+.enemy-hp {
+    background: #ef4444;
+}
+
+.bar-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-size: 0.7rem;
+    color: white;
+    line-height: 20px;
+    font-weight: bold;
+}
+
+/* --- Enemy Info --- */
+.enemy-info {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.enemy-name {
+    font-family: Arial, sans-serif;
+    font-size: 0.8rem;
+    color: #fbbf24;
+    font-weight: bold;
+}
+
+.enemy-title {
+    font-size: 0.6rem;
+    color: #9ca3af;
+}
+
+/* --- Log --- */
+.battle-log {
+    background: #000;
+    padding: 10px;
+    margin: 10px 0;
+    min-height: 30px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: white;
+    border: 1px solid #333;
+}
+
+/* --- Action Buttons --- */
+.action-panel {
+    margin-top: 15px;
+}
+
+.action-buttons {
+    margin: 0 auto;
+    width: 100%;
+}
+
+.action-buttons:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.skill-btn {
+    background: #374151;
+    border: 2px solid #4b5563;
+    padding: 10px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 0.7rem;
+    cursor: pointer;
+    float: left;
+    width: 25%;
+    text-align: center;
+}
+
+.skill-btn:hover {
+    border-color: #fbbf24;
+}
+
+.skill-btn:disabled {
+    filter: alpha(opacity=50);
+    cursor: not-allowed;
+}
+
+.skill-btn .btn-name {
+    display: block;
+}
+
+.skill-btn .btn-cost {
+    font-size: 0.6rem;
+    color: #3b82f6;
+}
+
+.item-btn {
+    background: #1f2937;
+    border: 2px solid #22c55e;
+    padding: 10px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 0.7rem;
+    cursor: pointer;
+    float: left;
+    width: 50%;
+    text-align: center;
+}
+
+.item-btn:hover {
+    border-color: #4ade80;
+}
+
+.item-btn:disabled {
+    filter: alpha(opacity=50);
+    cursor: not-allowed;
+}
+
+.item-count {
+    background: #000;
+    padding: 2px 6px;
+    margin-left: 5px;
+    font-size: 0.6rem;
+}
+
+/* --- Minion Container --- */
+.minion-container {
+    background: #1f2937;
+    border: 2px solid #f59e0b;
+    padding: 10px;
+    margin: 10px 0;
+    display: none;
+}
+
+.minion-container.show {
+    display: block;
+}
+
+.minion-sprite {
+    font-size: 2rem;
+    text-align: center;
+}
+
+.minion-bar-wrap {
+    background: #000;
+    height: 15px;
+    border: 1px solid #f59e0b;
+    overflow: hidden;
+}
+
+.minion-bar-fill {
+    height: 100%;
+    background: #f59e0b;
+    width: 100%;
+}
+
+/* --- Target Selection --- */
+.target-selection {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -120px;
+    margin-top: -80px;
+    width: 240px;
+    background: #1f2937;
+    border: 4px solid #fbbf24;
+    padding: 20px;
+    z-index: 2500;
+    display: none;
+    text-align: center;
+}
+
+.target-selection.show {
+    display: block;
+}
+
+.target-btn {
+    background: #374151;
+    border: 2px solid #4b5563;
+    padding: 15px 30px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 10px;
+}
+
+.target-btn:hover {
+    border-color: #fbbf24;
+}
+
+/* --- Modal --- */
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: none;
+    z-index: 2000;
+    text-align: center;
+}
+
+.modal-overlay.show {
+    display: block;
+}
+
+.modal-content {
+    background: #1f2937;
+    border: 4px solid #fbbf24;
+    padding: 30px;
+    max-width: 400px;
+    margin: 100px auto;
+}
+
+.modal-emoji {
+    font-size: 4rem;
+    margin-bottom: 10px;
+}
+
+.modal-title {
+    font-family: Arial, sans-serif;
+    font-size: 1.5rem;
+    color: #fbbf24;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.modal-desc {
+    font-size: 0.9rem;
+    color: #9ca3af;
+    margin-bottom: 20px;
+}
+
+.modal-btn {
+    background: #22c55e;
+    border: none;
+    padding: 12px 30px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.modal-btn:hover {
+    background: #16a34a;
+}
+
+.modal-btn-menu {
+    background: #374151;
+    border: 2px solid #4b5563;
+    padding: 12px 30px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 5px;
+}
+
+/* --- Endless Modal --- */
+.endless-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    display: none;
+    z-index: 2000;
+    text-align: center;
+}
+
+.endless-modal.show {
+    display: block;
+}
+
+.endless-content {
+    background: #1f2937;
+    border: 4px solid #a855f7;
+    padding: 30px;
+    max-width: 500px;
+    margin: 50px auto;
+}
+
+.endless-title {
+    font-family: Arial, sans-serif;
+    font-size: 1.2rem;
+    color: #a855f7;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.endless-sub {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-bottom: 20px;
+}
+
+.selection-btn {
+    background: #374151;
+    border: 2px solid #4b5563;
+    padding: 10px 20px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 5px;
+    display: block;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.selection-btn:hover {
+    border-color: #a855f7;
+}
+
+/* --- Shop Modal --- */
+.shop-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    display: none;
+    z-index: 2000;
+    text-align: center;
+    overflow: auto;
+}
+
+.shop-modal.show {
+    display: block;
+}
+
+.shop-content {
+    background: #1f2937;
+    border: 4px solid #fbbf24;
+    padding: 30px;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.shop-title {
+    font-family: Arial, sans-serif;
+    font-size: 1.2rem;
+    color: #fbbf24;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.shop-balance {
+    font-size: 0.9rem;
+    color: #22c55e;
+    margin-bottom: 20px;
+}
+
+body.compact-ui .settings-bar {
+    position: static;
+    text-align: center;
+    padding: 8px 0 0;
+}
+
+body.compact-ui .menu-screen {
+    padding: 10px 5px 20px;
+}
+
+body.compact-ui .menu-buttons,
+body.compact-ui .menu-input,
+body.compact-ui .shop-grid,
+body.compact-ui .leaderboard-table,
+body.compact-ui .filter-select,
+body.compact-ui .game-wrapper {
+    width: 94%;
+}
+
+body.compact-ui .player-stats-menu,
+body.compact-ui .battle-arena,
+body.compact-ui .modal-content,
+body.compact-ui .endless-content,
+body.compact-ui .shop-content {
+    width: 92%;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+body.compact-ui .shop-item {
+    width: 42%;
+    margin: 4px 2%;
+}
+
+body.compact-ui .back-btn,
+body.compact-ui .speedrun-timer {
+    position: static;
+    display: inline-block;
+    margin: 0 4px 8px;
+}
+
+body.compact-ui .header-info,
+body.compact-ui .header-stats {
+    float: none;
+    display: block;
+    text-align: center;
+}
+
+/* --- Daily Modal --- */
+.daily-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    display: none;
+    z-index: 2000;
+    text-align: center;
+}
+
+.daily-modal.show {
+    display: block;
+}
+
+.daily-content {
+    background: #1f2937;
+    border: 4px solid #22c55e;
+    padding: 30px;
+    max-width: 500px;
+    margin: 50px auto;
+}
+
+.daily-title {
+    font-family: Arial, sans-serif;
+    font-size: 1.2rem;
+    color: #22c55e;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.daily-grid {
+    margin: 0 auto;
+}
+
+.daily-grid:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.daily-day {
+    background: #374151;
+    border: 2px solid #4b5563;
+    padding: 15px;
+    float: left;
+    width: 60px;
+    margin: 5px;
+    text-align: center;
+}
+
+.daily-day.big-prize {
+    background: #7f1d1d;
+    border-color: #ef4444;
+}
+
+.daily-day.claimed {
+    filter: alpha(opacity=50);
+}
+
+.daily-day.available {
+    border-color: #22c55e;
+    background: #166534;
+}
+
+.daily-claim-btn {
+    background: #22c55e;
+    border: none;
+    padding: 12px 30px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.daily-claim-btn:disabled {
+    background: #374151;
+    cursor: not-allowed;
+}
+
+/* --- Leaderboard Modal --- */
+.leaderboard-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    display: none;
+    z-index: 2000;
+    text-align: center;
+    overflow: auto;
+}
+
+.leaderboard-modal.show {
+    display: block;
+}
+
+.leaderboard-content {
+    background: #1f2937;
+    border: 4px solid #fbbf24;
+    padding: 30px;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.leaderboard-title {
+    font-family: Arial, sans-serif;
+    font-size: 1.2rem;
+    color: #fbbf24;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.filter-options {
+    margin-bottom: 15px;
+}
+
+.filter-opt {
+    background: #374151;
+    border: 2px solid #4b5563;
+    padding: 8px 15px;
+    color: white;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+    margin: 0 5px;
+}
+
+.filter-opt:hover {
+    border-color: #fbbf24;
+}
+
+/* --- Float Text --- */
+.float-text {
+    position: absolute;
+    font-family: Arial, sans-serif;
+    font-size: 1.2rem;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 4000;
+    filter: alpha(opacity=100);
+}
+
+/* --- Particle --- */
+.particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    pointer-events: none;
+    z-index: 4000;
+}
+
+/* --- Hit Animation --- */
+.hit {
+    filter: progid:DXImageTransform.Microsoft.DropShadow(color=#ff0000, offX=0, offY=0);
+}
+
+/* --- Baba Valya Attacks --- */
+.baba-valya-attack {
+    position: absolute;
+    font-size: 2rem;
+    z-index: 1500;
+    cursor: pointer;
+}
+
+/* --- Speech Bubble --- */
+.speech-bubble {
+    position: absolute;
+    background: #fff;
+    color: #000;
+    padding: 15px;
+    max-width: 250px;
+    font-size: 0.8rem;
+    z-index: 100;
+    border: 2px solid #333;
+    display: none;
+}
+
+.speech-bubble.show {
+    display: block;
+}
+
+.speech-hint {
+    display: block;
+    font-size: 0.6rem;
+    color: #666;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+/* --- Auth Section --- */
+.auth-section {
+    text-align: center;
+    padding: 20px;
+}
+
+.auth-section.hidden {
+    display: none;
+}
+
+.auth-title {
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    color: #fbbf24;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.auth-input {
+    background: #1f2937;
+    border: 3px solid #4b5563;
+    padding: 12px 15px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 1rem;
+    width: 300px;
+    text-align: center;
+    margin-bottom: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.auth-msg {
+    color: #ef4444;
+    font-size: 0.8rem;
+    margin-top: 10px;
+}
+
+/* --- Hardcore Modal --- */
+.hardcore-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    display: none;
+    z-index: 2000;
+    text-align: center;
+}
+
+.hardcore-modal.show {
+    display: block;
+}
+
+.hardcore-content {
+    background: #1f2937;
+    border: 4px solid #ef4444;
+    padding: 30px;
+    max-width: 400px;
+    margin: 100px auto;
+}
+
+.hardcore-title {
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    color: #ef4444;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.hardcore-btn {
+    background: #374151;
+    border: 2px solid #4b5563;
+    padding: 12px 30px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 10px;
+}
+
+.hardcore-btn:hover {
+    border-color: #fbbf24;
+}
+
+#hardcore-yes {
+    background: #ef4444;
+    border-color: #ef4444;
+}
+
+#hardcore-no {
+    background: #22c55e;
+    border-color: #22c55e;
+}
+
+/* --- PvP Mode --- */
+.game-wrapper.pvp-mode .player-sprite {
+    float: left;
+}
+
+.game-wrapper.pvp-mode .enemy-sprite {
+    float: right;
+}
+
+/* --- Boss Buttons --- */
+.boss-section {
+    margin-top: 20px;
+}
+
+.boss-btn {
+    background: #374151;
+    border: 2px solid #4b5563;
+    padding: 10px 15px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin: 5px;
+    display: inline;
+}
+
+.boss-btn:hover {
+    border-color: #fbbf24;
+}
+
+/* --- Bottom Buttons --- */
+.bottom-buttons {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.bottom-btn {
+    background: #374151;
+    border: 2px solid #4b5563;
+    padding: 8px 15px;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 0.7rem;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.bottom-btn:hover {
+    border-color: #fbbf24;
+}
+
+/* --- Hidden File Input --- */
+.hidden-input {
+    display: none;
+}
+
+/* --- IE8 Specific Fixes --- */
+.clearfix:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Inline block fix for IE8 */
+.inline-block {
+    display: inline-block;
+}
+
+/* IE6/7 wrapper for inline-block fallback (valid CSS syntax) */
+* html .inline-block { /* IE6 */
+    display: inline;
+    zoom: 1;
+}
+*:first-child+html .inline-block { /* IE7 */
+    display: inline;
+    zoom: 1;
+}
+
+/* Opacity fix for IE8 */
+.opacity-50 {
+    filter: alpha(opacity=50);
+}
+
+/* --- Responsive adjustments removed for IE8 --- */
+/* Fixed width layout for IE8 compatibility */
+.container {
+    width: 600px;
+    margin: 0 auto;
+}
