@@ -267,6 +267,8 @@
         <div class="currency">DUST: <span id="menu-dust">0</span></div>
         <button class="btn primary" onclick="App.showLevelSelect()">Start Mission</button>
         <button class="btn" onclick="App.showShop()">Hangar</button>
+        <button class="btn" onclick="LeaderboardUI.show('starbear_hc_modern', () => App.showMenu())">Rankings</button>
+        <button class="btn" onclick="openPlayerSettings()">Name</button>
     </div>
 
     <div id="screen-shop" class="screen hidden">
@@ -307,6 +309,7 @@
 
     <canvas id="gameCanvas"></canvas>
 
+    <script src="../../xp_player_identity.js"></script>
     <script>
 
         /** CONFIGURATION (HARDCORE MODE) */
@@ -319,9 +322,9 @@
             },
             worlds: [
                 // Increased speeds and density for difficulty
-                { id: 0, name: "Nebula", height: 5000, cometSpeed: 180, cometGap: 250, fakes: false, reward: 30 },
-                { id: 1, name: "Asteroids", height: 7000, cometSpeed: 280, cometGap: 180, fakes: true, reward: 80 },
-                { id: 2, name: "Neon Storm", height: 10000, cometSpeed: 400, cometGap: 140, fakes: true, reward: 200 }
+                { id: 0, name: "Nebula", difficulty: "Easy", height: 5000, cometSpeed: 180, cometGap: 250, fakes: false, reward: 30 },
+                { id: 1, name: "Asteroids", difficulty: "Normal", height: 7000, cometSpeed: 280, cometGap: 180, fakes: true, reward: 80 },
+                { id: 2, name: "Neon Storm", difficulty: "Hard", height: 10000, cometSpeed: 400, cometGap: 140, fakes: true, reward: 200 }
             ],
             game: {
                 maxDist: 340, // Max jump distance
@@ -342,6 +345,157 @@
             save() {
                 localStorage.setItem('starbear_hc', JSON.stringify(this));
                 App.updateUI();
+            }
+        };
+
+        /** LEADERBOARD SYSTEM */
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyatGz9z_EYXBAFrH2wrnX8snbDn1ESJk",
+            authDomain: "schoolrpg-leaderboard.firebaseapp.com",
+            projectId: "schoolrpg-leaderboard",
+            storageBucket: "schoolrpg-leaderboard.firebasestorage.app",
+            messagingSenderId: "942057524924",
+            appId: "1:942057524924:web:4720f94710edd210ec8ab9",
+            measurementId: "G-MR13BVCGZW"
+        };
+
+        const LeaderboardSystem = {
+            isOnline: false,
+            db: null,
+            scoresCol: null,
+            gameId: null,
+
+            async init(gameId) {
+                this.gameId = gameId;
+                this.isOnline = window.navigator.onLine;
+                if (this.isOnline) {
+                    try {
+                        if (!window.firebase_app_instance) {
+                            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+                            window.firebase_app_instance = initializeApp(firebaseConfig);
+                            const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                            window.firebase_db_instance = getFirestore(window.firebase_app_instance);
+                        }
+                        this.db = window.firebase_db_instance;
+                        const { collection } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                        this.scoresCol = collection(this.db, 'leaderboards', this.gameId, 'scores');
+                    } catch (e) {
+                        console.warn("Firebase Init Error (Using Local):", e);
+                        this.isOnline = false;
+                    }
+                }
+            },
+
+            async saveScore(name, score, desc = "") {
+                const entry = {
+                    name: name || (window.XPPlayerProfile ? XPPlayerProfile.getName(this.gameId || 'starbear_hc_modern', "StarBear") : "Player"),
+                    score: Number(score),
+                    desc: desc,
+                    timestamp: Date.now(),
+                    date: new Date().toISOString()
+                };
+
+                if (this.isOnline && this.db) {
+                    try {
+                        const { addDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                        await addDoc(this.scoresCol, entry);
+                    } catch (e) {
+                        this.saveLocal(entry);
+                    }
+                } else {
+                    this.saveLocal(entry);
+                }
+            },
+
+            saveLocal(entry) {
+                let scores = this.getLocalRaw();
+                scores.push(entry);
+                scores.sort((a, b) => b.score - a.score);
+                scores = scores.slice(0, 50);
+                localStorage.setItem(`lb_${this.gameId}`, JSON.stringify(scores));
+            },
+
+            getLocalRaw() {
+                try { return JSON.parse(localStorage.getItem(`lb_${this.gameId}`) || "[]"); } catch (e) { return []; }
+            },
+
+            async getScores(limitCount = 10) {
+                if (this.isOnline && this.db) {
+                    try {
+                        const { getDocs, query, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                        const q = query(this.scoresCol, orderBy("score", "desc"), limit(limitCount));
+                        const snap = await getDocs(q);
+                        return snap.docs.map(doc => doc.data());
+                    } catch (e) { return this.getLocal(limitCount); }
+                } else { return this.getLocal(limitCount); }
+            },
+
+            getLocal(limitCount) {
+                return this.getLocalRaw().slice(0, limitCount);
+            },
+
+            showPrompt(score, callback) {
+                if (window.XPPlayerProfile) {
+                    XPPlayerProfile.requestRecordIdentity({
+                        gameId: this.gameId || 'starbear_hc_modern',
+                        defaultName: 'StarBear',
+                        title: 'Save Record',
+                        subtitle: 'Your victory will be saved with time and world.',
+                        onDone: (profile) => callback(profile.name)
+                    });
+                    return;
+                }
+                const name = prompt("NEW RECORD! Enter your name:", localStorage.getItem('player_name') || "");
+                if (name) {
+                    localStorage.setItem('player_name', name);
+                    callback(name);
+                }
+            }
+        };
+
+        function openPlayerSettings() {
+            if (!window.XPPlayerProfile) return;
+            XPPlayerProfile.openSettings({
+                gameId: 'starbear_hc_modern',
+                defaultName: 'StarBear',
+                title: 'Player Name',
+                subtitle: 'Change the leaderboard name and choose whether to ask again before saving a new record.'
+            });
+        }
+
+        const LeaderboardUI = {
+            show(gameId, exitCallback) {
+                let screen = document.getElementById('screen-leaderboard');
+                if (!screen) {
+                    screen = document.createElement('div');
+                    screen.id = 'screen-leaderboard';
+                    screen.className = 'screen hidden';
+                    document.body.appendChild(screen);
+                }
+                document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+                screen.classList.remove('hidden');
+                screen.innerHTML = `<h1 style="color:var(--accent)">RANKINGS</h1><div id="lb-list" style="width:100%; max-width:400px; margin:20px 0; overflow-y:auto; flex:1;">Loading...</div><button class="btn" id="lb-close">BACK</button>`;
+
+                document.getElementById('lb-close').onclick = () => {
+                    screen.classList.add('hidden');
+                    if (exitCallback) exitCallback();
+                };
+
+                LeaderboardSystem.init(gameId).then(() => {
+                    LeaderboardSystem.getScores(50).then(scores => {
+                        const list = document.getElementById('lb-list');
+                        if (!scores || scores.length === 0) { list.innerHTML = '<div style="text-align:center;padding:20px;opacity:0.5;">No records yet</div>'; return; }
+                        list.innerHTML = scores.map((s, i) => `
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;margin-bottom:8px;background:rgba(0,255,204,0.05);border-radius:10px;border:1px solid rgba(0,255,204,0.15);">
+                                <div>
+                                    <div>${i + 1}. ${s.name}</div>
+                                    <div style="font-size:11px;color:#888;">${s.desc || ''}</div>
+                                </div>
+                                <b style="color:var(--accent);">${Math.floor(s.score)}</b>
+                            </div>
+                        `).join('');
+                    });
+                });
             }
         };
 
@@ -417,7 +571,7 @@
                 CONFIG.worlds.forEach(w => {
                     const el = document.createElement('div');
                     el.className = 'level-card';
-                    el.innerHTML = `<h3>${w.name}</h3><div class="level-meta">Height: ${w.height}px | Traps: ${w.fakes ? 'YES' : 'NO'}</div>`;
+                    el.innerHTML = `<h3>${w.name}</h3><div class="level-meta">Difficulty: ${w.difficulty || 'Unknown'} | Height: ${w.height}px | Traps: ${w.fakes ? 'YES' : 'NO'}</div>`;
                     el.onclick = () => this.start(w.id);
                     list.appendChild(el);
                 });
@@ -443,7 +597,16 @@
                     r.innerText = `+${rew} DUST`;
                     Data.dust += rew;
                     Data.save();
-                    document.getElementById('res-reason').innerText = `Time: ${time}`;
+                    const difficulty = CONFIG.worlds[this.worldId] ? CONFIG.worlds[this.worldId].difficulty : 'Unknown';
+                    document.getElementById('res-reason').innerText = `Time: ${time} | Difficulty: ${difficulty}`;
+
+                    LeaderboardSystem.init('starbear_hc_modern').then(() => {
+                        LeaderboardSystem.showPrompt(Data.dust, (name) => {
+                            const worldName = CONFIG.worlds[this.worldId] ? CONFIG.worlds[this.worldId].name : `W${this.worldId}`;
+                            const difficulty = CONFIG.worlds[this.worldId] ? CONFIG.worlds[this.worldId].difficulty : 'Unknown';
+                            LeaderboardSystem.saveScore(name, Data.dust, `${worldName} | ${difficulty} | ${time}`);
+                        });
+                    });
                 } else {
                     t.innerText = "KILLED IN ACTION";
                     t.style.color = "#ff0055";

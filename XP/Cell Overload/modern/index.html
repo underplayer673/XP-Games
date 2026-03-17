@@ -3,16 +3,206 @@
 
 <head>
     <meta charset="UTF-8">
-    <!-- Updated viewport to prevent zooming and ensure proper scaling -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cell Overload | Перегрузка клетки</title>
     <meta name="description" content="Пошаговая стратегия на сетке с цепными реакциями. Мультиплеер и умный ИИ.">
-    <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050a14;
+            --blue-glow: #00f2ff;
+            --red-glow: #ff0055;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-color: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+            height: 100vh;
+            height: 100dvh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .background-blobs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            filter: blur(80px);
+        }
+
+        .blob {
+            position: absolute;
+            width: 40vw;
+            height: 40vw;
+            border-radius: 50%;
+            opacity: 0.2;
+            animation: move 20s infinite alternate;
+        }
+
+        .blob-1 { background: var(--blue-glow); top: -10%; left: -10%; }
+        .blob-2 { background: var(--red-glow); bottom: -10%; right: -10%; animation-delay: -10s; }
+
+        @keyframes move {
+            from { transform: translate(0, 0); }
+            to { transform: translate(20%, 20%); }
+        }
+
+        .game-container {
+            width: 95%;
+            max-width: 600px;
+            max-height: 98vh;
+            max-height: 98dvh;
+            padding: clamp(10px, 3vw, 25px);
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 7vw, 2.5rem);
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            line-height: 1.1;
+        }
+
+        .status-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .elo-badge {
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            color: #000;
+            padding: 2px 10px;
+            border-radius: 5px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .turn-indicator { font-size: clamp(0.9rem, 3.5vw, 1.2rem); font-weight: 700; }
+        .player-name.blue { color: var(--blue-glow); text-shadow: 0 0 10px var(--blue-glow); }
+        .player-name.red { color: var(--red-glow); text-shadow: 0 0 10px var(--red-glow); }
+        .score-board { display: flex; gap: 15px; }
+        .score { font-size: clamp(0.9rem, 3.5vw, 1rem); font-weight: 500; }
+        .score.blue { color: var(--blue-glow); }
+        .score.red { color: var(--red-glow); }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 5px;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 450px;
+            touch-action: manipulation;
+        }
+
+        .cell {
+            aspect-ratio: 1 / 1;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.2rem, 6vw, 1.6rem);
+            cursor: pointer;
+            transition: background 0.2s, border 0.2s, transform 0.1s;
+            position: relative;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .cell:active { transform: scale(0.95); }
+        .cell.owner-blue { border-color: var(--blue-glow); color: var(--blue-glow); background: rgba(0, 242, 255, 0.1); box-shadow: 0 0 10px rgba(0, 242, 255, 0.15) inset; }
+        .cell.owner-red { border-color: var(--red-glow); color: var(--red-glow); background: rgba(255, 0, 85, 0.1); box-shadow: 0 0 10px rgba(255, 0, 85, 0.15) inset; }
+        .cell.exploding { background: white; box-shadow: 0 0 30px white; transform: scale(1.1); z-index: 5; animation: flash 0.3s ease-out; }
+
+        @keyframes flash { 0% { filter: brightness(1); } 50% { filter: brightness(4); } 100% { filter: brightness(1); } }
+
+        .setup-screen { padding: 5px 0; width: 100%; }
+        .setting-group { margin-bottom: 12px; }
+        .setting-group h3 { font-size: 0.9rem; margin-bottom: 6px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .options-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
+        .opt-btn { padding: 8px 16px; background: transparent; border: 1px solid var(--glass-border); color: #888; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.95rem; transition: all 0.2s; min-width: 100px; }
+        .opt-btn.active { background: rgba(255, 255, 255, 0.15); border-color: var(--blue-glow); color: var(--blue-glow); box-shadow: 0 0 10px rgba(0, 242, 255, 0.15); }
+        .difficulty-options { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        .diff-btn { width: 44px; height: 40px; background: transparent; border: 1px solid var(--glass-border); color: var(--text-color); border-radius: 6px; cursor: pointer; font-family: 'Orbitron'; font-size: 1.1rem; transition: all 0.2s; }
+        .diff-btn:hover { background: rgba(255, 255, 255, 0.05); }
+        .diff-btn.active { background: var(--blue-glow); color: #000; border-color: var(--blue-glow); box-shadow: 0 0 15px var(--blue-glow); }
+        .diff-desc { margin-top: 5px; font-size: 0.9rem; color: var(--blue-glow); min-height: 1.2em; }
+        .main-btn { padding: 14px 50px; background: linear-gradient(45deg, #00d2ff 0%, #3a7bd5 100%); border: none; border-radius: 30px; color: white; font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3); transition: all 0.3s; margin-top: 15px; width: 100%; max-width: 280px; touch-action: manipulation; }
+        .main-btn:active { transform: scale(0.96); }
+        .settings-panel { position: fixed; top: max(10px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right)); z-index: 1000; display: flex; gap: 12px; }
+        .icon-btn { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border); backdrop-filter: blur(5px); width: 44px; height: 44px; border-radius: 50%; color: white; font-size: 1.1rem; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: all 0.3s ease; }
+        .hidden { display: none !important; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: flex; justify-content: center; align-items: center; border-radius: 20px; z-index: 100; backdrop-filter: blur(10px); }
+        .tutorial-card { background: #0a0f1e; border: 1px solid var(--glass-border); padding: 25px; border-radius: 20px; max-width: 500px; width: 90%; box-shadow: 0 0 30px rgba(0, 0, 0, 0.5); max-height: 85vh; overflow-y: auto; }
+        .tut-content { text-align: left; margin: 15px 0; font-size: 1rem; line-height: 1.6; }
+        .tut-content p { margin-bottom: 12px; }
+        .winner-msg h2 { font-size: clamp(2rem, 8vw, 3rem); margin-bottom: 25px; padding: 0 10px; }
+
+        @media (max-width: 480px) {
+            .game-container { padding: 10px; width: 100%; height: 100dvh; max-height: 100dvh; border-radius: 0; border: none; justify-content: flex-start; }
+            .game-grid { gap: 3px; }
+            .cell { border-radius: 4px; }
+            h1 { margin-top: 40px; margin-bottom: 5px; }
+            .settings-panel { top: 10px; right: 10px; }
+            .setup-screen { margin-top: 10px; padding-bottom: 20px; }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            .game-container { flex-direction: row; align-items: center; justify-content: center; gap: 20px; padding: 5px 20px; }
+            header { display: flex; flex-direction: column; justify-content: center; width: 30%; }
+            h1 { font-size: 1.5rem; margin-top: 0; }
+            .board-container { height: 90vh; display: flex; align-items: center; }
+            .game-grid { width: 80vh; max-width: 400px; }
+            .setup-screen { display: flex; flex-direction: column; overflow-y: auto; height: 100%; justify-content: center; }
+            .settings-panel { top: 5px; right: 5px; }
+        }
+    </style>
 </head>
 
 <body>
@@ -23,9 +213,7 @@
     <div class="settings-panel">
         <button id="tutorialBtn" class="icon-btn"><span>?</span></button>
         <button id="langBtn" class="icon-btn"><span>EN</span></button>
-        <button id="toggleMusicBtn" class="icon-btn">
-            <span id="musicIcon">🔇</span>
-        </button>
+        <button id="toggleMusicBtn" class="icon-btn"><span id="musicIcon">🔇</span></button>
     </div>
 
     <audio id="bgMusic" loop autoplay>
@@ -46,7 +234,6 @@
         </header>
 
         <div class="setup-screen" id="setupScreen">
-            <!-- Game Mode Selection -->
             <div class="setting-group">
                 <h3 id="txtMode">Режим игры</h3>
                 <div class="options-row">
@@ -54,8 +241,6 @@
                     <button class="opt-btn" data-mode="pvp" id="btnPvP">1 vs 1 (ПК)</button>
                 </div>
             </div>
-
-            <!-- Player Side Selection (Only for PvE) -->
             <div class="setting-group" id="sideSelection">
                 <h3 id="txtSide">Ваша сторона</h3>
                 <div class="options-row">
@@ -63,8 +248,6 @@
                     <button class="opt-btn" data-side="red" id="btnRedSide">Красные (2-й)</button>
                 </div>
             </div>
-
-            <!-- AI Difficulty -->
             <div class="setting-group" id="diffSelection">
                 <h3 id="txtChooseDiff">Сложность ИИ</h3>
                 <div class="difficulty-options">
@@ -78,7 +261,6 @@
                 </div>
                 <div id="diffDescription" class="diff-desc">Нормально</div>
             </div>
-
             <button id="startGameBtn" class="main-btn">НАЧАТЬ БИТВУ</button>
         </div>
 
@@ -101,7 +283,437 @@
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+
+    <script src="../../xp_player_identity.js"></script>
+    <script>
+        const GRID_SIZE = 6;
+        const CRITICAL_MASS = 3;
+        const DELAY = 150;
+
+        let board = [];
+        let currentPlayer = 'blue';
+        let gameActive = false;
+        let isAIProcessing = false;
+        let isExploding = false;
+        let movesMade = 0;
+        let currentLang = 'en';
+        let playerElo = parseInt(localStorage.getItem('cell_elo') || '1200');
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyatGz9z_EYXBAFrH2wrnX8snbDn1ESJk",
+            authDomain: "schoolrpg-leaderboard.firebaseapp.com",
+            projectId: "schoolrpg-leaderboard",
+            storageBucket: "schoolrpg-leaderboard.firebasestorage.app",
+            messagingSenderId: "942057524924",
+            appId: "1:942057524924:web:4720f94710edd210ec8ab9"
+        };
+
+        const LeaderboardSystem = {
+            isOnline: false, db: null, scoresCol: null, gameId: 'cell_overload_modern',
+            async init() {
+                this.isOnline = navigator.onLine;
+                if (this.isOnline) {
+                    try {
+                        if (!window.fbApp) {
+                            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+                            window.fbApp = initializeApp(firebaseConfig);
+                            const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                            window.fbDb = getFirestore(window.fbApp);
+                        }
+                        this.db = window.fbDb;
+                        const { collection } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                        this.scoresCol = collection(this.db, 'leaderboards', this.gameId, 'scores');
+                    } catch (e) { this.isOnline = false; }
+                }
+            },
+            async saveScore(name, score, desc = "") {
+                const entry = {
+                    name: name || (window.XPPlayerProfile ? XPPlayerProfile.getName('cell_overload_modern', 'Commander') : (localStorage.getItem('player_name') || "Player")),
+                    score: Number(score),
+                    desc: desc,
+                    timestamp: Date.now()
+                };
+                if (this.isOnline && this.db) {
+                    try { const { addDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"); await addDoc(this.scoresCol, entry); }
+                    catch (e) { this.saveLocal(entry); }
+                } else this.saveLocal(entry);
+            },
+            saveLocal(entry) {
+                let scores = this.getLocalRaw(); scores.push(entry);
+                scores.sort((a, b) => b.score - a.score);
+                localStorage.setItem(`lb_${this.gameId}`, JSON.stringify(scores.slice(0, 50)));
+            },
+            getLocalRaw() { try { return JSON.parse(localStorage.getItem(`lb_${this.gameId}`) || "[]"); } catch (e) { return []; } },
+            async getScores(limitCount = 10) {
+                if (this.isOnline && this.db) {
+                    try {
+                        const { getDocs, query, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                        const q = query(this.scoresCol, orderBy("score", "desc"), limit(limitCount));
+                        const snap = await getDocs(q); return snap.docs.map(doc => doc.data());
+                    } catch (e) { return this.getLocalRaw().slice(0, limitCount); }
+                } else return this.getLocalRaw().slice(0, limitCount);
+            }
+        };
+
+        const LeaderboardUI = {
+            show() {
+                let s = document.getElementById('lb-screen') || document.createElement('div');
+                s.id = 'lb-screen';
+                s.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;color:white;backdrop-filter:blur(10px);font-family:'Rajdhani', sans-serif;";
+                document.body.appendChild(s); s.style.display = 'flex';
+                s.innerHTML = `<div style="width:90%;max-width:400px;background:#050510;border:2px solid #00f3ff;border-radius:15px;padding:25px;box-shadow:0 0 20px #00f3ff55;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="margin:0;color:#00f3ff;font-family:'Orbitron', sans-serif;letter-spacing:2px;">TOP COMMANDERS</h2>
+                        <button onclick="document.getElementById('lb-screen').style.display='none'" style="background:none;border:none;color:white;font-size:24px;cursor:pointer;">✕</button>
+                    </div>
+                    <div id="lb-list" style="max-height:60vh;overflow-y:auto;">Loading...</div>
+                </div>`;
+                LeaderboardSystem.getScores(50).then(scores => {
+                    const list = document.getElementById('lb-list');
+                    if (!scores || scores.length === 0) { list.innerHTML = '<div style="text-align:center;padding:20px;opacity:0.5;">No records yet</div>'; return; }
+                    list.innerHTML = scores.map((s, i) => `
+                        <div style="display:flex;justify-content:space-between;padding:12px;margin-bottom:8px;background:rgba(0,243,255,0.05);border-radius:10px;border:1px solid rgba(0,243,255,0.2);">
+                            <span>${i + 1}. ${s.name}</span> <b style="color:#00f3ff;">${Math.floor(s.score)} ELO</b>
+                        </div>
+                    `).join('');
+                });
+            },
+            showNamePrompt(callback) {
+                const name = window.XPPlayerProfile
+                    ? XPPlayerProfile.getName('cell_overload_modern', 'Commander')
+                    : (localStorage.getItem('player_name') || 'Commander');
+                if (callback) callback(name);
+            }
+        };
+
+        let gameMode = 'pve';
+        let aiDifficulty = 3;
+        let playerSide = 'blue';
+
+        let boardEl, turnText, blueScoreEl, redScoreEl, setupScreen, boardContainer, gameOverScreen, winnerText;
+        let bgMusic, toggleMusicBtn, musicIcon, langBtn, tutorialBtn, tutorialScreen, tutContent, tutTitle, diffDescEl;
+        let musicEnabled = true;
+
+        const difficultyNames = {
+            ru: ["Обезьяна", "Новичок", "Тактик", "Мастер", "ЛЕГЕНДА", "ГРОССМЕЙСТЕР", "ТЕРМИНАТОР"],
+            en: ["Monkey", "Novice", "Tactician", "Master", "LEGEND", "GRANDMASTER", "TERMINATOR"]
+        };
+
+        const loc = {
+            ru: {
+                turn: "Ход", blue: "Синие", red: "Красные", mode: "Режим игры", side: "Ваша сторона", diff: "Сложность ИИ", pve: "Игрок vs ИИ", pvp: "1 vs 1 (ПК)", blueSide: "Синие (1-й)", redSide: "Красные (2-й)", start: "НАЧАТЬ БИТВУ", restart: "МЕНЮ", winSuffix: " ПОБЕДИЛИ!", tutTitle: "Как играть",
+                tutorial: `<p>1. Кликайте по пустым или своим клеткам (+1 масса).</p><p>2. При массе 4 клетка <b>ВЗРЫВАЕТСЯ</b>.</p><p>3. Взрыв захватывает соседние клетки врага.</p><p>4. Взрывы вызывают цепные реакции.</p><p>5. Захватите всё поле!</p>`
+            },
+            en: {
+                turn: "Turn", blue: "Blue", red: "Red", mode: "Game Mode", side: "Your Side", diff: "AI Difficulty", pve: "Player vs AI", pvp: "1 vs 1 (Local)", blueSide: "Blue (1st)", redSide: "Red (2nd)", start: "START BATTLE", restart: "MENU", winSuffix: " WINS!", tutTitle: "How to Play",
+                tutorial: `<p>1. Click cells to add mass (+1).</p><p>2. At mass 4, the cell <b>EXPLODES</b>.</p><p>3. Explosions capture neighbor enemy cells.</p><p>4. Create chain reactions to dominate.</p><p>5. Capture the entire board!</p>`
+            }
+        };
+
+        function initDOMElements() {
+            boardEl = document.getElementById('gameBoard');
+            turnText = document.querySelector('.player-name');
+            blueScoreEl = document.getElementById('blueScore');
+            redScoreEl = document.getElementById('redScore');
+            setupScreen = document.getElementById('setupScreen');
+            boardContainer = document.getElementById('boardContainer');
+            gameOverScreen = document.getElementById('gameOverScreen');
+            winnerText = document.getElementById('winnerText');
+            diffDescEl = document.getElementById('diffDescription');
+            bgMusic = document.getElementById('bgMusic');
+            toggleMusicBtn = document.getElementById('toggleMusicBtn');
+            musicIcon = document.getElementById('musicIcon');
+            langBtn = document.getElementById('langBtn');
+            tutorialBtn = document.getElementById('tutorialBtn');
+            tutorialScreen = document.getElementById('tutorialScreen');
+            tutContent = document.getElementById('tutContent');
+            tutTitle = document.getElementById('tutTitle');
+
+            if (bgMusic) {
+                bgMusic.volume = 0.4;
+                const playPromise = bgMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(() => {
+                        musicEnabled = false; updateMusicIcon();
+                        const startMusic = () => { if (!musicEnabled && bgMusic.paused) { bgMusic.play().then(() => { musicEnabled = true; updateMusicIcon(); }).catch(e => console.log(e)); } };
+                        document.addEventListener('click', startMusic, { once: true });
+                        document.addEventListener('touchstart', startMusic, { once: true });
+                    });
+                }
+            }
+
+            const bindTouch = (id, handler) => {
+                const el = document.getElementById(id); if (!el) return;
+                el.onclick = (e) => { e.preventDefault(); handler(); };
+                el.ontouchend = (e) => { e.preventDefault(); handler(); };
+            };
+
+            bindTouch('startGameBtn', startGame);
+            bindTouch('restartBtn', resetToMenu);
+            bindTouch('closeTutorialBtn', () => tutorialScreen.classList.add('hidden'));
+            bindTouch('toggleMusicBtn', toggleMusic);
+            bindTouch('langBtn', toggleLang);
+            bindTouch('tutorialBtn', showTutorial);
+
+            document.getElementById('btnPvE').onclick = () => setGameMode('pve');
+            document.getElementById('btnPvP').onclick = () => setGameMode('pvp');
+            document.getElementById('btnBlueSide').onclick = () => setPlayerSide('blue');
+            document.getElementById('btnRedSide').onclick = () => setPlayerSide('red');
+
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                const setDiff = (e) => { if (e) e.preventDefault(); document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); aiDifficulty = parseInt(btn.dataset.level); updateDiffDesc(); };
+                btn.onclick = setDiff; btn.ontouchend = setDiff;
+            });
+
+            updateUIStrings();
+            LeaderboardSystem.init();
+
+            const lbBtn = document.createElement('button');
+            lbBtn.className = 'icon-btn'; lbBtn.innerHTML = '<span>🏆</span>';
+            lbBtn.onclick = () => LeaderboardUI.show();
+            document.querySelector('.settings-panel').prepend(lbBtn);
+
+            const nameBtn = document.createElement('button');
+            nameBtn.className = 'icon-btn'; nameBtn.innerHTML = '<span>NAME</span>';
+            nameBtn.onclick = openPlayerSettings;
+            document.querySelector('.settings-panel').prepend(nameBtn);
+
+            if (boardEl) { boardEl.addEventListener('touchmove', (e) => { if (gameActive) e.preventDefault(); }, { passive: false }); }
+        }
+
+        function setGameMode(mode) {
+            gameMode = mode;
+            document.getElementById('btnPvE').className = `opt-btn ${mode === 'pve' ? 'active' : ''}`;
+            document.getElementById('btnPvP').className = `opt-btn ${mode === 'pvp' ? 'active' : ''}`;
+            const sideDiv = document.getElementById('sideSelection');
+            const diffDiv = document.getElementById('diffSelection');
+            if (mode === 'pvp') { sideDiv.classList.add('hidden'); diffDiv.classList.add('hidden'); }
+            else { sideDiv.classList.remove('hidden'); diffDiv.classList.remove('hidden'); }
+        }
+
+        function setPlayerSide(side) {
+            playerSide = side;
+            document.getElementById('btnBlueSide').className = `opt-btn ${side === 'blue' ? 'active' : ''}`;
+            document.getElementById('btnRedSide').className = `opt-btn ${side === 'red' ? 'active' : ''}`;
+        }
+
+        function updateDiffDesc() {
+            diffDescEl.textContent = difficultyNames[currentLang][aiDifficulty - 1];
+            if (aiDifficulty === 1) diffDescEl.style.color = '#888';
+            else if (aiDifficulty === 2) diffDescEl.style.color = '#00ff00';
+            else if (aiDifficulty === 3) diffDescEl.style.color = '#ffff00';
+            else if (aiDifficulty === 4) diffDescEl.style.color = '#ffaa00';
+            else if (aiDifficulty === 5) { diffDescEl.style.color = '#ff0055'; diffDescEl.style.fontWeight = 'bold'; diffDescEl.style.textShadow = '0 0 10px #ff0055'; }
+            else { diffDescEl.style.color = 'var(--blue-glow)'; }
+        }
+
+        function showTutorial() { tutTitle.textContent = loc[currentLang].tutTitle; tutContent.innerHTML = loc[currentLang].tutorial; tutorialScreen.classList.remove('hidden'); }
+
+        function toggleLang() {
+            currentLang = currentLang === 'ru' ? 'en' : 'ru';
+            langBtn.querySelector('span').textContent = currentLang.toUpperCase();
+            updateUIStrings(); updateDiffDesc();
+            if (!tutorialScreen.classList.contains('hidden')) showTutorial();
+            if (!gameActive) renderBoard();
+        }
+
+        function openPlayerSettings() {
+            if (!window.XPPlayerProfile) return;
+            XPPlayerProfile.openSettings({
+                gameId: 'cell_overload_modern',
+                defaultName: 'Commander',
+                title: 'Player Name',
+                subtitle: 'Change the leaderboard name.',
+                showAskToggle: false
+            });
+        }
+
+        function updateUIStrings() {
+            const s = loc[currentLang];
+            document.getElementById('txtTurn').textContent = s.turn;
+            document.getElementById('txtMode').textContent = s.mode;
+            document.getElementById('btnPvE').textContent = s.pve;
+            document.getElementById('btnPvP').textContent = s.pvp;
+            document.getElementById('txtSide').textContent = s.side;
+            document.getElementById('btnBlueSide').textContent = s.blueSide;
+            document.getElementById('btnRedSide').textContent = s.redSide;
+            document.getElementById('txtChooseDiff').textContent = s.diff;
+            document.getElementById('startGameBtn').textContent = s.start;
+            document.getElementById('restartBtn').textContent = s.restart;
+            const eloDisplay = document.getElementById('eloDisplay');
+            if (eloDisplay) eloDisplay.textContent = `ELO: ${playerElo}`;
+            updateDiffDesc(); updateTurnUI();
+        }
+
+        function toggleMusic() { if (!bgMusic) return; if (musicEnabled) bgMusic.pause(); else bgMusic.play(); musicEnabled = !musicEnabled; updateMusicIcon(); }
+        function updateMusicIcon() { musicIcon.textContent = musicEnabled ? '🔊' : '🔇'; }
+
+        function startGame() { initBoardData(); setupScreen.classList.add('hidden'); boardContainer.classList.remove('hidden'); gameOverScreen.classList.add('hidden'); renderBoard(); if (gameMode === 'pve' && playerSide === 'red') { isAIProcessing = true; setTimeout(aiMove, 800); } }
+        function resetToMenu() { gameActive = false; gameOverScreen.classList.add('hidden'); boardContainer.classList.add('hidden'); setupScreen.classList.remove('hidden'); }
+
+        function initBoardData() { board = Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill().map(() => ({ mass: 0, owner: null }))); currentPlayer = 'blue'; gameActive = true; movesMade = 0; isAIProcessing = false; isExploding = false; blueScoreEl.textContent = '0'; redScoreEl.textContent = '0'; updateTurnUI(); }
+
+        function renderBoard() {
+            if (!boardEl) return; boardEl.innerHTML = '';
+            let blueCount = 0; let redCount = 0;
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    const cellData = board[r][c];
+                    const cell = document.createElement('div');
+                    cell.className = `cell ${cellData.owner ? 'owner-' + cellData.owner : ''}`;
+                    if (cellData.mass > CRITICAL_MASS) cell.classList.add('exploding');
+                    cell.textContent = cellData.mass > 0 ? cellData.mass : '';
+                    const handleTouch = (e) => { if (e.type === 'touchend') e.preventDefault(); handleCellClick(r, c); };
+                    cell.onclick = handleTouch; cell.ontouchend = handleTouch;
+                    if (cellData.owner === 'blue') blueCount++;
+                    if (cellData.owner === 'red') redCount++;
+                    boardEl.appendChild(cell);
+                }
+            }
+            blueScoreEl.textContent = blueCount; redScoreEl.textContent = redCount;
+            if (gameActive && movesMade >= 2) {
+                if (blueCount === 0) endGame(loc[currentLang].red.toUpperCase() + loc[currentLang].winSuffix);
+                else if (redCount === 0) endGame(loc[currentLang].blue.toUpperCase() + loc[currentLang].winSuffix);
+            }
+        }
+
+        async function handleCellClick(r, c) {
+            if (!gameActive || isAIProcessing || isExploding) return;
+            if (gameMode === 'pve') { if (currentPlayer !== playerSide) return; }
+            const cell = board[r][c]; if (cell.owner && cell.owner !== currentPlayer) return;
+            movesMade++; await executeMove(r, c, currentPlayer);
+            if (gameActive) { currentPlayer = currentPlayer === 'blue' ? 'red' : 'blue'; updateTurnUI(); if (gameMode === 'pve' && currentPlayer !== playerSide) { setTimeout(aiMove, 600); } }
+        }
+
+        async function executeMove(r, c, player) { board[r][c].mass++; board[r][c].owner = player; if (board[r][c].mass > CRITICAL_MASS) { isExploding = true; await explode(r, c, player); isExploding = false; } renderBoard(); }
+
+        async function explode(r, c, player) {
+            const cell = board[r][c]; cell.mass = 0; cell.owner = null;
+            const neighbors = getNeighbors(r, c);
+            neighbors.forEach(([nr, nc]) => { if (nr >= 0 && nr < GRID_SIZE && nc >= 0 && nc < GRID_SIZE) { board[nr][nc].mass++; board[nr][nc].owner = player; } });
+            renderBoard(); await new Promise(resolve => setTimeout(resolve, DELAY));
+            for (const [nr, nc] of neighbors) { if (nr >= 0 && nr < GRID_SIZE && nc >= 0 && nc < GRID_SIZE) { if (board[nr][nc].mass > CRITICAL_MASS) { await explode(nr, nc, player); } } }
+        }
+
+        function updateTurnUI() { if (!turnText) return; const s = loc[currentLang]; turnText.textContent = currentPlayer === 'blue' ? s.blue : s.red; turnText.className = `player-name ${currentPlayer}`; }
+
+        function endGame(msg) {
+            gameActive = false; winnerText.textContent = msg;
+            const isBlueWon = msg.includes(loc[currentLang].blue.toUpperCase()); winnerText.style.color = isBlueWon ? 'var(--blue-glow)' : 'var(--red-glow)';
+            if (gameMode === 'pve') {
+                const winner = isBlueWon ? 'blue' : 'red'; const gain = updateElo(winner);
+                const eloSub = document.createElement('div'); eloSub.style.fontSize = '0.7em'; eloSub.style.marginTop = '10px'; eloSub.style.opacity = '0.8'; eloSub.textContent = `ELO: ${playerElo} (${gain >= 0 ? '+' : ''}${gain})`; winnerText.appendChild(eloSub);
+            }
+            gameOverScreen.classList.remove('hidden');
+        }
+
+        async function aiMove() {
+            if (!gameActive) return; isAIProcessing = true;
+            const aiColor = currentPlayer; const humanColor = currentPlayer === 'blue' ? 'red' : 'blue';
+            const validMoves = getValidMoves(board, aiColor);
+            if (validMoves.length === 0) { isAIProcessing = false; return; }
+            let move;
+            switch (aiDifficulty) {
+                case 1: move = validMoves[Math.floor(Math.random() * validMoves.length)]; break;
+                case 2: validMoves.sort((a, b) => { const cellA = board[a.r][a.c]; const cellB = board[b.r][b.c]; return cellB.mass - cellA.mass || Math.random() - 0.5; }); move = validMoves[0]; break;
+                case 3: move = getTacticianMove(validMoves, aiColor); break;
+                case 4: move = getMasterMove(validMoves, aiColor, humanColor); break;
+                case 5: move = getLegendMove(validMoves, aiColor, humanColor); break;
+                case 6: move = getGrandmasterMove(validMoves, aiColor, humanColor); break;
+                case 7: move = getTerminatorMove(validMoves, aiColor, humanColor); break;
+            }
+            movesMade++; await executeMove(move.r, move.c, aiColor); currentPlayer = humanColor; updateTurnUI(); isAIProcessing = false;
+        }
+
+        function getTacticianMove(moves, player) {
+            let bestMove = moves[0]; let maxDamage = -1;
+            for (const m of moves) { const tempBoard = cloneBoard(board); const result = simulateExplosion(tempBoard, m.r, m.c, player); let score = result.captured * 10; if (board[m.r][m.c].mass === CRITICAL_MASS) score += 5; score += Math.random() * 2; if (score > maxDamage) { maxDamage = score; bestMove = m; } }
+            return bestMove;
+        }
+
+        function getMasterMove(moves, player, opponent) {
+            let bestScore = -Infinity; let bestMove = moves[0]; const searchMoves = moves.sort(() => 0.5 - Math.random()).slice(0, 15);
+            for (const m of searchMoves) {
+                const boardCopy = cloneBoard(board); simulateExplosion(boardCopy, m.r, m.c, player);
+                const oppMoves = getValidMoves(boardCopy, opponent); let minOpponentScore = Infinity;
+                if (oppMoves.length === 0) minOpponentScore = -10000;
+                else { for (const om of oppMoves.slice(0, 5)) { const boardAfterOpp = cloneBoard(boardCopy); simulateExplosion(boardAfterOpp, om.r, om.c, opponent); const score = evaluateBoardSimple(boardAfterOpp, player, opponent); if (score < minOpponentScore) minOpponentScore = score; } }
+                if (minOpponentScore > bestScore) { bestScore = minOpponentScore; bestMove = m; }
+            }
+            return bestMove;
+        }
+
+        function evaluateBoardSimple(b, player, opponent) { let score = 0; for (let r = 0; r < GRID_SIZE; r++) for (let c = 0; c < GRID_SIZE; c++) { if (b[r][c].owner === player) score += 10; if (b[r][c].owner === opponent) score -= 10; } return score; }
+
+        function getLegendMove(moves, player, opponent) {
+            let bestScore = -Infinity; let bestMove = moves[0]; moves.sort((a, b) => board[b.r][b.c].mass - board[a.r][a.c].mass); const searchMoves = moves.slice(0, 20);
+            for (const m of searchMoves) { const boardCopy = cloneBoard(board); simulateExplosion(boardCopy, m.r, m.c, player); const depth = countAllCells(board) < 10 ? 4 : 3; const score = minimax(boardCopy, depth - 1, false, player, opponent, -Infinity, Infinity, evaluateLegend); if (score > bestScore) { bestScore = score; bestMove = m; } }
+            return bestMove;
+        }
+
+        function getGrandmasterMove(moves, player, opponent) {
+            let bestScore = -Infinity; let bestMove = moves[0]; moves.sort((a, b) => board[b.r][b.c].mass - board[a.r][a.c].mass); const searchMoves = moves.slice(0, 30);
+            for (const m of searchMoves) { const boardCopy = cloneBoard(board); simulateExplosion(boardCopy, m.r, m.c, player); const depth = countAllCells(board) < 12 ? 5 : 4; const score = minimax(boardCopy, depth - 1, false, player, opponent, -Infinity, Infinity, evaluateLegend); if (score > bestScore) { bestScore = score; bestMove = m; } }
+            return bestMove;
+        }
+
+        function getTerminatorMove(moves, player, opponent) {
+            let bestScore = -Infinity; let bestMove = moves[0]; moves.sort((a, b) => board[b.r][b.c].mass - board[a.r][a.c].mass); const searchMoves = moves.slice(0, 40);
+            for (const m of searchMoves) { const boardCopy = cloneBoard(board); simulateExplosion(boardCopy, m.r, m.c, player); const depth = countAllCells(board) < 15 ? 6 : 5; const score = minimax(boardCopy, depth - 1, false, player, opponent, -Infinity, Infinity, evaluateTerminator); if (score > bestScore) { bestScore = score; bestMove = m; } }
+            return bestMove;
+        }
+
+        function minimax(nodeBoard, depth, isMaximizing, player, opponent, alpha, beta, evalFunc = evaluateLegend) {
+            if (isWin(nodeBoard, player)) return 10000 + depth * 100; if (isWin(nodeBoard, opponent)) return -10000 - depth * 100; if (depth === 0) return evalFunc(nodeBoard, player, opponent);
+            const currentPlayerForNode = isMaximizing ? player : opponent; const moves = getValidMoves(nodeBoard, currentPlayerForNode); moves.sort((a, b) => nodeBoard[b.r][b.c].mass - nodeBoard[a.r][a.c].mass); const movesToCheck = moves.slice(0, 8);
+            if (isMaximizing) { let maxScore = -Infinity; for (const m of movesToCheck) { const childBoard = cloneBoard(nodeBoard); simulateExplosion(childBoard, m.r, m.c, player); const score = minimax(childBoard, depth - 1, false, player, opponent, alpha, beta, evalFunc); maxScore = Math.max(maxScore, score); alpha = Math.max(alpha, score); if (beta <= alpha) break; } return maxScore; }
+            else { let minScore = Infinity; for (const m of movesToCheck) { const childBoard = cloneBoard(nodeBoard); simulateExplosion(childBoard, m.r, m.c, opponent); const score = minimax(childBoard, depth - 1, true, player, opponent, alpha, beta, evalFunc); minScore = Math.min(minScore, score); beta = Math.min(beta, score); if (beta <= alpha) break; } return minScore; }
+        }
+
+        function evaluateLegend(b, player, opponent) {
+            let score = 0; let myCells = 0; let oppCells = 0;
+            for (let r = 0; r < GRID_SIZE; r++) for (let c = 0; c < GRID_SIZE; c++) { const cell = b[r][c]; if (cell.owner === player) { myCells++; score += cell.mass * 10; const neighbors = getNeighbors(r, c); for (const [nr, nc] of neighbors) { const n = b[nr][nc]; if (n.owner === opponent && n.mass === CRITICAL_MASS) score -= 500; } } else if (cell.owner === opponent) oppCells++; }
+            score += myCells * 100; score -= oppCells * 100; return score;
+        }
+
+        function evaluateTerminator(b, player, opponent) {
+            let score = 0; let myCells = 0; let oppCells = 0; const size = GRID_SIZE;
+            for (let r = 0; r < size; r++) for (let c = 0; c < size; c++) { const cell = b[r][c]; if (cell.owner === player) { myCells++; let posWeight = 10; if ((r === 0 || r === size - 1) && (c === 0 || c === size - 1)) posWeight = 100; else if (r === 0 || r === size - 1 || c === 0 || c === size - 1) posWeight = 40; score += posWeight + cell.mass * 5; const neighbors = getNeighbors(r, c); for (const [nr, nc] of neighbors) { const n = b[nr][nc]; if (n.owner === opponent && n.mass === CRITICAL_MASS) score -= 150; } } else if (cell.owner === opponent) { oppCells++; let oppPosWeight = 10; if ((r === 0 || r === size - 1) && (c === 0 || c === size - 1)) oppPosWeight = 100; score -= (oppPosWeight + cell.mass * 5); } }
+            if (oppCells === 0 && myCells > 0) return 20000; if (myCells === 0 && oppCells > 0) return -20000;
+            score += myCells * 50; score -= oppCells * 50; return score;
+        }
+
+        const botElo = { 1: 800, 2: 1200, 3: 1500, 4: 1800, 5: 2200, 6: 2600, 7: 3000 };
+        function calculateEloGain(playerElo, botRank, won) { const k = 32; const botEloValue = botElo[botRank] || 1200; const expected = 1 / (1 + Math.pow(10, (botEloValue - playerElo) / 400)); const actual = won ? 1 : 0; return Math.round(k * (actual - expected)); }
+
+        function updateElo(winner) {
+            if (gameMode !== 'pve') return;
+            const won = (winner === playerSide);
+            const gain = calculateEloGain(playerElo, aiDifficulty, won);
+            playerElo += gain;
+            localStorage.setItem('cell_elo', playerElo);
+            if (won) LeaderboardSystem.saveScore(null, playerElo, `Win | Diff: ${aiDifficulty}`);
+            return gain;
+        }
+
+        function getValidMoves(currentBoard, player) { const moves = []; for (let r = 0; r < GRID_SIZE; r++) for (let c = 0; c < GRID_SIZE; c++) if (currentBoard[r][c].owner === null || currentBoard[r][c].owner === player) moves.push({ r, c }); return moves; }
+
+        function cloneBoard(b) { const newBoard = new Array(GRID_SIZE); for (let i = 0; i < GRID_SIZE; i++) { newBoard[i] = new Array(GRID_SIZE); for (let j = 0; j < GRID_SIZE; j++) newBoard[i][j] = { mass: b[i][j].mass, owner: b[i][j].owner }; } return newBoard; }
+
+        function countAllCells(b) { let count = 0; for (let r = 0; r < GRID_SIZE; r++) for (let c = 0; c < GRID_SIZE; c++) if (b[r][c].owner) count++; return count; }
+
+        function isWin(b, player) { let oppCount = 0; let myCount = 0; const opponent = player === 'blue' ? 'red' : 'blue'; for (let r = 0; r < GRID_SIZE; r++) for (let c = 0; c < GRID_SIZE; c++) { if (b[r][c].owner === opponent) oppCount++; if (b[r][c].owner === player) myCount++; } return oppCount === 0 && myCount > 0; }
+
+        function simulateExplosion(tempBoard, r, c, player) {
+            let captured = 0; const queue = [[r, c]]; const opponent = player === 'blue' ? 'red' : 'blue'; let safetyCounter = 0;
+            while (queue.length > 0 && safetyCounter < 600) { safetyCounter++; const [currR, currC] = queue.shift(); const cell = tempBoard[currR][currC]; cell.mass++; if (cell.owner === opponent) captured++; cell.owner = player; if (cell.mass > CRITICAL_MASS) { cell.mass = 0; cell.owner = null; const neighbors = getNeighbors(currR, currC); neighbors.forEach(([nr, nc]) => queue.push([nr, nc])); } }
+            return { captured };
+        }
+
+        function getNeighbors(r, c) { const n = []; if (r > 0) n.push([r - 1, c]); if (r < GRID_SIZE - 1) n.push([r + 1, c]); if (c > 0) n.push([r, c - 1]); if (c < GRID_SIZE - 1) n.push([r, c + 1]); return n; }
+
+        window.addEventListener('DOMContentLoaded', initDOMElements);
+    </script>
 </body>
 
 </html>

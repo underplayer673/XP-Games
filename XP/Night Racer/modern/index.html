@@ -79,599 +79,107 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.98);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        h1,
-        h2,
-        h3 {
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        h1, h2, h3 { text-transform: uppercase; letter-spacing: 1px; }
 
-        .text-accent {
-            color: var(--accent);
-            text-shadow: 0 0 10px var(--accent-glow);
-        }
-
-        .text-primary {
-            color: var(--primary);
-            text-shadow: 0 0 10px var(--primary-glow);
-        }
-
-        .text-dim {
-            color: var(--text-dim);
-        }
-
-        .currency {
-            color: #ffd700;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-        }
+        .text-accent { color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
+        .text-primary { color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); }
+        .text-dim { color: var(--text-dim); }
+        .currency { color: #ffd700; font-weight: bold; display: inline-flex; align-items: center; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
 
         button {
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 1rem;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            background: #2a2a35;
-            color: var(--text-main);
-            border: 1px solid var(--border);
+            border: none; outline: none; cursor: pointer; padding: 12px 20px;
+            border-radius: 8px; font-weight: 700; font-size: 1rem;
+            transition: all 0.2s; text-transform: uppercase;
+            background: #2a2a35; color: var(--text-main); border: 1px solid var(--border);
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.2);
-        }
+        button:hover { transform: translateY(-2px); filter: brightness(1.2); }
+        button:active { transform: translateY(0); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        button:active {
-            transform: translateY(0);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, #5a189a 100%);
-            color: white;
-            border: none;
-            box-shadow: 0 4px 15px var(--primary-glow);
-        }
-
-        .btn-accent {
-            background: linear-gradient(135deg, var(--accent) 0%, #009688 100%);
-            color: #000;
-            border: none;
-            box-shadow: 0 4px 15px var(--accent-glow);
-        }
-
-        .btn-block {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .btn-icon {
-            padding: 10px;
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, #5a189a 100%); color: white; border: none; box-shadow: 0 4px 15px var(--primary-glow); }
+        .btn-accent { background: linear-gradient(135deg, var(--accent) 0%, #009688 100%); color: #000; border: none; box-shadow: 0 4px 15px var(--accent-glow); }
+        .btn-block { width: 100%; margin-bottom: 10px; }
+        .btn-icon { padding: 10px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
 
         /* Top Controls */
-        .top-controls {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 100;
-            display: flex;
-            gap: 10px;
-        }
-
+        .top-controls { position: absolute; top: 15px; right: 15px; z-index: 100; display: flex; gap: 10px; }
         .control-btn {
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 20px;
-            height: 40px;
-            padding: 0 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--border);
-            font-size: 0.9rem;
-            color: #fff;
+            background: rgba(0, 0, 0, 0.5); border-radius: 20px; height: 40px; padding: 0 15px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--border); font-size: 0.9rem; color: #fff;
         }
 
         header {
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(20, 20, 30, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            min-height: 70px;
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(20, 20, 30, 0.95); backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 20; min-height: 70px;
         }
 
-        .menu-hero {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            padding: 20px;
-        }
+        .menu-hero { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; padding: 20px; }
+        .menu-title { font-size: 3rem; line-height: 0.9; margin-bottom: 10px; font-weight: 900; font-style: italic; text-align: center; z-index: 2; text-shadow: 0 5px 20px rgba(0, 0, 0, 0.8); pointer-events: none; }
+        .menu-car-container { width: 100%; flex: 1; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; min-height: 200px; }
+        #menuCanvas { width: 100%; height: 100%; object-fit: contain; }
+        .menu-controls { width: 100%; z-index: 2; background: rgba(0, 0, 0, 0.5); padding: 15px; border-radius: 15px; backdrop-filter: blur(5px); }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.05); padding: 10px 15px; border-radius: 8px; margin-bottom: 10px; font-size: 0.9rem; cursor: pointer; }
 
-        .menu-title {
-            font-size: 3rem;
-            line-height: 0.9;
-            margin-bottom: 10px;
-            font-weight: 900;
-            font-style: italic;
-            text-align: center;
-            z-index: 2;
-            text-shadow: 0 5px 20px rgba(0, 0, 0, 0.8);
-            pointer-events: none;
-        }
+        .garage-tabs { display: flex; gap: 10px; padding: 10px 20px; }
+        .tab-btn { flex: 1; padding: 8px; font-size: 0.8rem; opacity: 0.6; }
+        .tab-btn.active { opacity: 1; border-color: var(--accent); background: #2a2a35; }
+        .car-list { display: flex; overflow-x: auto; padding: 10px 20px; gap: 15px; scroll-snap-type: x mandatory; min-height: 180px; }
+        .car-card { min-width: 140px; background: #1e1e28; border-radius: 12px; padding: 10px; border: 1px solid var(--border); scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; transition: 0.2s; cursor: pointer; }
+        .car-card.selected { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); background: #252530; }
+        .car-visual-box { width: 100%; height: 80px; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; }
 
-        .menu-car-container {
-            width: 100%;
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            z-index: 1;
-            min-height: 200px;
-        }
+        .stats-grid { width: 100%; display: grid; grid-template-columns: auto 1fr; gap: 8px 15px; margin: 15px 0; font-size: 0.9rem; align-items: center; }
+        .stat-bar { height: 8px; background: #333; border-radius: 4px; overflow: hidden; width: 100%; }
+        .stat-fill { height: 100%; background: var(--accent); width: 0%; transition: 0.5s ease-out; box-shadow: 0 0 8px var(--accent); }
+        .parts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
+        .part-slot { background: #1e1e28; padding: 10px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; text-align: center; }
 
-        #menuCanvas {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
+        .case-roulette { height: 200px; background: #0b0b10; position: relative; margin: 20px 0; border-top: 2px solid var(--accent); border-bottom: 2px solid var(--accent); overflow: hidden; box-shadow: inset 0 0 50px #000; width: 100%; }
+        .roulette-strip { display: flex; height: 100%; position: absolute; left: 0; top: 0; }
+        .roulette-item { width: 150px; height: 100%; flex-shrink: 0; border-right: 1px solid rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%); }
+        .roulette-marker { position: absolute; top: 0; left: 50%; width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 15px solid var(--accent); transform: translateX(-50%); z-index: 20; filter: drop-shadow(0 0 5px var(--accent)); }
 
-        .menu-controls {
-            width: 100%;
-            z-index: 2;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 15px;
-            border-radius: 15px;
-            backdrop-filter: blur(5px);
-        }
-
-        .setting-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-
-        .garage-tabs {
-            display: flex;
-            gap: 10px;
-            padding: 10px 20px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 8px;
-            font-size: 0.8rem;
-            opacity: 0.6;
-        }
-
-        .tab-btn.active {
-            opacity: 1;
-            border-color: var(--accent);
-            background: #2a2a35;
-        }
-
-        .car-list {
-            display: flex;
-            overflow-x: auto;
-            padding: 10px 20px;
-            gap: 15px;
-            scroll-snap-type: x mandatory;
-            min-height: 180px;
-        }
-
-        .car-card {
-            min-width: 140px;
-            background: #1e1e28;
-            border-radius: 12px;
-            padding: 10px;
-            border: 1px solid var(--border);
-            scroll-snap-align: start;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: 0.2s;
-            cursor: pointer;
-        }
-
-        .car-card.selected {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
-            background: #252530;
-        }
-
-        .car-visual-box {
-            width: 100%;
-            height: 80px;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .stats-grid {
-            width: 100%;
-            display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 8px 15px;
-            margin: 15px 0;
-            font-size: 0.9rem;
-            align-items: center;
-        }
-
-        .stat-bar {
-            height: 8px;
-            background: #333;
-            border-radius: 4px;
-            overflow: hidden;
-            width: 100%;
-        }
-
-        .stat-fill {
-            height: 100%;
-            background: var(--accent);
-            width: 0%;
-            transition: 0.5s ease-out;
-            box-shadow: 0 0 8px var(--accent);
-        }
-
-        .parts-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .part-slot {
-            background: #1e1e28;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .case-roulette {
-            height: 200px;
-            background: #0b0b10;
-            position: relative;
-            margin: 20px 0;
-            border-top: 2px solid var(--accent);
-            border-bottom: 2px solid var(--accent);
-            overflow: hidden;
-            box-shadow: inset 0 0 50px #000;
-            width: 100%;
-        }
-
-        .roulette-strip {
-            display: flex;
-            height: 100%;
-            position: absolute;
-            left: 0;
-            top: 0;
-        }
-
-        .roulette-item {
-            width: 150px;
-            height: 100%;
-            flex-shrink: 0;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%);
-        }
-
-        .roulette-marker {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 15px solid var(--accent);
-            transform: translateX(-50%);
-            z-index: 20;
-            filter: drop-shadow(0 0 5px var(--accent));
-        }
-
-        .c-common {
-            color: var(--common);
-        }
-
-        .c-uncommon {
-            color: var(--uncommon);
-        }
-
-        .c-rare {
-            color: var(--rare);
-        }
-
-        .c-legendary {
-            color: var(--legendary);
-        }
-
-        .c-mythic {
-            color: var(--mythic);
-        }
-
-        .r-common {
-            border-bottom: 4px solid var(--common);
-        }
-
-        .r-uncommon {
-            border-bottom: 4px solid var(--uncommon);
-            box-shadow: inset 0 -10px 20px -10px var(--uncommon);
-        }
-
-        .r-rare {
-            border-bottom: 4px solid var(--rare);
-            box-shadow: inset 0 -10px 20px -10px var(--rare);
-        }
-
-        .r-legendary {
-            border-bottom: 4px solid var(--legendary);
-            box-shadow: inset 0 -10px 20px -10px var(--legendary);
-        }
-
-        .r-mythic {
-            border-bottom: 4px solid var(--mythic);
-            box-shadow: inset 0 -10px 20px -10px var(--mythic);
-        }
+        .c-common { color: var(--common); } .c-uncommon { color: var(--uncommon); } .c-rare { color: var(--rare); } .c-legendary { color: var(--legendary); } .c-mythic { color: var(--mythic); }
+        .r-common { border-bottom: 4px solid var(--common); } .r-uncommon { border-bottom: 4px solid var(--uncommon); box-shadow: inset 0 -10px 20px -10px var(--uncommon); }
+        .r-rare { border-bottom: 4px solid var(--rare); box-shadow: inset 0 -10px 20px -10px var(--rare); } .r-legendary { border-bottom: 4px solid var(--legendary); box-shadow: inset 0 -10px 20px -10px var(--legendary); } .r-mythic { border-bottom: 4px solid var(--mythic); box-shadow: inset 0 -10px 20px -10px var(--mythic); }
 
         /* RACE UI IMPROVEMENTS */
-        #gameCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            background: #1a1a2e;
-        }
+        #gameCanvas { width: 100%; height: 100%; display: block; background: #1a1a2e; }
+        .race-ui { position: absolute; top: 20px; left: 20px; pointer-events: none; z-index: 50; width: calc(100% - 40px); display: flex; justify-content: space-between; align-items: flex-start; }
+        .speed-gauge { font-family: monospace; font-size: 3rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 10px #000; font-style: italic; line-height: 1; }
+        
+        .bonus-text { position: absolute; font-weight: bold; font-style: italic; font-size: 1.5rem; pointer-events: none; animation: floatUp 0.8s forwards; text-shadow: 0 0 5px #000; z-index: 60; white-space: nowrap; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-50px) scale(1.2); } }
 
-        .race-ui {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            pointer-events: none;
-            z-index: 50;
-            width: calc(100% - 40px);
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .speed-gauge {
-            font-family: monospace;
-            font-size: 3rem;
-            font-weight: 900;
-            color: var(--accent);
-            text-shadow: 0 0 10px #000;
-            font-style: italic;
-            line-height: 1;
-        }
-
-        .bonus-text {
-            position: absolute;
-            font-weight: bold;
-            color: #ffd700;
-            font-size: 1.5rem;
-            pointer-events: none;
-            animation: floatUp 0.8s forwards;
-            text-shadow: 0 0 5px #000;
-            z-index: 60;
-        }
-
-        @keyframes floatUp {
-            0% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-
-            100% {
-                opacity: 0;
-                transform: translateY(-50px) scale(1.2);
-            }
-        }
+        /* COMBO UI */
+        #combo-display { text-align: right; margin-top: 10px; font-size: 2rem; font-weight: 900; color: #ff3d00; font-style: italic; text-shadow: 0 0 15px rgba(255, 61, 0, 0.8); transition: transform 0.1s; transform-origin: right center;}
 
         /* NITRO & CONTROLS */
-        .nitro-container {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 220px;
-            text-align: center;
-            z-index: 60;
-        }
+        .nitro-container { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); width: 220px; text-align: center; z-index: 60; }
+        .nitro-bar-bg { width: 100%; height: 12px; background: #333; border-radius: 6px; overflow: hidden; border: 1px solid #555; margin-top: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); }
+        .nitro-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #00d2ff, #008cff); box-shadow: 0 0 10px #00d2ff; transition: width 0.1s linear; }
+        .nitro-btn { width: 80px; height: 80px; border-radius: 50%; background: rgba(0, 210, 255, 0.2); border: 2px solid #00d2ff; color: #00d2ff; font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto; pointer-events: auto; cursor: pointer; transition: 0.1s; backdrop-filter: blur(4px); user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+        .nitro-btn:active { transform: scale(0.95); background: rgba(0, 210, 255, 0.5); box-shadow: 0 0 20px #00d2ff; }
+        .nitro-btn.disabled { border-color: #555; color: #555; opacity: 0.5; }
 
-        .nitro-bar-bg {
-            width: 100%;
-            height: 12px;
-            background: #333;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid #555;
-            margin-top: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
+        .touch-zone { position: absolute; top: 0; bottom: 0; width: 45%; z-index: 40; }
+        .touch-left { left: 0; } .touch-right { right: 0; }
+        .touch-hint { position: absolute; bottom: 150px; width: 100px; color: rgba(255, 255, 255, 0.2); font-weight: 900; font-size: 1.5rem; text-align: center; pointer-events: none; }
 
-        .nitro-bar-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #00d2ff, #008cff);
-            box-shadow: 0 0 10px #00d2ff;
-            transition: width 0.1s linear;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 100; display: none; justify-content: center; align-items: center; backdrop-filter: blur(8px); padding: 20px; }
+        .modal { background: var(--bg-panel); width: 100%; max-width: 400px; padding: 25px; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; max-height: 90vh; }
+        .shop-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #1e1e28; margin-bottom: 8px; border-radius: 8px; border: 1px solid transparent; }
+        .leaderboard-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .mission-row { background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
-        .nitro-btn {
-            width: 80px;
-            height: 80px;
-            /* Bigger for mobile */
-            border-radius: 50%;
-            background: rgba(0, 210, 255, 0.2);
-            border: 2px solid #00d2ff;
-            color: #00d2ff;
-            font-size: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            pointer-events: auto;
-            cursor: pointer;
-            transition: 0.1s;
-            backdrop-filter: blur(4px);
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-        }
-
-        .nitro-btn:active {
-            transform: scale(0.95);
-            background: rgba(0, 210, 255, 0.5);
-            box-shadow: 0 0 20px #00d2ff;
-        }
-
-        .nitro-btn.disabled {
-            border-color: #555;
-            color: #555;
-            opacity: 0.5;
-        }
-
-        .touch-zone {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 45%;
-            z-index: 40;
-        }
-
-        .touch-left {
-            left: 0;
-        }
-
-        .touch-right {
-            right: 0;
-        }
-
-        .touch-hint {
-            position: absolute;
-            bottom: 150px;
-            width: 100px;
-            color: rgba(255, 255, 255, 0.2);
-            font-weight: 900;
-            font-size: 1.5rem;
-            text-align: center;
-            pointer-events: none;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 100;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(8px);
-            padding: 20px;
-        }
-
-        .modal {
-            background: var(--bg-panel);
-            width: 100%;
-            max-width: 400px;
-            padding: 25px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            max-height: 90vh;
-        }
-
-        .shop-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: #1e1e28;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            border: 1px solid transparent;
-        }
-
-        .leaderboard-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .mission-row {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Mobile specific adjustments */
-        @media (max-width: 400px) {
-            .menu-title {
-                font-size: 2.5rem;
-            }
-
-            .car-card {
-                min-width: 120px;
-            }
-        }
+        @media (max-width: 400px) { .menu-title { font-size: 2.5rem; } .car-card { min-width: 120px; } }
     </style>
 </head>
 
@@ -702,9 +210,7 @@
                         <input type="checkbox" id="chk-safemode" onchange="toggleSafeMode(this.checked)">
                     </label>
 
-                    <button id="btn-race" class="btn-primary btn-block"
-                        style="font-size: 1.5rem; letter-spacing: 2px; padding: 15px; background: linear-gradient(45deg, #ff3d00, #ff9100); margin-bottom: 10px;"
-                        onclick="startRace()">RACE</button>
+                    <button id="btn-race" class="btn-primary btn-block" style="font-size: 1.5rem; letter-spacing: 2px; padding: 15px; background: linear-gradient(45deg, #ff3d00, #ff9100); margin-bottom: 10px;" onclick="startRace()">RACE</button>
 
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                         <button id="btn-garage" class="btn-block" onclick="nav('screen-garage')">GARAGE</button>
@@ -712,10 +218,9 @@
                     </div>
 
                     <div style="display: flex; gap: 10px;">
-                        <button id="btn-records" class="btn-block" style="background: rgba(255,255,255,0.05);"
-                            onclick="showLeaderboard()">🏆 RECORDS</button>
-                        <button id="btn-missions" class="btn-block" style="background: rgba(255,255,255,0.05);"
-                            onclick="showMissions()">📋 MISSIONS</button>
+                        <button id="btn-records" class="btn-block" style="background: rgba(255,255,255,0.05);" onclick="showLeaderboard()">🏆 RECORDS</button>
+                        <button id="btn-missions" class="btn-block" style="background: rgba(255,255,255,0.05);" onclick="showMissions()">📋 MISSIONS</button>
+                        <button id="btn-name" class="btn-block" style="background: rgba(255,255,255,0.05);" onclick="openPlayerSettings()">NAME</button>
                     </div>
                 </div>
             </div>
@@ -737,49 +242,24 @@
                 <div id="selected-car-info" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <h2 id="gar-car-name">Car Name</h2>
-                        <div id="gar-car-rarity"
-                            style="text-transform: uppercase; font-size: 0.8rem; font-weight: bold;"></div>
+                        <div id="gar-car-rarity" style="text-transform: uppercase; font-size: 0.8rem; font-weight: bold;"></div>
                     </div>
                     <div class="stats-grid">
-                        <span id="lbl-speed">SPEED</span>
-                        <div class="stat-bar">
-                            <div id="gar-stat-speed" class="stat-fill"></div>
-                        </div>
-                        <span id="lbl-handling">HANDLING</span>
-                        <div class="stat-bar">
-                            <div id="gar-stat-handling" class="stat-fill"></div>
-                        </div>
+                        <span id="lbl-speed">SPEED</span><div class="stat-bar"><div id="gar-stat-speed" class="stat-fill"></div></div>
+                        <span id="lbl-handling">HANDLING</span><div class="stat-bar"><div id="gar-stat-handling" class="stat-fill"></div></div>
                     </div>
                     <div id="tuning-panel">
                         <h3 style="margin: 10px 0;" id="title-tuning">TUNING</h3>
                         <div class="parts-grid">
-                            <div class="part-slot" onclick="openTuning('engine')">
-                                <div style="font-size: 1.5rem;">🔧</div>
-                                <div class="text-dim" style="font-size: 0.8rem;" id="lbl-engine">Engine</div>
-                                <div id="slot-engine" style="font-size:0.8rem; color:var(--accent)">Stock</div>
-                            </div>
-                            <div class="part-slot" onclick="openTuning('wheels')">
-                                <div style="font-size: 1.5rem;">🛞</div>
-                                <div class="text-dim" style="font-size: 0.8rem;" id="lbl-wheels">Wheels</div>
-                                <div id="slot-wheels" style="font-size:0.8rem; color:var(--accent)">Stock</div>
-                            </div>
-                            <div class="part-slot" onclick="openTuning('bumper')">
-                                <div style="font-size: 1.5rem;">🛡️</div>
-                                <div class="text-dim" style="font-size: 0.8rem;" id="lbl-bumper">Bumper</div>
-                                <div id="slot-bumper" style="font-size:0.8rem; color:var(--accent)">Stock</div>
-                            </div>
-                            <div class="part-slot" onclick="openTuning('coating')">
-                                <div style="font-size: 1.5rem;">✨</div>
-                                <div class="text-dim" style="font-size: 0.8rem;" id="lbl-coating">Coating</div>
-                                <div id="slot-coating" style="font-size:0.8rem; color:var(--accent)">None</div>
-                            </div>
+                            <div class="part-slot" onclick="openTuning('engine')"><div style="font-size: 1.5rem;">🔧</div><div class="text-dim" style="font-size: 0.8rem;" id="lbl-engine">Engine</div><div id="slot-engine" style="font-size:0.8rem; color:var(--accent)">Stock</div></div>
+                            <div class="part-slot" onclick="openTuning('wheels')"><div style="font-size: 1.5rem;">🛞</div><div class="text-dim" style="font-size: 0.8rem;" id="lbl-wheels">Wheels</div><div id="slot-wheels" style="font-size:0.8rem; color:var(--accent)">Stock</div></div>
+                            <div class="part-slot" onclick="openTuning('bumper')"><div style="font-size: 1.5rem;">🛡️</div><div class="text-dim" style="font-size: 0.8rem;" id="lbl-bumper">Bumper</div><div id="slot-bumper" style="font-size:0.8rem; color:var(--accent)">Stock</div></div>
+                            <div class="part-slot" onclick="openTuning('coating')"><div style="font-size: 1.5rem;">✨</div><div class="text-dim" style="font-size: 0.8rem;" id="lbl-coating">Coating</div><div id="slot-coating" style="font-size:0.8rem; color:var(--accent)">None</div></div>
                         </div>
                         <button id="btn-paint-open" class="btn-block" onclick="openPaintModal()">🎨 PAINT</button>
                     </div>
-                    <button id="btn-select-car" class="btn-primary btn-block"
-                        onclick="selectCurrentCar()">SELECT</button>
-                    <button id="btn-buy-car" class="btn-accent btn-block" style="display:none;"
-                        onclick="buyCurrentCar()">BUY</button>
+                    <button id="btn-select-car" class="btn-primary btn-block" onclick="selectCurrentCar()">SELECT</button>
+                    <button id="btn-buy-car" class="btn-accent btn-block" style="display:none;" onclick="buyCurrentCar()">BUY</button>
                 </div>
             </div>
         </div>
@@ -792,39 +272,21 @@
                 <div class="currency">$<span id="case-balance">0</span></div>
             </header>
             <div style="flex: 1; display: flex; flex-direction: column; align-items: center; padding: 20px;">
-                <div
-                    style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
+                <div style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
                     <button onclick="switchCase(-1)">❮</button>
-                    <div style="text-align: center;">
-                        <h2 id="case-name" class="text-primary">Case</h2>
-                        <small class="text-dim" id="case-desc">Win top parts!</small>
-                    </div>
+                    <div style="text-align: center;"><h2 id="case-name" class="text-primary">Case</h2><small class="text-dim" id="case-desc">Win top parts!</small></div>
                     <button onclick="switchCase(1)">❯</button>
                 </div>
-                <div class="case-roulette">
-                    <div class="roulette-marker"></div>
-                    <div class="roulette-line"></div>
-                    <div class="roulette-strip" id="roulette-strip"></div>
-                </div>
-                <button id="btn-spin" class="btn-primary btn-block" style="height: 60px; font-size: 1.2rem;"
-                    onclick="spinCase()"><span id="lbl-open">OPEN</span> $<span id="case-price">1000</span></button>
-                <div id="win-msg"
-                    style="margin-top: 15px; font-weight: bold; min-height: 40px; text-align: center; font-size: 1.1rem;">
-                </div>
-                <div style="margin-top: auto; width: 100%;">
-                    <h3 class="text-dim" id="lbl-contents">Contents:</h3>
-                    <div id="case-contents" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;"></div>
-                </div>
+                <div class="case-roulette"><div class="roulette-marker"></div><div class="roulette-line"></div><div class="roulette-strip" id="roulette-strip"></div></div>
+                <button id="btn-spin" class="btn-primary btn-block" style="height: 60px; font-size: 1.2rem;" onclick="spinCase()"><span id="lbl-open">OPEN</span> $<span id="case-price">1000</span></button>
+                <div id="win-msg" style="margin-top: 15px; font-weight: bold; min-height: 40px; text-align: center; font-size: 1.1rem;"></div>
+                <div style="margin-top: auto; width: 100%;"><h3 class="text-dim" id="lbl-contents">Contents:</h3><div id="case-contents" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px;"></div></div>
             </div>
         </div>
 
         <!-- SHOP PARTS -->
         <div id="screen-shop-parts" class="screen">
-            <header>
-                <button class="btn-icon" onclick="nav('screen-menu')">←</button>
-                <h2 id="title-shop">Part Shop</h2>
-                <div class="currency">$<span id="shop-balance">0</span></div>
-            </header>
+            <header><button class="btn-icon" onclick="nav('screen-menu')">←</button><h2 id="title-shop">Part Shop</h2><div class="currency">$<span id="shop-balance">0</span></div></header>
             <div style="padding: 20px;" id="shop-list"></div>
         </div>
 
@@ -843,380 +305,132 @@
                     <div class="text-accent">KM/H</div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size: 1.2rem;"><span id="lbl-score">SCORE</span>: <span id="race-score">0</span>
-                    </div>
-                    <div style="font-size: 0.9rem; color: #ffd700;"><span id="lbl-coins">COINS</span>: <span
-                            id="race-coins">0</span></div>
+                    <div style="font-size: 1.2rem;"><span id="lbl-score">SCORE</span>: <span id="race-score">0</span></div>
+                    <div style="font-size: 0.9rem; color: #ffd700;"><span id="lbl-coins">COINS</span>: <span id="race-coins">0</span></div>
+                    <!-- Блок комбо (Near-Miss) -->
+                    <div id="combo-display" style="opacity: 0;">COMBO x1</div>
                 </div>
             </div>
 
             <div class="nitro-container">
-                <div id="btn-nitro" class="nitro-btn" onmousedown="activateNitro(true)" onmouseup="activateNitro(false)"
-                    ontouchstart="activateNitro(true)" ontouchend="activateNitro(false)">⚡</div>
-                <div class="nitro-bar-bg">
-                    <div id="nitro-fill" class="nitro-bar-fill"></div>
-                </div>
+                <div id="btn-nitro" class="nitro-btn" onmousedown="activateNitro(true)" onmouseup="activateNitro(false)" ontouchstart="activateNitro(true)" ontouchend="activateNitro(false)">⚡</div>
+                <div class="nitro-bar-bg"><div id="nitro-fill" class="nitro-bar-fill"></div></div>
                 <small style="color:#00d2ff; font-weight:bold; text-shadow:0 0 5px #000;">NITRO</small>
             </div>
         </div>
     </div>
 
     <!-- MODALS -->
-    <div id="modal-tuning" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
-        <div class="modal">
-            <h3 id="modal-tuning-title">Tuning</h3>
-            <p class="text-dim" id="lbl-inventory">Inventory:</p>
-            <div id="inventory-list" style="margin: 20px 0; max-height: 300px; overflow-y: auto;"></div>
-            <button class="btn-block"
-                onclick="nav('screen-shop-parts');document.getElementById('modal-tuning').style.display='none'"
-                id="btn-buy-parts">Buy Parts</button>
-            <button class="btn-block" onclick="document.getElementById('modal-tuning').style.display='none'"
-                style="background:transparent; border:1px solid #444;" id="btn-close-tuning">Close</button>
-        </div>
-    </div>
-
+    <div id="modal-tuning" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'"><div class="modal"><h3 id="modal-tuning-title">Tuning</h3><p class="text-dim" id="lbl-inventory">Inventory:</p><div id="inventory-list" style="margin: 20px 0; max-height: 300px; overflow-y: auto;"></div><button class="btn-block" onclick="nav('screen-shop-parts');document.getElementById('modal-tuning').style.display='none'" id="btn-buy-parts">Buy Parts</button><button class="btn-block" onclick="document.getElementById('modal-tuning').style.display='none'" style="background:transparent; border:1px solid #444;" id="btn-close-tuning">Close</button></div></div>
+    
     <div id="modal-paint" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
-        <style>
-            .color-btn {
-                height: 44px;
-                border-radius: 10px;
-                border: 2px solid rgba(255, 255, 255, 0.1);
-                position: relative;
-                transition: 0.2s;
-                overflow: hidden;
-            }
-
-            .color-btn:hover {
-                transform: scale(1.1);
-                border-color: #fff;
-            }
-
-            .color-btn.owned::after {
-                content: '✓';
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                color: #fff;
-                font-weight: bold;
-                text-shadow: 0 0 5px #000;
-                background: rgba(0, 0, 0, 0.3);
-                width: 20px;
-                height: 20px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 0.7rem;
-            }
-
-            .color-btn.selected {
-                border-color: var(--accent);
-                box-shadow: 0 0 15px var(--accent-glow), inset 0 0 10px rgba(255, 255, 255, 0.2);
-                transform: scale(1.05);
-                z-index: 2;
-            }
-        </style>
-        <div class="modal">
-            <h3 id="modal-paint-title">Paint</h3>
-            <div id="paint-colors-grid"
-                style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 15px;"></div>
-            <p id="paint-cost-display"
-                style="text-align:center; margin:15px 0; color:var(--text-dim); font-weight: bold; height: 20px;">Select
-                Color</p>
-            <button id="btn-confirm-paint" class="btn-primary btn-block" disabled
-                onclick="confirmPaint()">PAINT</button>
-            <button class="btn-block" onclick="document.getElementById('modal-paint').style.display='none'"
-                style="background:transparent; border:1px solid #444; margin-top: 5px;"
-                id="btn-cancel-paint">Cancel</button>
-        </div>
+        <style>.color-btn { height: 44px; border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.1); position: relative; transition: 0.2s; overflow: hidden; } .color-btn:hover { transform: scale(1.1); border-color: #fff; } .color-btn.owned::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #fff; font-weight: bold; text-shadow: 0 0 5px #000; background: rgba(0, 0, 0, 0.3); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; } .color-btn.selected { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow), inset 0 0 10px rgba(255, 255, 255, 0.2); transform: scale(1.05); z-index: 2; }</style>
+        <div class="modal"><h3 id="modal-paint-title">Paint</h3><div id="paint-colors-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 15px;"></div><p id="paint-cost-display" style="text-align:center; margin:15px 0; color:var(--text-dim); font-weight: bold; height: 20px;">Select Color</p><button id="btn-confirm-paint" class="btn-primary btn-block" disabled onclick="confirmPaint()">PAINT</button><button class="btn-block" onclick="document.getElementById('modal-paint').style.display='none'" style="background:transparent; border:1px solid #444; margin-top: 5px;" id="btn-cancel-paint">Cancel</button></div>
     </div>
 
-    <div id="modal-leaderboard" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
-        <div class="modal">
-            <h2 style="text-align: center; color: var(--accent); margin-bottom: 20px;" id="title-top">TOP 10 RUNS</h2>
-            <div id="leaderboard-content" style="max-height: 300px; overflow-y: auto;"></div>
-            <button class="btn-block" onclick="document.getElementById('modal-leaderboard').style.display='none'"
-                style="margin-top: 20px;" id="btn-close-lb">CLOSE</button>
-        </div>
-    </div>
-
-    <div id="modal-missions" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'">
-        <div class="modal">
-            <h2 style="text-align: center; color: #ffd700; margin-bottom: 20px;" id="title-missions">DAILY MISSIONS</h2>
-            <div id="missions-content"></div>
-            <button class="btn-block" onclick="document.getElementById('modal-missions').style.display='none'"
-                style="margin-top: 20px;" id="btn-close-missions">CLOSE</button>
-        </div>
-    </div>
+    <div id="modal-leaderboard" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'"><div class="modal"><h2 style="text-align: center; color: var(--accent); margin-bottom: 20px;" id="title-top">TOP 10 RUNS</h2><div id="leaderboard-content" style="max-height: 300px; overflow-y: auto;"></div><button class="btn-block" onclick="document.getElementById('modal-leaderboard').style.display='none'" style="margin-top: 20px;" id="btn-close-lb">CLOSE</button></div></div>
+    
+    <div id="modal-missions" class="modal-overlay" onclick="if(event.target===this) this.style.display='none'"><div class="modal"><h2 style="text-align: center; color: #ffd700; margin-bottom: 20px;" id="title-missions">DAILY MISSIONS</h2><div id="missions-content"></div><button class="btn-block" onclick="document.getElementById('modal-missions').style.display='none'" style="margin-top: 20px;" id="btn-close-missions">CLOSE</button></div></div>
 
     <div id="modal-gameover" class="modal-overlay">
         <div class="modal" style="text-align: center;">
             <h2 style="color: #ff3d00; font-size: 2.5rem; margin-bottom: 20px;" id="title-wasted">WASTED!</h2>
             <p><span id="lbl-earnings">Earnings:</span> <span class="currency" id="race-earnings">$0</span></p>
             <p><span id="lbl-col-coins">Coins:</span> <span class="currency" id="race-collected-coins">$0</span></p>
-            <p style="color: var(--accent)"><span id="lbl-bonus">Bonus:</span> <span class="currency"
-                    id="race-mission-bonus">$0</span></p>
-            <div id="new-record-msg"
-                style="display:none; color: var(--accent); font-weight: bold; margin-top: 10px; animation: floatUp 0.5s;">
-                🏆 NEW RECORD!</div>
-            <br>
-            <button class="btn-primary btn-block" onclick="finishRace()" id="btn-to-garage">GARAGE</button>
-            <button class="btn-block" onclick="startRace()" id="btn-retry">RETRY</button>
+            <p style="color: var(--accent)"><span id="lbl-bonus">Bonus:</span> <span class="currency" id="race-mission-bonus">$0</span></p>
+            <div id="new-record-msg" style="display:none; color: var(--accent); font-weight: bold; margin-top: 10px; animation: floatUp 0.5s;">🏆 NEW RECORD!</div>
+            <br><button class="btn-primary btn-block" onclick="finishRace()" id="btn-to-garage">GARAGE</button><button class="btn-block" onclick="startRace()" id="btn-retry">RETRY</button>
         </div>
     </div>
 
+    <script src="../../xp_player_identity.js"></script>
     <script>
         /* --- LANGUAGE SYSTEM --- */
         let currentLang = 'en';
-
         const langData = {
             en: {
-                version: "ULTIMATE ED.",
-                safeMode: "🛡️ Safe Walls <small class='text-dim'>(-5% profit)</small>",
-                btnRace: "RACE",
-                btnGarage: "GARAGE",
-                btnCases: "CASES",
-                btnRecords: "🏆 RECORDS",
-                btnMissions: "📋 MISSIONS",
-
-                titleGarage: "Garage",
-                tabMy: "MY CARS",
-                tabAll: "CATALOG",
-                lblSpeed: "SPEED",
-                lblHand: "HANDLING",
-                titleTuning: "TUNING",
-                lblEngine: "Engine",
-                lblWheels: "Wheels",
-                lblBumper: "Bumper",
-                lblCoating: "Coating",
-                btnPaint: "🎨 PAINT",
-                btnSelect: "SELECT",
-                btnSelected: "SELECTED",
-                btnBuy: "BUY",
-                stock: "Stock",
-                none: "None",
-
-                titleCases: "Cases",
-                lblOpen: "OPEN",
-                lblContents: "Contents:",
-
-                titleShop: "Part Shop",
-
-                lblScore: "SCORE",
-                lblCoins: "COINS",
-
-                modalTuning: "Tuning",
-                lblInventory: "Inventory:",
-                btnBuyParts: "Buy Parts",
-                btnClose: "Close",
-                btnRemove: "Remove Part (Stock)",
-
-                modalPaint: "Paint",
-                lblSelectColor: "Select Color",
-                lblFree: "FREE",
-                btnCancel: "Cancel",
-
-                titleTop: "TOP 10 RUNS",
-                titleMissions: "DAILY MISSIONS",
-
-                titleWasted: "WASTED!",
-                lblEarnings: "Earnings:",
-                lblColCoins: "Coins:",
-                lblBonus: "Bonus:",
-                msgRecord: "🏆 NEW RECORD!",
-                btnToGarage: "GARAGE",
-                btnRetry: "RETRY",
-
-                notEnough: "Not enough money!",
-                bought: "Bought!",
-                msgCar: "CAR",
-                msgPart: "PART",
-
+                version: "ULTIMATE ED.", safeMode: "🛡️ Safe Walls <small class='text-dim'>(-5% profit)</small>",
+                btnRace: "RACE", btnGarage: "GARAGE", btnCases: "CASES", btnRecords: "🏆 RECORDS", btnMissions: "📋 MISSIONS",
+                titleGarage: "Garage", tabMy: "MY CARS", tabAll: "CATALOG", lblSpeed: "SPEED", lblHand: "HANDLING", titleTuning: "TUNING",
+                lblEngine: "Engine", lblWheels: "Wheels", lblBumper: "Bumper", lblCoating: "Coating", btnPaint: "🎨 PAINT", btnSelect: "SELECT", btnSelected: "SELECTED", btnBuy: "BUY", stock: "Stock", none: "None",
+                titleCases: "Cases", lblOpen: "OPEN", lblContents: "Contents:", titleShop: "Part Shop", lblScore: "SCORE", lblCoins: "COINS",
+                modalTuning: "Tuning", lblInventory: "Inventory:", btnBuyParts: "Buy Parts", btnClose: "Close", btnRemove: "Remove Part (Stock)",
+                modalPaint: "Paint", lblSelectColor: "Select Color", lblFree: "FREE", btnCancel: "Cancel", titleTop: "TOP 10 RUNS", titleMissions: "DAILY MISSIONS",
+                titleWasted: "WASTED!", lblEarnings: "Earnings:", lblColCoins: "Coins:", lblBonus: "Bonus:", msgRecord: "🏆 NEW RECORD!", btnToGarage: "GARAGE", btnRetry: "RETRY",
+                notEnough: "Not enough money!", bought: "Bought!", msgCar: "CAR", msgPart: "PART", msgNearMiss: "NEAR MISS",
                 rarities: { common: "COMMON", uncommon: "UNCOMMON", rare: "RARE", legendary: "LEGENDARY", mythic: "MYTHIC" },
                 types: { engine: "Engine", wheels: "Wheels", bumper: "Bumper", coating: "Coating" }
             },
             ru: {
-                version: "ULTIMATE ИЗД.",
-                safeMode: "🛡️ Авто-стены <small class='text-dim'>(-5% доход)</small>",
-                btnRace: "ГОНКА",
-                btnGarage: "ГАРАЖ",
-                btnCases: "КЕЙСЫ",
-                btnRecords: "🏆 РЕКОРДЫ",
-                btnMissions: "📋 ЗАДАНИЯ",
-
-                titleGarage: "Гараж",
-                tabMy: "МОИ АВТО",
-                tabAll: "КАТАЛОГ",
-                lblSpeed: "СКОРОСТЬ",
-                lblHand: "РУЛЕЖКА",
-                titleTuning: "ТЮНИНГ",
-                lblEngine: "Двигатель",
-                lblWheels: "Колеса",
-                lblBumper: "Бампер",
-                lblCoating: "Покрытие",
-                btnPaint: "🎨 ПОКРАСКА",
-                btnSelect: "ВЫБРАТЬ",
-                btnSelected: "ВЫБРАНО",
-                btnBuy: "КУПИТЬ",
-                stock: "Сток",
-                none: "Нет",
-
-                titleCases: "Кейсы",
-                lblOpen: "ОТКРЫТЬ",
-                lblContents: "Содержимое:",
-
-                titleShop: "Магазин Деталей",
-
-                lblScore: "СЧЁТ",
-                lblCoins: "МОНЕТЫ",
-
-                modalTuning: "Тюнинг",
-                lblInventory: "Инвентарь:",
-                btnBuyParts: "Купить Детали",
-                btnClose: "Закрыть",
-                btnRemove: "Снять (Сток)",
-
-                modalPaint: "Покраска",
-                lblSelectColor: "Выберите цвет",
-                lblFree: "БЕСПЛАТНО",
-                btnCancel: "Отмена",
-
-                titleTop: "ТОП 10 ЗАЕЗДОВ",
-                titleMissions: "ЕЖЕДНЕВНЫЕ ЗАДАНИЯ",
-
-                titleWasted: "РАЗБИТ!",
-                lblEarnings: "За заезд:",
-                lblColCoins: "Монеты:",
-                lblBonus: "Бонус:",
-                msgRecord: "🏆 НОВЫЙ РЕКОРД!",
-                btnToGarage: "В ГАРАЖ",
-                btnRetry: "ЕЩЕ РАЗ",
-
-                notEnough: "Недостаточно денег!",
-                bought: "Куплено!",
-                msgCar: "АВТОМОБИЛЬ",
-                msgPart: "ДЕТАЛЬ",
-
+                version: "ULTIMATE ИЗД.", safeMode: "🛡️ Авто-стены <small class='text-dim'>(-5% доход)</small>",
+                btnRace: "ГОНКА", btnGarage: "ГАРАЖ", btnCases: "КЕЙСЫ", btnRecords: "🏆 РЕКОРДЫ", btnMissions: "📋 ЗАДАНИЯ",
+                titleGarage: "Гараж", tabMy: "МОИ АВТО", tabAll: "КАТАЛОГ", lblSpeed: "СКОРОСТЬ", lblHand: "РУЛЕЖКА", titleTuning: "ТЮНИНГ",
+                lblEngine: "Двигатель", lblWheels: "Колеса", lblBumper: "Бампер", lblCoating: "Покрытие", btnPaint: "🎨 ПОКРАСКА", btnSelect: "ВЫБРАТЬ", btnSelected: "ВЫБРАНО", btnBuy: "КУПИТЬ", stock: "Сток", none: "Нет",
+                titleCases: "Кейсы", lblOpen: "ОТКРЫТЬ", lblContents: "Содержимое:", titleShop: "Магазин Деталей", lblScore: "СЧЁТ", lblCoins: "МОНЕТЫ",
+                modalTuning: "Тюнинг", lblInventory: "Инвентарь:", btnBuyParts: "Купить Детали", btnClose: "Закрыть", btnRemove: "Снять (Сток)",
+                modalPaint: "Покраска", lblSelectColor: "Выберите цвет", lblFree: "БЕСПЛАТНО", btnCancel: "Отмена", titleTop: "ТОП 10 ЗАЕЗДОВ", titleMissions: "ЕЖЕДНЕВНЫЕ ЗАДАНИЯ",
+                titleWasted: "РАЗБИТ!", lblEarnings: "За заезд:", lblColCoins: "Монеты:", lblBonus: "Бонус:", msgRecord: "🏆 НОВЫЙ РЕКОРД!", btnToGarage: "В ГАРАЖ", btnRetry: "ЕЩЕ РАЗ",
+                notEnough: "Недостаточно денег!", bought: "Куплено!", msgCar: "АВТОМОБИЛЬ", msgPart: "ДЕТАЛЬ", msgNearMiss: "НА ВОЛОСКЕ",
                 rarities: { common: "ОБЫЧНАЯ", uncommon: "НЕОБЫЧНАЯ", rare: "РЕДКАЯ", legendary: "ЛЕГЕНДАРНАЯ", mythic: "МИФИЧЕСКАЯ" },
                 types: { engine: "Двигатель", wheels: "Колеса", bumper: "Бампер", coating: "Покрытие" }
             }
         };
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'ru' : 'en';
-            document.getElementById('lang-btn').innerText = currentLang.toUpperCase();
-            applyLanguage();
-        }
-
+        function toggleLanguage() { currentLang = currentLang === 'en' ? 'ru' : 'en'; document.getElementById('lang-btn').innerText = currentLang.toUpperCase(); applyLanguage(); }
         function txt(key) { return langData[currentLang][key] || key; }
 
         function applyLanguage() {
             const t = langData[currentLang];
-            document.getElementById('txt-version').innerText = t.version;
-            document.getElementById('txt-safemode').innerHTML = t.safeMode;
-            document.getElementById('btn-race').innerText = t.btnRace;
-            document.getElementById('btn-garage').innerText = t.btnGarage;
-            document.getElementById('btn-cases').innerText = t.btnCases;
-            document.getElementById('btn-records').innerText = t.btnRecords;
-            document.getElementById('btn-missions').innerText = t.btnMissions;
-
-            document.getElementById('title-garage').innerText = t.titleGarage;
-            document.getElementById('tab-my').innerText = t.tabMy;
-            document.getElementById('tab-all').innerText = t.tabAll;
-            document.getElementById('lbl-speed').innerText = t.lblSpeed;
-            document.getElementById('lbl-handling').innerText = t.lblHand;
-            document.getElementById('title-tuning').innerText = t.titleTuning;
-            document.getElementById('lbl-engine').innerText = t.lblEngine;
-            document.getElementById('lbl-wheels').innerText = t.lblWheels;
-            document.getElementById('lbl-bumper').innerText = t.lblBumper;
-            document.getElementById('lbl-coating').innerText = t.lblCoating;
+            document.getElementById('txt-version').innerText = t.version; document.getElementById('txt-safemode').innerHTML = t.safeMode;
+            document.getElementById('btn-race').innerText = t.btnRace; document.getElementById('btn-garage').innerText = t.btnGarage;
+            document.getElementById('btn-cases').innerText = t.btnCases; document.getElementById('btn-records').innerText = t.btnRecords; document.getElementById('btn-missions').innerText = t.btnMissions;
+            document.getElementById('title-garage').innerText = t.titleGarage; document.getElementById('tab-my').innerText = t.tabMy; document.getElementById('tab-all').innerText = t.tabAll;
+            document.getElementById('lbl-speed').innerText = t.lblSpeed; document.getElementById('lbl-handling').innerText = t.lblHand; document.getElementById('title-tuning').innerText = t.titleTuning;
+            document.getElementById('lbl-engine').innerText = t.lblEngine; document.getElementById('lbl-wheels').innerText = t.lblWheels; document.getElementById('lbl-bumper').innerText = t.lblBumper; document.getElementById('lbl-coating').innerText = t.lblCoating;
             document.getElementById('btn-paint-open').innerText = t.btnPaint;
-            // Select/Buy btn updated dynamically
-
-            document.getElementById('title-cases').innerText = t.titleCases;
-            document.getElementById('lbl-open').innerText = t.lblOpen;
-            document.getElementById('lbl-contents').innerText = t.lblContents;
-
-            document.getElementById('title-shop').innerText = t.titleShop;
-            document.getElementById('lbl-score').innerText = t.lblScore;
-            document.getElementById('lbl-coins').innerText = t.lblCoins;
-
-            document.getElementById('modal-tuning-title').innerText = t.modalTuning;
-            document.getElementById('lbl-inventory').innerText = t.lblInventory;
-            document.getElementById('btn-buy-parts').innerText = t.btnBuyParts;
-            document.getElementById('btn-close-tuning').innerText = t.btnClose;
-
-            document.getElementById('modal-paint-title').innerText = t.modalPaint;
-            document.getElementById('paint-cost-display').innerText = t.lblSelectColor;
-            document.getElementById('btn-confirm-paint').innerText = t.btnPaint;
-            document.getElementById('btn-cancel-paint').innerText = t.btnCancel;
-
-            document.getElementById('title-top').innerText = t.titleTop;
-            document.getElementById('btn-close-lb').innerText = t.btnClose;
-
-            document.getElementById('title-missions').innerText = t.titleMissions;
-            document.getElementById('btn-close-missions').innerText = t.btnClose;
-
-            document.getElementById('title-wasted').innerText = t.titleWasted;
-            document.getElementById('lbl-earnings').innerText = t.lblEarnings;
-            document.getElementById('lbl-col-coins').innerText = t.lblColCoins;
-            document.getElementById('lbl-bonus').innerText = t.lblBonus;
-            document.getElementById('btn-to-garage').innerText = t.btnToGarage;
-            document.getElementById('btn-retry').innerText = t.btnRetry;
-
-            // Refresh dynamic lists
+            document.getElementById('title-cases').innerText = t.titleCases; document.getElementById('lbl-open').innerText = t.lblOpen; document.getElementById('lbl-contents').innerText = t.lblContents;
+            document.getElementById('title-shop').innerText = t.titleShop; document.getElementById('lbl-score').innerText = t.lblScore; document.getElementById('lbl-coins').innerText = t.lblCoins;
+            document.getElementById('modal-tuning-title').innerText = t.modalTuning; document.getElementById('lbl-inventory').innerText = t.lblInventory; document.getElementById('btn-buy-parts').innerText = t.btnBuyParts; document.getElementById('btn-close-tuning').innerText = t.btnClose;
+            document.getElementById('modal-paint-title').innerText = t.modalPaint; document.getElementById('paint-cost-display').innerText = t.lblSelectColor; document.getElementById('btn-confirm-paint').innerText = t.btnPaint; document.getElementById('btn-cancel-paint').innerText = t.btnCancel;
+            document.getElementById('title-top').innerText = t.titleTop; document.getElementById('btn-close-lb').innerText = t.btnClose;
+            document.getElementById('title-missions').innerText = t.titleMissions; document.getElementById('btn-close-missions').innerText = t.btnClose;
+            document.getElementById('title-wasted').innerText = t.titleWasted; document.getElementById('lbl-earnings').innerText = t.lblEarnings; document.getElementById('lbl-col-coins').innerText = t.lblColCoins; document.getElementById('lbl-bonus').innerText = t.lblBonus; document.getElementById('btn-to-garage').innerText = t.btnToGarage; document.getElementById('btn-retry').innerText = t.btnRetry;
             if (document.getElementById('screen-garage').classList.contains('active')) renderGarageList();
             if (document.getElementById('screen-shop-parts').classList.contains('active')) renderShopParts();
             if (document.getElementById('selected-car-info').style.display !== 'none') selectGarageItem(viewingCarId, garageTab === 'my');
-
             updCase();
         }
 
         /* --- AUDIO SYSTEM --- */
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        let isMuted = false;
-        let musicTimer = null;
-        let currentTrack = 'none';
+        let isMuted = false; let musicTimer = null; let currentTrack = 'none';
 
-        function toggleMute() {
-            isMuted = !isMuted;
-            document.getElementById('mute-btn').innerText = isMuted ? '🔇' : '🔊';
-            if (isMuted) stopMusic();
-            else if (document.getElementById('screen-race').classList.contains('active')) playMusic('race');
-            else playMusic('menu');
-        }
+        function toggleMute() { isMuted = !isMuted; document.getElementById('mute-btn').innerText = isMuted ? '🔇' : '🔊'; if (isMuted) stopMusic(); else if (document.getElementById('screen-race').classList.contains('active')) playMusic('race'); else playMusic('menu'); }
 
         function playTone(freq, type, duration, vol) {
             if (isMuted || audioCtx.state === 'suspended') return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
             gain.gain.setValueAtTime(vol, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + duration);
         }
 
         function sndClick() { playTone(800, 'sine', 0.05, 0.05); }
         function sndCoin() { playTone(1200, 'sine', 0.1, 0.1); setTimeout(() => playTone(1800, 'sine', 0.2, 0.1), 50); }
-        function sndNitro() { playTone(100, 'sawtooth', 0.3, 0.05); }
+        function sndNearMiss(combo) { playTone(800 + (combo * 150), 'sine', 0.1, 0.1); } // Пинг комбо
         function sndCrash() { playTone(100, 'sawtooth', 0.5, 0.3); playTone(50, 'square', 0.5, 0.3); }
 
         function stopMusic() { if (musicTimer) clearInterval(musicTimer); musicTimer = null; }
         function playMusic(track) {
             if (isMuted) return;
             if (currentTrack === track && musicTimer) return;
-            stopMusic();
-            currentTrack = track;
+            stopMusic(); currentTrack = track;
             if (audioCtx.state === 'suspended') audioCtx.resume();
             let step = 0;
             if (track === 'menu') {
-                const bassLine = [110, 0, 110, 0, 130, 0, 98, 0];
-                const lead = [440, 0, 0, 0, 523, 0, 392, 0];
+                const bassLine = [110, 0, 110, 0, 130, 0, 98, 0]; const lead = [440, 0, 0, 0, 523, 0, 392, 0];
                 musicTimer = setInterval(() => {
                     if (bassLine[step % 8] > 0) playTone(bassLine[step % 8], 'triangle', 0.3, 0.05);
                     if (lead[step % 8] > 0 && Math.random() > 0.5) playTone(lead[step % 8], 'sine', 0.4, 0.03);
@@ -1226,9 +440,19 @@
             else if (track === 'race') {
                 const bass = [55, 55, 0, 55, 65, 65, 0, 65, 73, 73, 0, 73, 65, 65, 55, 55];
                 musicTimer = setInterval(() => {
+                    // Звуковой Сок: Приглушаем музыку во время Нитро, добавляем рев
+                    let isNitroActive = (typeof playerCar !== 'undefined' && playerCar.isNitro);
+                    let muffle = isNitroActive ? 0.2 : 1; // Музыка тише на 80%
+
                     let f = bass[step % 16];
-                    if (f > 0) playTone(f, 'sawtooth', 0.1, 0.05);
-                    if (step % 4 === 0) playTone(100, 'noise', 0.05, 0.02);
+                    if (f > 0) playTone(f, 'sawtooth', 0.1, 0.05 * muffle);
+                    if (step % 4 === 0) playTone(100, 'noise', 0.05, 0.02 * muffle);
+
+                    // Свист и рев турбины
+                    if (isNitroActive) {
+                        playTone(100 + Math.random() * 50, 'sawtooth', 0.2, 0.15); // Рев
+                        playTone(200 + Math.random() * 100, 'square', 0.1, 0.05);  // Турбина
+                    }
                     step++;
                 }, 120);
             }
@@ -1265,194 +489,83 @@
 
         /* --- STATE --- */
         let player = {
-            money: 5000, inventory: [],
-            garage: [{ id: 'c1', dbId: 'lada', color: '#b0b0b0', parts: { engine: null, wheels: null, bumper: null, coating: null } }],
-            selectedCarInstanceId: 'c1', settings: { safeMode: false },
-            unlockedColors: [], highscores: [],
-            missions: [], lastMissionReset: 0
+            money: 5000, inventory: [], garage: [{ id: 'c1', dbId: 'lada', color: '#b0b0b0', parts: { engine: null, wheels: null, bumper: null, coating: null } }],
+            selectedCarInstanceId: 'c1', settings: { safeMode: false }, unlockedColors: [], highscores: [], missions: [], lastMissionReset: 0
         };
-        const PAINT_COLORS = [
-            { color: '#ffffff', cost: 500 }, { color: '#ff0000', cost: 500 }, { color: '#00ff00', cost: 500 },
-            { color: '#0000ff', cost: 500 }, { color: '#ffff00', cost: 500 }, { color: '#ff00ff', cost: 1000 },
-            { color: '#111111', cost: 2000 }, { color: '#9d4edd', cost: 2500 }, { color: '#00f2ea', cost: 2500 },
-        ];
+
+        /** LEADERBOARD SYSTEM (Unchanged) */
+        const firebaseConfig = { apiKey: "AIzaSyAyatGz9z_EYXBAFrH2wrnX8snbDn1ESJk", authDomain: "schoolrpg-leaderboard.firebaseapp.com", projectId: "schoolrpg-leaderboard", storageBucket: "schoolrpg-leaderboard.firebasestorage.app", messagingSenderId: "942057524924", appId: "1:942057524924:web:4720f94710edd210ec8ab9", measurementId: "G-MR13BVCGZW" };
+        const LeaderboardSystem = {
+            isOnline: false, db: null, scoresCol: null, gameId: null,
+            async init(gameId) {
+                this.gameId = gameId; this.isOnline = window.navigator.onLine;
+                if (this.isOnline) {
+                    try { if (!window.firebase_app_instance) { const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"); window.firebase_app_instance = initializeApp(firebaseConfig); const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"); window.firebase_db_instance = getFirestore(window.firebase_app_instance); } this.db = window.firebase_db_instance; const { collection } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"); this.scoresCol = collection(this.db, 'leaderboards', this.gameId, 'scores'); } catch (e) { console.warn("Firebase Init Error", e); this.isOnline = false; }
+                }
+            },
+            async saveScore(name, score, desc = "") { const entry = { name: name || (window.XPPlayerProfile ? XPPlayerProfile.getName(this.gameId || 'night_racer', "Driver") : "Player"), score: Number(score), desc: desc, timestamp: Date.now(), date: new Date().toISOString() }; if (this.isOnline && this.db) { try { const { addDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"); await addDoc(this.scoresCol, entry); } catch (e) { this.saveLocal(entry); } } else { this.saveLocal(entry); } },
+            saveLocal(entry) { let scores = this.getLocalRaw(); scores.push(entry); scores.sort((a, b) => b.score - a.score); scores = scores.slice(0, 50); localStorage.setItem(`lb_${this.gameId}`, JSON.stringify(scores)); },
+            getLocalRaw() { try { return JSON.parse(localStorage.getItem(`lb_${this.gameId}`) || "[]"); } catch (e) { return []; } },
+            async getScores(limitCount = 10) { if (this.isOnline && this.db) { try { const { getDocs, query, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"); const q = query(this.scoresCol, orderBy("score", "desc"), limit(limitCount)); const snap = await getDocs(q); return snap.docs.map(doc => doc.data()); } catch (e) { return this.getLocal(limitCount); } } else { return this.getLocal(limitCount); } },
+            getLocal(limitCount) { return this.getLocalRaw().slice(0, limitCount); },
+            showPrompt(score, callback) { if (window.XPPlayerProfile) { XPPlayerProfile.requestRecordIdentity({ gameId: this.gameId || 'night_racer', defaultName: 'Driver', title: 'Save Record', subtitle: 'Your best run will be saved.', onDone: (profile) => callback(profile.name) }); return; } const name = prompt("NEW RECORD! Enter your name:", localStorage.getItem('player_name') || ""); if (name) { localStorage.setItem('player_name', name); callback(name); } }
+        };
+
+        function openPlayerSettings() { if (!window.XPPlayerProfile) return; XPPlayerProfile.openSettings({ gameId: 'night_racer', defaultName: 'Driver', title: 'Player Name', subtitle: 'Change the leaderboard name.' }); }
+
+        const PAINT_COLORS = [ { color: '#ffffff', cost: 500 }, { color: '#ff0000', cost: 500 }, { color: '#00ff00', cost: 500 }, { color: '#0000ff', cost: 500 }, { color: '#ffff00', cost: 500 }, { color: '#ff00ff', cost: 1000 }, { color: '#111111', cost: 2000 }, { color: '#9d4edd', cost: 2500 }, { color: '#00f2ea', cost: 2500 }, { color: 'linear-gradient(45deg, #ff0000, #ffff00)', cost: 5000 }, { color: 'linear-gradient(45deg, #00f2ea, #9d4edd)', cost: 5000 }, { color: 'linear-gradient(45deg, #FFD700, #ff8c00)', cost: 7000 } ];
 
         /* --- CORE --- */
         function saveGame() { localStorage.setItem('nr_ult_save', JSON.stringify(player)); updateUI(); }
-        function loadGame() {
-            let s = localStorage.getItem('nr_ult_save');
-            if (s) player = { ...player, ...JSON.parse(s) };
-            if (!player.unlockedColors) player.unlockedColors = [];
-            if (!player.highscores) player.highscores = [];
-            if (!player.missions || player.missions.length === 0) resetMissions();
-            if (Date.now() - (player.lastMissionReset || 0) > 86400000) resetMissions();
-            player.garage.forEach(c => { if (c.color && !player.unlockedColors.includes(c.color)) player.unlockedColors.push(c.color); });
-            document.getElementById('chk-safemode').checked = player.settings.safeMode;
-            updateUI();
-        }
-
-        function resetMissions() {
-            // Simplified mission structure for translation
-            // types: 'coins', 'score'
-            player.missions = [
-                { id: 'm1', type: 'coins', target: 10 + Math.floor(Math.random() * 10), current: 0, reward: 2000, completed: false },
-                { id: 'm2', type: 'score', target: 3000 + Math.floor(Math.random() * 5000), current: 0, reward: 1500, completed: false }
-            ];
-            player.lastMissionReset = Date.now();
-        }
-
-        function nav(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.getElementById('modal-gameover').style.display = 'none';
-            if (id === 'screen-garage') { renderGarageList(); }
-            if (id === 'screen-shop-parts') renderShopParts();
-            if (id === 'screen-menu') playMusic('menu');
-            else if (id !== 'screen-race') playMusic('menu');
-        }
+        function loadGame() { let s = localStorage.getItem('nr_ult_save'); if (s) player = { ...player, ...JSON.parse(s) }; if (!player.unlockedColors) player.unlockedColors = []; if (!player.highscores) player.highscores = []; if (!player.missions || player.missions.length === 0) resetMissions(); if (Date.now() - (player.lastMissionReset || 0) > 86400000) resetMissions(); player.garage.forEach(c => { if (c.color && !player.unlockedColors.includes(c.color)) player.unlockedColors.push(c.color); }); document.getElementById('chk-safemode').checked = player.settings.safeMode; updateUI(); }
+        function resetMissions() { player.missions = [ { id: 'm1', type: 'coins', target: 10 + Math.floor(Math.random() * 10), current: 0, reward: 2000, completed: false }, { id: 'm2', type: 'score', target: 3000 + Math.floor(Math.random() * 5000), current: 0, reward: 1500, completed: false } ]; player.lastMissionReset = Date.now(); }
+        function nav(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); document.getElementById('modal-gameover').style.display = 'none'; if (id === 'screen-garage') { renderGarageList(); } if (id === 'screen-shop-parts') renderShopParts(); if (id === 'screen-menu') playMusic('menu'); else if (id !== 'screen-race') playMusic('menu'); }
         function toggleSafeMode(v) { player.settings.safeMode = v; saveGame(); }
         function updateUI() { document.querySelectorAll('[id$="-balance"]').forEach(el => el.innerText = player.money); }
 
         /* --- MISSIONS --- */
-        function showMissions() {
-            document.getElementById('modal-missions').style.display = 'flex';
-            const cont = document.getElementById('missions-content'); cont.innerHTML = '';
-            player.missions.forEach(m => {
-                let desc = "";
-                if (m.type === 'coins') desc = currentLang === 'en' ? `Collect ${m.target} coins` : `Собрать ${m.target} монет`;
-                if (m.type === 'score') desc = currentLang === 'en' ? `Score ${m.target} points` : `Набрать ${m.target} очков`;
-
-                let row = document.createElement('div'); row.className = 'mission-row';
-                let status = m.completed ? '<span style="color:#0f0">✓</span>' : `<span style="color:#aaa">${m.current}/${m.target}</span>`;
-                row.innerHTML = `<div>${desc}</div><div style="text-align:right"><div class="currency">$${m.reward}</div>${status}</div>`;
-                cont.appendChild(row);
-            });
-        }
-        function checkMissions(runScore, runCoins) {
-            let bonus = 0;
-            player.missions.forEach(m => {
-                if (!m.completed) {
-                    if (m.type === 'coins') m.current += runCoins;
-                    if (m.type === 'score') m.current = Math.max(m.current, Math.floor(runScore));
-                    if (m.current >= m.target) {
-                        m.completed = true;
-                        bonus += m.reward;
-                    }
-                }
-            });
-            return bonus;
-        }
+        function showMissions() { document.getElementById('modal-missions').style.display = 'flex'; const cont = document.getElementById('missions-content'); cont.innerHTML = ''; player.missions.forEach(m => { let desc = ""; if (m.type === 'coins') desc = currentLang === 'en' ? `Collect ${m.target} coins` : `Собрать ${m.target} монет`; if (m.type === 'score') desc = currentLang === 'en' ? `Score ${m.target} points` : `Набрать ${m.target} очков`; let row = document.createElement('div'); row.className = 'mission-row'; let status = m.completed ? '<span style="color:#0f0">✓</span>' : `<span style="color:#aaa">${m.current}/${m.target}</span>`; row.innerHTML = `<div>${desc}</div><div style="text-align:right"><div class="currency">$${m.reward}</div>${status}</div>`; cont.appendChild(row); }); }
+        function checkMissions(runScore, runCoins) { let bonus = 0; player.missions.forEach(m => { if (!m.completed) { if (m.type === 'coins') m.current += runCoins; if (m.type === 'score') m.current = Math.max(m.current, Math.floor(runScore)); if (m.current >= m.target) { m.completed = true; bonus += m.reward; } } }); return bonus; }
 
         /* --- MENU VISUAL --- */
-        let menuAnimReq;
-        function drawMenuCar() {
-            const cvs = document.getElementById('menuCanvas'); const ctx = cvs.getContext('2d');
-            const cur = player.garage.find(c => c.id === player.selectedCarInstanceId);
-            const rect = cvs.parentElement.getBoundingClientRect();
-            const dpr = window.devicePixelRatio || 1;
-            cvs.width = rect.width * dpr; cvs.height = rect.height * dpr;
-            ctx.scale(dpr, dpr);
-            let frame = 0;
-            const animate = () => {
-                if (!document.getElementById('screen-menu').classList.contains('active')) return;
-                ctx.clearRect(0, 0, rect.width, rect.height);
-                ctx.save();
-                const scale = Math.min(cvs.width, cvs.height) / 80;
-                ctx.translate(cvs.width / 2, cvs.height / 2); ctx.scale(scale, scale);
-                drawDetailedCar(ctx, -18, -33, cur.color, cur, true);
-                ctx.globalCompositeOperation = 'overlay';
-                let grad = ctx.createLinearGradient(-50, -50, 50, 50);
-                grad.addColorStop(0, 'rgba(255,255,255,0)'); grad.addColorStop(0.5 + Math.sin(frame * 0.05) * 0.1, 'rgba(255,255,255,0.2)'); grad.addColorStop(1, 'rgba(255,255,255,0)');
-                ctx.fillStyle = grad; ctx.fillRect(-20, -40, 40, 80);
-                ctx.restore();
-                frame++;
-                menuAnimReq = requestAnimationFrame(animate);
-            }
-            cancelAnimationFrame(menuAnimReq); animate();
-        }
-        const obs = new MutationObserver((muts) => { muts.forEach(m => { if (m.target.id === 'screen-menu' && m.target.classList.contains('active')) drawMenuCar(); }) });
-        obs.observe(document.getElementById('screen-menu'), { attributes: true });
+        let menuAnimReq; function drawMenuCar() { const cvs = document.getElementById('menuCanvas'); const ctx = cvs.getContext('2d'); const cur = player.garage.find(c => c.id === player.selectedCarInstanceId); const rect = cvs.parentElement.getBoundingClientRect(); const dpr = window.devicePixelRatio || 1; cvs.width = rect.width * dpr; cvs.height = rect.height * dpr; ctx.scale(dpr, dpr); let frame = 0; const animate = () => { if (!document.getElementById('screen-menu').classList.contains('active')) return; ctx.clearRect(0, 0, rect.width, rect.height); ctx.save(); const scale = Math.min(cvs.width, cvs.height) / 80; ctx.translate(cvs.width / 2, cvs.height / 2); ctx.scale(scale, scale); drawDetailedCar(ctx, -18, -33, cur.color, cur, true); ctx.globalCompositeOperation = 'overlay'; let grad = ctx.createLinearGradient(-50, -50, 50, 50); grad.addColorStop(0, 'rgba(255,255,255,0)'); grad.addColorStop(0.5 + Math.sin(frame * 0.05) * 0.1, 'rgba(255,255,255,0.2)'); grad.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = grad; ctx.fillRect(-20, -40, 40, 80); ctx.restore(); frame++; menuAnimReq = requestAnimationFrame(animate); }; cancelAnimationFrame(menuAnimReq); animate(); }
+        const obs = new MutationObserver((muts) => { muts.forEach(m => { if (m.target.id === 'screen-menu' && m.target.classList.contains('active')) drawMenuCar(); }) }); obs.observe(document.getElementById('screen-menu'), { attributes: true });
 
         /* --- GARAGE --- */
         let garageTab = 'my'; let viewingCarId = null;
         function setGarageTab(t) { garageTab = t; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('tab-' + t).classList.add('active'); renderGarageList(); }
-
-        function renderGarageList() {
-            const list = document.getElementById('garage-list'); list.innerHTML = '';
-            let items = (garageTab === 'my') ? player.garage : CARS;
-            items.forEach(item => {
-                let isOwned = garageTab === 'my';
-                let dbData = isOwned ? CARS.find(x => x.id === item.dbId) : item;
-                let uniqueId = isOwned ? item.id : item.id;
-                let card = document.createElement('div'); card.className = `car-card ${viewingCarId === uniqueId ? 'selected' : ''}`;
-                let rText = langData[currentLang].rarities[dbData.rarity];
-                let cvsId = 'gcvs_' + uniqueId + Math.floor(Math.random() * 1000);
-                card.innerHTML = `<div class="car-visual-box"><canvas id="${cvsId}" width="100" height="80"></canvas></div><div style="font-weight:bold; font-size:0.9rem">${dbData.name}</div><div class="c-${dbData.rarity}" style="font-size:0.7rem; margin-top:2px;">${rText}</div>`;
-                card.onclick = () => selectGarageItem(uniqueId, isOwned);
-                list.appendChild(card);
-                setTimeout(() => {
-                    let ctx = document.getElementById(cvsId).getContext('2d'); ctx.translate(50, 40); ctx.scale(1.2, 1.2);
-                    drawDetailedCar(ctx, -18, -33, isOwned ? item.color : item.color, isOwned ? item : { parts: {} }, false);
-                }, 10);
-            });
-            if (!viewingCarId && items.length > 0) selectGarageItem(items[0].id, garageTab === 'my');
-        }
-
-        function selectGarageItem(id, isOwned) {
-            viewingCarId = id; document.querySelectorAll('.car-card').forEach(c => c.classList.remove('selected'));
-            let item, dbData, stats;
-            if (isOwned) {
-                item = player.garage.find(x => x.id === id); dbData = CARS.find(x => x.id === item.dbId); stats = getCarStats(item);
-                document.getElementById('tuning-panel').style.display = 'block'; document.getElementById('btn-select-car').style.display = 'block'; document.getElementById('btn-buy-car').style.display = 'none';
-                document.getElementById('btn-select-car').innerText = (player.selectedCarInstanceId === id) ? txt('btnSelected') : txt('btnSelect');
-                document.getElementById('btn-select-car').disabled = (player.selectedCarInstanceId === id);
-                ['engine', 'wheels', 'bumper', 'coating'].forEach(slot => {
-                    let pid = item.parts[slot];
-                    document.getElementById('slot-' + slot).innerText = pid ? PARTS.find(x => x.id === pid).name : txt('stock');
-                    document.getElementById('slot-' + slot).style.color = pid ? 'var(--text-main)' : 'var(--accent)';
-                });
-            } else {
-                item = CARS.find(x => x.id === id); dbData = item; stats = { speed: item.speed, hand: item.hand };
-                document.getElementById('tuning-panel').style.display = 'none'; document.getElementById('btn-select-car').style.display = 'none'; document.getElementById('btn-buy-car').style.display = 'block'; document.getElementById('btn-buy-car').innerHTML = `${txt('btnBuy')} $${item.price}`;
-            }
-            document.getElementById('selected-car-info').style.display = 'block'; document.getElementById('gar-car-name').innerText = dbData.name;
-            document.getElementById('gar-car-rarity').innerText = langData[currentLang].rarities[dbData.rarity];
-            document.getElementById('gar-car-rarity').className = `c-${dbData.rarity}`;
-            document.getElementById('gar-stat-speed').style.width = Math.min((stats.speed / 45) * 100, 100) + '%'; document.getElementById('gar-stat-handling').style.width = Math.min((stats.hand / 15) * 100, 100) + '%';
-        }
-
+        function renderGarageList() { const list = document.getElementById('garage-list'); list.innerHTML = ''; let items = (garageTab === 'my') ? player.garage : CARS; items.forEach(item => { let isOwned = garageTab === 'my'; let dbData = isOwned ? CARS.find(x => x.id === item.dbId) : item; let uniqueId = isOwned ? item.id : item.id; let card = document.createElement('div'); card.className = `car-card ${viewingCarId === uniqueId ? 'selected' : ''}`; let rText = langData[currentLang].rarities[dbData.rarity]; let cvsId = 'gcvs_' + uniqueId + Math.floor(Math.random() * 1000); card.innerHTML = `<div class="car-visual-box"><canvas id="${cvsId}" width="100" height="80"></canvas></div><div style="font-weight:bold; font-size:0.9rem">${dbData.name}</div><div class="c-${dbData.rarity}" style="font-size:0.7rem; margin-top:2px;">${rText}</div>`; card.onclick = () => selectGarageItem(uniqueId, isOwned); list.appendChild(card); setTimeout(() => { let ctx = document.getElementById(cvsId).getContext('2d'); ctx.translate(50, 40); ctx.scale(1.2, 1.2); drawDetailedCar(ctx, -18, -33, isOwned ? item.color : item.color, isOwned ? item : { parts: {} }, false); }, 10); }); if (!viewingCarId && items.length > 0) selectGarageItem(items[0].id, garageTab === 'my'); }
+        function selectGarageItem(id, isOwned) { viewingCarId = id; document.querySelectorAll('.car-card').forEach(c => c.classList.remove('selected')); let item, dbData, stats; if (isOwned) { item = player.garage.find(x => x.id === id); dbData = CARS.find(x => x.id === item.dbId); stats = getCarStats(item); document.getElementById('tuning-panel').style.display = 'block'; document.getElementById('btn-select-car').style.display = 'block'; document.getElementById('btn-buy-car').style.display = 'none'; document.getElementById('btn-select-car').innerText = (player.selectedCarInstanceId === id) ? txt('btnSelected') : txt('btnSelect'); document.getElementById('btn-select-car').disabled = (player.selectedCarInstanceId === id); ['engine', 'wheels', 'bumper', 'coating'].forEach(slot => { let pid = item.parts[slot]; document.getElementById('slot-' + slot).innerText = pid ? PARTS.find(x => x.id === pid).name : txt('stock'); document.getElementById('slot-' + slot).style.color = pid ? 'var(--text-main)' : 'var(--accent)'; }); } else { item = CARS.find(x => x.id === id); dbData = item; stats = { speed: item.speed, hand: item.hand }; document.getElementById('tuning-panel').style.display = 'none'; document.getElementById('btn-select-car').style.display = 'none'; document.getElementById('btn-buy-car').style.display = 'block'; document.getElementById('btn-buy-car').innerHTML = `${txt('btnBuy')} $${item.price}`; } document.getElementById('selected-car-info').style.display = 'block'; document.getElementById('gar-car-name').innerText = dbData.name; document.getElementById('gar-car-rarity').innerText = langData[currentLang].rarities[dbData.rarity]; document.getElementById('gar-car-rarity').className = `c-${dbData.rarity}`; document.getElementById('gar-stat-speed').style.width = Math.min((stats.speed / 45) * 100, 100) + '%'; document.getElementById('gar-stat-handling').style.width = Math.min((stats.hand / 15) * 100, 100) + '%'; }
         function getCarStats(c) { let db = CARS.find(x => x.id === c.dbId); let s = db.speed, h = db.hand; for (let k in c.parts) if (c.parts[k]) { let p = PARTS.find(x => x.id === c.parts[k]); if (p) { s += p.speed; h += p.hand; } } return { speed: s, hand: h }; }
         function selectCurrentCar() { if (garageTab !== 'my') return; player.selectedCarInstanceId = viewingCarId; saveGame(); selectGarageItem(viewingCarId, true); }
         function buyCurrentCar() { let car = CARS.find(x => x.id === viewingCarId); if (player.money >= car.price) { player.money -= car.price; player.garage.push({ id: 'c' + Date.now(), dbId: car.id, color: car.color, parts: {} }); if (!player.unlockedColors.includes(car.color)) player.unlockedColors.push(car.color); alert(txt('bought')); saveGame(); setGarageTab('my'); } else alert(txt('notEnough')); }
 
-        let activeSlot = null;
-        function openTuning(s) { activeSlot = s; document.getElementById('modal-tuning').style.display = 'flex'; const l = document.getElementById('inventory-list'); l.innerHTML = ''; let av = player.inventory.map(id => PARTS.find(x => x.id === id)).filter(p => p && p.type === s); let btnR = document.createElement('button'); btnR.innerText = txt('btnRemove'); btnR.className = "btn-block"; btnR.style.border = "1px dashed #666"; btnR.onclick = () => installPart(null); l.appendChild(btnR); av.forEach(p => { let b = document.createElement('button'); b.className = "btn-block shop-item"; b.innerHTML = `<span>${p.name} <span class="c-${p.rarity}">(${langData[currentLang].rarities[p.rarity]})</span></span> <span class="text-accent">+${p.speed}S +${p.hand}H</span>`; b.onclick = () => installPart(p.id); l.appendChild(b); }); }
+        let activeSlot = null; function openTuning(s) { activeSlot = s; document.getElementById('modal-tuning').style.display = 'flex'; const l = document.getElementById('inventory-list'); l.innerHTML = ''; let av = player.inventory.map(id => PARTS.find(x => x.id === id)).filter(p => p && p.type === s); let btnR = document.createElement('button'); btnR.innerText = txt('btnRemove'); btnR.className = "btn-block"; btnR.style.border = "1px dashed #666"; btnR.onclick = () => installPart(null); l.appendChild(btnR); av.forEach(p => { let b = document.createElement('button'); b.className = "btn-block shop-item"; b.innerHTML = `<span>${p.name} <span class="c-${p.rarity}">(${langData[currentLang].rarities[p.rarity]})</span></span> <span class="text-accent">+${p.speed}S +${p.hand}H</span>`; b.onclick = () => installPart(p.id); l.appendChild(b); }); }
         function installPart(pid) { let c = player.garage.find(x => x.id === viewingCarId); if (c.parts[activeSlot]) player.inventory.push(c.parts[activeSlot]); if (pid) { let idx = player.inventory.indexOf(pid); if (idx > -1) player.inventory.splice(idx, 1); c.parts[activeSlot] = pid; } else c.parts[activeSlot] = null; document.getElementById('modal-tuning').style.display = 'none'; saveGame(); selectGarageItem(viewingCarId, true); }
 
         function renderShopParts() { const l = document.getElementById('shop-list'); l.innerHTML = ''; PARTS.sort((a, b) => a.price - b.price).forEach(p => { let d = document.createElement('div'); d.className = "shop-item"; d.innerHTML = `<div><div style="font-weight:bold">${p.name}</div><div class="c-${p.rarity}" style="font-size:0.8rem">${langData[currentLang].rarities[p.rarity]} | ${langData[currentLang].types[p.type]}</div><div class="text-accent" style="font-size:0.8rem">+${p.speed} Spd / +${p.hand} Hnd</div></div><button class="btn-accent" onclick="buyPart('${p.id}', ${p.price})">$${p.price}</button>`; l.appendChild(d); }); }
         function buyPart(id, price) { if (player.money >= price) { player.money -= price; player.inventory.push(id); saveGame(); alert(txt('bought')); updateUI(); } else alert(txt('notEnough')); }
 
-        let selectedPaintColor = null;
-        function openPaintModal() { document.getElementById('modal-paint').style.display = 'flex'; renderPaintGrid(); }
+        let selectedPaintColor = null; function openPaintModal() { document.getElementById('modal-paint').style.display = 'flex'; renderPaintGrid(); }
         function renderPaintGrid() { const grid = document.getElementById('paint-colors-grid'); grid.innerHTML = ''; selectedPaintColor = null; document.getElementById('paint-cost-display').innerText = txt('lblSelectColor'); document.getElementById('btn-confirm-paint').disabled = true; PAINT_COLORS.forEach(p => { const btn = document.createElement('button'); btn.className = 'color-btn'; btn.style.background = p.color; const isOwned = player.unlockedColors.includes(p.color); if (isOwned) btn.classList.add('owned'); btn.onclick = () => { document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); selectedPaintColor = p; document.getElementById('paint-cost-display').innerText = isOwned ? txt('lblFree') : `$${p.cost}`; document.getElementById('btn-confirm-paint').disabled = false; }; grid.appendChild(btn); }); }
         function confirmPaint() { if (!selectedPaintColor) return; const c = selectedPaintColor.color; const cost = player.unlockedColors.includes(c) ? 0 : selectedPaintColor.cost; if (player.money >= cost) { if (cost > 0) player.money -= cost; if (cost > 0) player.unlockedColors.push(c); let car = player.garage.find(x => x.id === viewingCarId); car.color = c; saveGame(); document.getElementById('modal-paint').style.display = 'none'; selectGarageItem(viewingCarId, true); updateUI(); } else alert(txt('notEnough')); }
 
-        function showLeaderboard() { document.getElementById('modal-leaderboard').style.display = 'flex'; const cont = document.getElementById('leaderboard-content'); cont.innerHTML = `<div class="leaderboard-row"><span>#</span><span>${txt('msgCar')}</span><span>${txt('lblScore')}</span></div>`; let scores = player.highscores.sort((a, b) => b.score - a.score).slice(0, 10); if (scores.length === 0) cont.innerHTML += '<div style="text-align:center;padding:20px;color:#666">...</div>'; scores.forEach((s, i) => { let row = document.createElement('div'); row.className = 'leaderboard-row'; let carName = CARS.find(c => c.id === s.carId)?.name || '???'; row.innerHTML = `<span>${i + 1}</span><span>${carName}</span><span style="color:var(--accent)">${Math.floor(s.score)}</span>`; cont.appendChild(row); }); }
+        async function showLeaderboard() {
+            const cont = document.getElementById('leaderboard-content');
+            cont.innerHTML = `<div class="leaderboard-row"><span>#</span><span>${txt('msgCar')}</span><span>${txt('lblScore')}</span></div><div id="lb-loading" style="text-align:center;padding:10px;">Loading...</div>`;
+            document.getElementById('modal-leaderboard').style.display = 'flex';
+            await LeaderboardSystem.init('night_racer');
+            const scores = await LeaderboardSystem.getScores(10);
+            cont.innerHTML = `<div class="leaderboard-row"><span>#</span><span>${txt('msgCar')}</span><span>${txt('lblScore')}</span></div>`;
+            if (scores.length === 0) cont.innerHTML += '<div style="text-align:center;padding:20px;color:#666">...</div>';
+            scores.forEach((s, i) => { let row = document.createElement('div'); row.className = 'leaderboard-row'; row.innerHTML = `<span>${i + 1}</span><span>${s.name}<br><small style="color:#888">${s.desc || ''}</small></span><span style="color:var(--accent)">${Math.floor(s.score)}</span>`; cont.appendChild(row); });
+        }
 
         let curCase = 0; let spinning = false;
         function switchCase(d) { curCase += d; if (curCase < 0) curCase = CASES.length - 1; if (curCase >= CASES.length) curCase = 0; updCase(); }
-        function updCase() {
-            let c = CASES[curCase];
-            document.getElementById('case-name').innerText = currentLang === 'en' ? c.name : c.name_ru;
-            document.getElementById('case-desc').innerText = currentLang === 'en' ? c.desc : c.desc_ru;
-            document.getElementById('case-price').innerText = c.price;
-            let d = document.getElementById('case-contents'); d.innerHTML = '';
-            let pool = (c.type === 'parts' ? PARTS : (c.type === 'cars' ? CARS : [...PARTS, ...CARS]));
-            ['mythic', 'legendary', 'rare'].forEach(rar => { pool.filter(x => x.rarity === rar).forEach(x => { let s = document.createElement('span'); s.className = `c-${rar}`; s.style.fontSize = '0.75rem'; s.style.border = '1px solid #333'; s.style.padding = '2px 5px'; s.style.borderRadius = '4px'; s.innerText = x.name; d.appendChild(s); }); });
-        }
+        function updCase() { let c = CASES[curCase]; document.getElementById('case-name').innerText = currentLang === 'en' ? c.name : c.name_ru; document.getElementById('case-desc').innerText = currentLang === 'en' ? c.desc : c.desc_ru; document.getElementById('case-price').innerText = c.price; let d = document.getElementById('case-contents'); d.innerHTML = ''; let pool = (c.type === 'parts' ? PARTS : (c.type === 'cars' ? CARS : [...PARTS, ...CARS])); ['mythic', 'legendary', 'rare'].forEach(rar => { pool.filter(x => x.rarity === rar).forEach(x => { let s = document.createElement('span'); s.className = `c-${rar}`; s.style.fontSize = '0.75rem'; s.style.border = '1px solid #333'; s.style.padding = '2px 5px'; s.style.borderRadius = '4px'; s.innerText = x.name; d.appendChild(s); }); }); }
         function spinCase() {
-            if (spinning) return; let c = CASES[curCase];
-            if (player.money < c.price) return alert(txt('notEnough'));
+            if (spinning) return; let c = CASES[curCase]; if (player.money < c.price) return alert(txt('notEnough'));
             player.money -= c.price; updateUI(); spinning = true;
             const strip = document.getElementById('roulette-strip'); strip.style.transition = 'none'; strip.style.transform = 'translateX(0)'; strip.innerHTML = ''; document.getElementById('win-msg').innerHTML = '';
             let pool = (c.type === 'parts' ? PARTS : (c.type === 'cars' ? CARS : [...PARTS, ...CARS]));
@@ -1471,93 +584,100 @@
 
         /* --- RACE LOGIC --- */
         let raceActive = false;
-        let rCanvas = document.getElementById('gameCanvas');
-        let rCtx = rCanvas.getContext('2d');
-        let rState = { roadY: 0, score: 0, speed: 0, opponents: [], coins: [], bgOffset: 0, collected: 0 };
-        let playerCar = { x: 0, y: 0, data: null, stats: { s: 0, h: 0 }, w: 36, h: 66, nitro: 0, maxNitro: 100, isNitro: false };
-        let particles = [];
-        let keys = { L: 0, R: 0, Space: 0 };
-        let buildings = [];
+        let rCanvas = document.getElementById('gameCanvas'); let rCtx = rCanvas.getContext('2d');
+        // Состояние Комбо и FOV добавлено
+        let rState = { roadY: 0, score: 0, speed: 0, opponents: [], coins: [], bgOffset: 0, collected: 0, combo: 0, comboTimer: 0 };
+        let playerCar = { x: 0, y: 0, data: null, stats: { s: 0, h: 0 }, w: 36, h: 66, nitro: 0, maxNitro: 100, isNitro: false, fov: 0 };
+        let particles = []; let keys = { L: 0, R: 0, Space: 0 }; let buildings = [];
 
-        function initBuildings() {
-            buildings = [];
-            for (let i = 0; i < 10; i++) {
-                buildings.push({ y: i * 100, h: 50 + Math.random() * 200, w: 30 + Math.random() * 50, x: -50 - Math.random() * 50, color: '#050510' });
-                buildings.push({ y: i * 100, h: 50 + Math.random() * 200, w: 30 + Math.random() * 50, x: 400 + Math.random() * 50, color: '#050510' });
-            }
-        }
+        function initBuildings() { buildings = []; for (let i = 0; i < 10; i++) { buildings.push({ y: i * 100, h: 50 + Math.random() * 200, w: 30 + Math.random() * 50, x: -50 - Math.random() * 50, color: '#050510' }); buildings.push({ y: i * 100, h: 50 + Math.random() * 200, w: 30 + Math.random() * 50, x: 400 + Math.random() * 50, color: '#050510' }); } }
 
         function startRace() {
             nav('screen-race'); playMusic('race');
-            const dpr = window.devicePixelRatio || 1;
-            rCanvas.width = rCanvas.parentElement.offsetWidth * dpr;
-            rCanvas.height = rCanvas.parentElement.offsetHeight * dpr;
-            rCtx.setTransform(1, 0, 0, 1, 0, 0); rCtx.scale(dpr, dpr);
-
-            let c = player.garage.find(x => x.id === player.selectedCarInstanceId);
-            let s = getCarStats(c);
-            playerCar.data = c;
-            playerCar.stats.s = 15 + (s.speed * 0.5);
-            playerCar.stats.h = 4 + (s.hand * 0.5);
+            const dpr = window.devicePixelRatio || 1; rCanvas.width = rCanvas.parentElement.offsetWidth * dpr; rCanvas.height = rCanvas.parentElement.offsetHeight * dpr; rCtx.setTransform(1, 0, 0, 1, 0, 0); rCtx.scale(dpr, dpr);
+            let c = player.garage.find(x => x.id === player.selectedCarInstanceId); let s = getCarStats(c);
+            playerCar.data = c; playerCar.stats.s = 15 + (s.speed * 0.5); playerCar.stats.h = 4 + (s.hand * 0.5);
             playerCar.x = (rCanvas.width / dpr) / 2 - 18; playerCar.y = (rCanvas.height / dpr) - 150;
-            playerCar.nitro = 0; playerCar.isNitro = false;
-            rState = { roadY: 0, score: 0, speed: 0, opponents: [], coins: [], bgOffset: 0, collected: 0 };
-            particles = []; raceActive = true; keys = { L: 0, R: 0, Space: 0 };
-            initBuildings(); raceLoop();
+            playerCar.nitro = 0; playerCar.isNitro = false; playerCar.fov = 0;
+            rState = { roadY: 0, score: 0, speed: 0, opponents: [], coins: [], bgOffset: 0, collected: 0, combo: 0, comboTimer: 0 };
+            particles = []; raceActive = true; keys = { L: 0, R: 0, Space: 0 }; initBuildings(); raceLoop();
         }
 
         function raceLoop() { if (!raceActive) return; updateRace(); drawRace(); requestAnimationFrame(raceLoop); }
 
-        function activateNitro(active) {
-            if (active && playerCar.nitro > 5) { if (!playerCar.isNitro) sndNitro(); playerCar.isNitro = true; }
-            else { playerCar.isNitro = false; }
-        }
+        function activateNitro(active) { if (active && playerCar.nitro > 5) { playerCar.isNitro = true; } else { playerCar.isNitro = false; } }
 
         function updateRace() {
             const dpr = window.devicePixelRatio || 1;
-            const logH = rCanvas.height / dpr;
-            const V_WIDTH = 600; // Virtual width for game logic
-            const screenW = rCanvas.width / dpr;
-            const scaleX = screenW / V_WIDTH;
+            const logH = rCanvas.height / dpr; const V_WIDTH = 600; const screenW = rCanvas.width / dpr; const scaleX = screenW / V_WIDTH;
 
-            if (keys.Space && playerCar.nitro > 5) activateNitro(true);
-            else if (keys.Space && playerCar.nitro <= 0) activateNitro(false);
+            if (keys.Space && playerCar.nitro > 5) activateNitro(true); else if (keys.Space && playerCar.nitro <= 0) activateNitro(false);
 
             if (playerCar.isNitro) { playerCar.nitro -= 1.5; if (playerCar.nitro <= 0) playerCar.isNitro = false; }
             else if (playerCar.nitro < playerCar.maxNitro) playerCar.nitro += 0.25;
 
+            // FOV Сок (камера отдаляется при нитро)
+            if (playerCar.isNitro) { playerCar.fov += (1 - playerCar.fov) * 0.1; } else { playerCar.fov += (0 - playerCar.fov) * 0.1; }
+
             let targetSpeed = playerCar.stats.s; if (playerCar.isNitro) targetSpeed *= 1.35;
             if (rState.speed < targetSpeed) rState.speed += 0.4; if (rState.speed > targetSpeed) rState.speed -= 0.5;
 
-            rState.roadY += rState.speed * 2.5; rState.score += rState.speed * 0.1;
+            rState.roadY += rState.speed * 2.5; rState.score += (rState.speed * 0.1) * (1 + (rState.combo * 0.5));
 
             let hMod = playerCar.isNitro ? 0.6 : 1;
-            if (keys.L) playerCar.x -= playerCar.stats.h * hMod;
-            if (keys.R) playerCar.x += playerCar.stats.h * hMod;
+            if (keys.L) playerCar.x -= playerCar.stats.h * hMod; if (keys.R) playerCar.x += playerCar.stats.h * hMod;
 
             let safe = player.settings.safeMode;
-            if (safe) {
-                if (playerCar.x < 0) { playerCar.x = 0; rState.speed *= 0.98; }
-                if (playerCar.x > V_WIDTH - 36) { playerCar.x = V_WIDTH - 36; rState.speed *= 0.98; }
-            } else if (playerCar.x < 0 || playerCar.x > V_WIDTH - 36) return crash();
+            if (safe) { if (playerCar.x < 0) { playerCar.x = 0; rState.speed *= 0.98; } if (playerCar.x > V_WIDTH - 36) { playerCar.x = V_WIDTH - 36; rState.speed *= 0.98; } } 
+            else if (playerCar.x < 0 || playerCar.x > V_WIDTH - 36) return crash();
 
             let spawnRate = 0.02 + (rState.speed / 2000);
-            if (Math.random() < spawnRate) {
-                let randomX = Math.random() * (V_WIDTH - 36);
-                if (!rState.opponents.some(o => Math.abs(o.y - (-150)) < 150)) {
-                    rState.opponents.push({ x: randomX, y: -150, speed: rState.speed * (0.2 + Math.random() * 0.3), color: ['#888', '#555', '#33a', '#a33'][Math.floor(Math.random() * 4)] });
-                }
-            }
-            if (Math.random() < 0.015) {
-                let randomX = 20 + Math.random() * (V_WIDTH - 40);
-                if (!rState.opponents.some(o => Math.abs(o.y - (-150)) < 100)) { rState.coins.push({ x: randomX, y: -150, w: 20, h: 20 }); }
-            }
+            if (Math.random() < spawnRate) { let randomX = Math.random() * (V_WIDTH - 36); if (!rState.opponents.some(o => Math.abs(o.y - (-150)) < 150)) { rState.opponents.push({ x: randomX, y: -150, speed: rState.speed * (0.2 + Math.random() * 0.3), color: ['#888', '#555', '#33a', '#a33'][Math.floor(Math.random() * 4)], nearMissed: false }); } }
+            if (Math.random() < 0.015) { let randomX = 20 + Math.random() * (V_WIDTH - 40); if (!rState.opponents.some(o => Math.abs(o.y - (-150)) < 100)) { rState.coins.push({ x: randomX, y: -150, w: 20, h: 20 }); } }
 
+            // Обновление Оппонентов и Проверка На Волоске (Near-Miss)
+            let cxP = playerCar.x + 18, cyP = playerCar.y + 33;
             for (let i = rState.opponents.length - 1; i >= 0; i--) {
                 let o = rState.opponents[i]; o.y += (rState.speed - o.speed) * 1.5;
-                if (playerCar.x < o.x + 34 && playerCar.x + 34 > o.x + 2 && playerCar.y < o.y + 64 && playerCar.y + 64 > o.y + 2) return crash();
+                let cxO = o.x + 17, cyO = o.y + 32;
+                let distX = Math.abs(cxP - cxO), distY = Math.abs(cyP - cyO);
+                
+                // Столкновение
+                if (distX < 33 && distY < 63) return crash();
+
+                // Near-miss check: очень близко по X (33-70px), и на одном уровне по Y
+                if (distX >= 33 && distX <= 65 && distY < 75 && !o.nearMissed) {
+                    o.nearMissed = true;
+                    rState.combo++; rState.comboTimer = 100; // Держим комбо 100 кадров
+                    
+                    // БОНУСЫ НА ВОЛОСКЕ
+                    rState.score += 100 * rState.combo;
+                    playerCar.nitro = Math.min(playerCar.maxNitro, playerCar.nitro + 20 + (rState.combo * 5));
+                    sndNearMiss(rState.combo);
+                    
+                    // Визуальный текст
+                    let div = document.createElement('div');
+                    div.className = 'bonus-text'; div.style.color = '#00f2ea';
+                    div.innerText = `${txt('msgNearMiss')} x${rState.combo}!`;
+                    div.style.left = ((playerCar.x > o.x ? playerCar.x + 40 : playerCar.x - 40) * scaleX) + 'px';
+                    div.style.top = (playerCar.y - 20) + 'px';
+                    document.getElementById('screen-race').appendChild(div);
+                    setTimeout(() => div.remove(), 800);
+                }
+
                 if (o.y > logH + 100) rState.opponents.splice(i, 1);
             }
+
+            // Обновление Комбо Таймера и UI
+            let comboUI = document.getElementById('combo-display');
+            if (rState.combo > 0) {
+                rState.comboTimer--;
+                comboUI.innerText = `COMBO x${rState.combo}`;
+                comboUI.style.opacity = rState.comboTimer > 0 ? Math.min(1, rState.comboTimer / 20) : 0;
+                comboUI.style.transform = `scale(${1 + (rState.comboTimer/200)})`;
+                if (rState.comboTimer <= 0) rState.combo = 0;
+            } else { comboUI.style.opacity = 0; }
+
             for (let i = rState.coins.length - 1; i >= 0; i--) {
                 let c = rState.coins[i]; c.y += rState.speed * 1.5;
                 if (playerCar.x < c.x + c.w && playerCar.x + 36 > c.x && playerCar.y < c.y + c.h && playerCar.y + 66 > c.y) {
@@ -1573,39 +693,59 @@
             if (playerCar.isNitro) for (let k = 0; k < 3; k++) particles.push({ x: playerCar.x + 18, y: playerCar.y + 64, vx: (Math.random() - 0.5) * 4, vy: 5 + Math.random() * 5, life: 10, color: '#00d2ff' });
             particles.forEach(p => { p.x += p.vx; p.y += p.vy + (rState.speed * 0.5); p.life--; }); particles = particles.filter(p => p.life > 0);
 
-            document.getElementById('race-score').innerText = Math.floor(rState.score);
-            document.getElementById('race-speed').innerText = Math.floor(rState.speed * 10);
-            document.getElementById('race-coins').innerText = rState.collected;
-            document.getElementById('nitro-fill').style.width = playerCar.nitro + '%';
+            document.getElementById('race-score').innerText = Math.floor(rState.score); document.getElementById('race-speed').innerText = Math.floor(rState.speed * 10); document.getElementById('race-coins').innerText = rState.collected; document.getElementById('nitro-fill').style.width = playerCar.nitro + '%';
             if (playerCar.nitro < 5) document.getElementById('btn-nitro').classList.add('disabled'); else document.getElementById('btn-nitro').classList.remove('disabled');
         }
 
         function drawRace() {
             const dpr = window.devicePixelRatio || 1;
-            const V_WIDTH = 600;
-            const screenW = rCanvas.width / dpr;
-            const logH = rCanvas.height / dpr;
-            const scaleX = screenW / V_WIDTH;
+            const V_WIDTH = 600; const screenW = rCanvas.width / dpr; const logH = rCanvas.height / dpr; const scaleX = screenW / V_WIDTH;
 
             rCtx.save();
-            rCtx.scale(scaleX, 1); // Scale horizontally to fit the road
+            
+            // Screen Shake (Драйв и Сок)
+            if (playerCar.isNitro) {
+                let intensity = playerCar.fov * 6;
+                rCtx.translate((Math.random() - 0.5) * intensity, (Math.random() - 0.5) * intensity);
+            }
 
-            rCtx.fillStyle = '#1a1a2e'; rCtx.fillRect(0, 0, V_WIDTH, logH);
-            rCtx.fillStyle = '#0a0a14'; buildings.forEach(b => {
-                // Draw buildings on the edges of the virtual width
-                let bx = b.x < 0 ? b.x : V_WIDTH + (b.x - 400);
-                rCtx.fillRect(bx, b.y, b.w, b.h);
-            });
-            rCtx.fillStyle = '#181820'; rCtx.fillRect(0, 0, V_WIDTH, logH);
+            // Зум/FOV Эффект (камера отдаляется для ощущения скорости)
+            let zoomOut = 1 - (playerCar.fov * 0.15); // До 15% отдаления
+            rCtx.translate(screenW/2, logH/2);
+            rCtx.scale(zoomOut, zoomOut);
+            rCtx.translate(-screenW/2, -logH/2);
+
+            rCtx.scale(scaleX, 1); 
+
+            // Отрисовываем фон с запасом, чтобы края не оголялись при зуме
+            rCtx.fillStyle = '#1a1a2e'; rCtx.fillRect(-500, -500, V_WIDTH + 1000, logH + 1000);
+            rCtx.fillStyle = '#0a0a14'; buildings.forEach(b => { let bx = b.x < 0 ? b.x : V_WIDTH + (b.x - 400); rCtx.fillRect(bx, b.y, b.w, b.h); });
+            rCtx.fillStyle = '#181820'; rCtx.fillRect(0, -500, V_WIDTH, logH + 1000);
+            
             rCtx.strokeStyle = 'rgba(255,255,255,0.1)'; rCtx.lineWidth = 4 / scaleX; rCtx.setLineDash([40, 40]); rCtx.lineDashOffset = -rState.roadY;
-            let laneW = V_WIDTH / 3; rCtx.beginPath(); rCtx.moveTo(laneW, -50); rCtx.lineTo(laneW, logH + 50); rCtx.moveTo(laneW * 2, -50); rCtx.lineTo(laneW * 2, logH + 50); rCtx.stroke();
-            rCtx.setLineDash([]); rCtx.strokeStyle = 'rgba(0,242,234,0.5)'; rCtx.lineWidth = 6 / scaleX; rCtx.beginPath(); rCtx.moveTo(0, 0); rCtx.lineTo(0, logH); rCtx.moveTo(V_WIDTH, 0); rCtx.lineTo(V_WIDTH, logH); rCtx.stroke();
+            let laneW = V_WIDTH / 3; rCtx.beginPath(); rCtx.moveTo(laneW, -500); rCtx.lineTo(laneW, logH + 500); rCtx.moveTo(laneW * 2, -500); rCtx.lineTo(laneW * 2, logH + 500); rCtx.stroke();
+            rCtx.setLineDash([]); rCtx.strokeStyle = 'rgba(0,242,234,0.5)'; rCtx.lineWidth = 6 / scaleX; rCtx.beginPath(); rCtx.moveTo(0, -500); rCtx.lineTo(0, logH + 500); rCtx.moveTo(V_WIDTH, -500); rCtx.lineTo(V_WIDTH, logH + 500); rCtx.stroke();
+            
             rState.coins.forEach(c => { rCtx.fillStyle = '#ffd700'; rCtx.beginPath(); rCtx.arc(c.x + 10, c.y + 10, 8, 0, Math.PI * 2); rCtx.fill(); rCtx.strokeStyle = '#fff'; rCtx.lineWidth = 2 / scaleX; rCtx.stroke(); rCtx.fillStyle = '#000'; rCtx.font = 'bold 12px sans-serif'; rCtx.fillText('$', c.x + 7, c.y + 14); });
             rState.opponents.forEach(o => drawDetailedCar(rCtx, o.x, o.y, o.color, null, false));
             particles.forEach(p => { rCtx.fillStyle = p.color === '#00d2ff' ? `rgba(0,210,255,${p.life / 10})` : `rgba(255,100,0,${p.life / 20})`; rCtx.beginPath(); rCtx.arc(p.x, p.y, Math.random() * 4 + 2, 0, Math.PI * 2); rCtx.fill(); });
+            
             drawDetailedCar(rCtx, playerCar.x, playerCar.y, playerCar.data.color, playerCar.data, true);
-
             rCtx.restore();
+
+            // Линии скорости (Speed Lines) по краям экрана, когда активно Нитро
+            if (playerCar.fov > 0.05) {
+                rCtx.save(); rCtx.setTransform(1, 0, 0, 1, 0, 0); // Экранные координаты
+                rCtx.strokeStyle = `rgba(0, 242, 234, ${playerCar.fov * 0.4})`;
+                rCtx.beginPath();
+                for(let i=0; i<15; i++) {
+                    let side = Math.random() < 0.5 ? 0 : 1;
+                    let x = side === 0 ? Math.random() * (screenW * 0.2) : screenW - Math.random() * (screenW * 0.2);
+                    let y = Math.random() * logH; let len = 50 + Math.random() * 150;
+                    rCtx.moveTo(x, y); rCtx.lineTo(x, y + len);
+                }
+                rCtx.lineWidth = 2 * dpr; rCtx.stroke(); rCtx.restore();
+            }
 
             if (player.settings.safeMode) { rCtx.fillStyle = 'rgba(0,255,255,0.1)'; rCtx.fillRect(0, 0, 10, logH); rCtx.fillRect(screenW - 10, 0, 10, logH); }
         }
@@ -1626,54 +766,25 @@
 
         function crash() {
             raceActive = false; stopMusic(); sndCrash();
-            let mult = player.settings.safeMode ? 0.95 : 1;
-            let runScore = Math.floor(rState.score);
-            let earn = Math.floor((runScore / 5) * mult) + rState.collected;
-            let missionBonus = checkMissions(runScore, rState.collected); earn += missionBonus;
-            player.money += earn;
-            let newRecord = false;
-            let currentBest = player.highscores.length ? Math.max(...player.highscores.map(s => s.score)) : 0;
+            let mult = player.settings.safeMode ? 0.95 : 1; let runScore = Math.floor(rState.score);
+            let earn = Math.floor((runScore / 5) * mult) + rState.collected; let missionBonus = checkMissions(runScore, rState.collected); earn += missionBonus;
+            player.money += earn; let newRecord = false; let currentBest = player.highscores.length ? Math.max(...player.highscores.map(s => s.score)) : 0;
             if (runScore > currentBest) newRecord = true;
-            player.highscores.push({ score: runScore, date: new Date().toLocaleDateString(), carId: playerCar.data.dbId });
-            player.highscores.sort((a, b) => b.score - a.score);
-            if (player.highscores.length > 50) player.highscores.pop();
-            saveGame();
-            document.getElementById('race-earnings').innerText = '$' + Math.floor((runScore / 5) * mult);
-            document.getElementById('race-collected-coins').innerText = '$' + rState.collected;
-            document.getElementById('race-mission-bonus').innerText = '$' + missionBonus;
-            let msg = document.getElementById('new-record-msg'); msg.style.display = newRecord ? 'block' : 'none';
-            if (newRecord) msg.innerText = txt('msgRecord') + ` ${runScore}!`;
+            player.highscores.push({ score: runScore, date: new Date().toLocaleDateString(), carId: playerCar.data.dbId }); player.highscores.sort((a, b) => b.score - a.score);
+            if (player.highscores.length > 50) player.highscores.pop(); saveGame();
+            document.getElementById('race-earnings').innerText = '$' + Math.floor((runScore / 5) * mult); document.getElementById('race-collected-coins').innerText = '$' + rState.collected; document.getElementById('race-mission-bonus').innerText = '$' + missionBonus;
+            let msg = document.getElementById('new-record-msg'); msg.style.display = newRecord ? 'block' : 'none'; if (newRecord) msg.innerText = txt('msgRecord') + ` ${runScore}!`;
             document.getElementById('modal-gameover').style.display = 'flex';
+            if (newRecord) { LeaderboardSystem.init('night_racer').then(() => { LeaderboardSystem.showPrompt(runScore, (name) => { LeaderboardSystem.saveScore(name, runScore, CARS.find(c => c.id === playerCar.data.dbId)?.name || ''); }); }); }
         }
         function finishRace() { nav('screen-garage'); }
 
-        // Touch Control Helpers
-        function setKey(k, v) { keys[k] = v; }
-        window.addEventListener('keydown', e => { if (e.code === 'ArrowLeft') keys.L = 1; if (e.code === 'ArrowRight') keys.R = 1; if (e.code === 'Space') keys.Space = 1; });
-        window.addEventListener('keyup', e => { if (e.code === 'ArrowLeft') keys.L = 0; if (e.code === 'ArrowRight') keys.R = 0; if (e.code === 'Space') keys.Space = 0; });
-        // Prevent zoom/scroll
+        function setKey(k, v) { keys[k] = v; } window.addEventListener('keydown', e => { if (e.code === 'ArrowLeft') keys.L = 1; if (e.code === 'ArrowRight') keys.R = 1; if (e.code === 'Space') keys.Space = 1; }); window.addEventListener('keyup', e => { if (e.code === 'ArrowLeft') keys.L = 0; if (e.code === 'ArrowRight') keys.R = 0; if (e.code === 'Space') keys.Space = 0; });
         document.addEventListener('touchmove', function (e) { if (raceActive) e.preventDefault(); }, { passive: false });
-
-        // Resize Handler
-        let resizeTimer;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                if (document.getElementById('screen-menu').classList.contains('active')) drawMenuCar();
-                if (raceActive) {
-                    const dpr = window.devicePixelRatio || 1;
-                    rCanvas.width = rCanvas.parentElement.offsetWidth * dpr;
-                    rCanvas.height = rCanvas.parentElement.offsetHeight * dpr;
-                    rCtx.setTransform(1, 0, 0, 1, 0, 0); rCtx.scale(dpr, dpr);
-                }
-            }, 100);
-        });
-
+        let resizeTimer; window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { if (document.getElementById('screen-menu').classList.contains('active')) drawMenuCar(); if (raceActive) { const dpr = window.devicePixelRatio || 1; rCanvas.width = rCanvas.parentElement.offsetWidth * dpr; rCanvas.height = rCanvas.parentElement.offsetHeight * dpr; rCtx.setTransform(1, 0, 0, 1, 0, 0); rCtx.scale(dpr, dpr); } }, 100); });
+        
         loadGame(); applyLanguage(); drawMenuCar(); updCase();
-
-        // Mobile Controls Implementation
-        window.setKey = setKey;
-        window.activateNitro = activateNitro;
+        window.setKey = setKey; window.activateNitro = activateNitro;
     </script>
 </body>
 

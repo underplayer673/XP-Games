@@ -430,7 +430,9 @@ let state = {
     plots: Array(9).fill().map(() => ({ state: 'empty', key: null, time: 0, fert: false, gh: false })),
     inventory: { carrot: 2 }, weapons: [], parts: 0, hardcore: false,
     rainUntil: 0, gardenPage: 0, discovered: {}, yggLevel: 1, won: false,
-    yggSpeed: false, noRain: false, peaceful: false
+    yggSpeed: false, noRain: false, peaceful: false,
+    enemiesDefeated: 0,
+    victorySaved: false
 };
 
 let selected = null, tab = 'seeds', currentEnemy = null, combo = 0, comboMult = 1, comboTimer = null;
@@ -451,11 +453,82 @@ function load() {
             state = { ...state, ...loaded };
             if (!state.plots) state.plots = Array(9).fill().map(() => ({ state: 'empty' }));
             if (!state.inventory) state.inventory = { carrot: 2 };
+            if (state.enemiesDefeated == null) state.enemiesDefeated = 0;
+            if (state.victorySaved == null) state.victorySaved = false;
         } catch (e) { }
     }
     if (state.hardcore) document.body.classList.add('hardcore');
     normalizeYggLevel();
 }
+
+const LB_GAME_ID = 'rasteniya_sergeya_modern';
+
+function calculateVictoryScore() {
+    return Math.floor(state.money / 100) + (state.level * 10) + (Object.keys(state.inventory || {}).length * 5);
+}
+
+function saveVictoryRecord() {
+    if (state.victorySaved) return;
+    if (typeof LeaderboardSystem === 'undefined') return;
+    state.victorySaved = true;
+    const score = calculateVictoryScore();
+    const defeated = state.enemiesDefeated || 0;
+    const name = window.XPPlayerProfile
+        ? XPPlayerProfile.getName(LB_GAME_ID, 'Gardener')
+        : (localStorage.getItem('player_name') || 'Gardener');
+    LeaderboardSystem.init(LB_GAME_ID).then(() => {
+        LeaderboardSystem.saveScore(name, score, `Sovereign | Defeated: ${defeated}`);
+    });
+    save();
+}
+
+function openPlayerSettings() {
+    if (!window.XPPlayerProfile) return;
+    XPPlayerProfile.openSettings({
+        gameId: LB_GAME_ID,
+        defaultName: 'Gardener',
+        title: 'Player Name',
+        subtitle: 'Change the leaderboard name.',
+        showAskToggle: false
+    });
+}
+
+const LeaderboardUI = {
+    show() {
+        if (typeof LeaderboardSystem === 'undefined') return;
+        let s = document.getElementById('lb-screen');
+        if (!s) {
+            s = document.createElement('div');
+            s.id = 'lb-screen';
+            document.body.appendChild(s);
+        }
+        s.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;color:white;backdrop-filter:blur(10px);font-family:inherit;";
+        s.innerHTML = `<div style="width:90%;max-width:420px;background:#111;border:2px solid #777;border-radius:18px;padding:22px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h2 style="margin:0;color:#fff;">RANKINGS</h2>
+                <button id="lb-close" style="background:none;border:none;color:white;font-size:24px;cursor:pointer;">✕</button>
+            </div>
+            <div id="lb-list" style="max-height:60vh;overflow-y:auto;">Loading...</div>
+        </div>`;
+        document.getElementById('lb-close').onclick = () => { s.remove(); };
+
+        LeaderboardSystem.init(LB_GAME_ID).then(() => {
+            LeaderboardSystem.getScores(50).then(scores => {
+                const list = document.getElementById('lb-list');
+                if (!scores || scores.length === 0) { list.innerHTML = '<div style="text-align:center;padding:20px;opacity:0.6;">No records yet</div>'; return; }
+                list.innerHTML = scores.map((x, i) => `
+                    <div style="display:flex;justify-content:space-between;gap:10px;padding:12px;margin-bottom:8px;background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.08);">
+                        <div>
+                            <div>${i + 1}. ${x.name}</div>
+                            <div style="font-size:11px;color:#aaa;">${x.desc || ''}</div>
+                        </div>
+                        <b style="color:#ffd700;">${Math.floor(x.score)}</b>
+                    </div>
+                `).join('');
+            });
+        });
+    }
+};
 
 /* --- UI --- */
 function updateUI() {
@@ -1228,6 +1301,7 @@ function attack(e) {
     if (currentEnemy.curHp <= 0) {
         clearInterval(battleInterval);
         state.money = Math.floor(state.money + currentEnemy.rew);
+        state.enemiesDefeated = (state.enemiesDefeated || 0) + 1;
         document.getElementById('bat-over').remove();
         currentEnemy = null;
         setBattleMode(false);
@@ -1357,7 +1431,10 @@ function sellGalaxies() {
     if (g > 0) { state.money += g * 10000000; state.inventory.galaxy = 0; save(); updateUI(); openPortal(); }
 }
 function resetGame() { if (confirm("Reset?")) { localStorage.clear(); location.reload(); } }
-function closeVictory() { document.getElementById('victory-modal').style.display = 'none'; }
+function closeVictory() {
+    saveVictoryRecord();
+    document.getElementById('victory-modal').style.display = 'none';
+}
 
 function openPortal() {
     document.getElementById('portal-modal').style.display = 'flex';

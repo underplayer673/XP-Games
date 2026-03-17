@@ -47,14 +47,14 @@
             }
         }
 
-        /* Кнопки управления (Язык и Авторы) */
         .top-controls {
             position: absolute;
             top: 15px;
             right: 15px;
             display: flex;
             gap: 10px;
-            z-index: 100;
+            z-index: 10000;
+            flex-wrap: wrap;
         }
 
         .control-btn {
@@ -87,7 +87,6 @@
             padding-top: 70px;
         }
 
-        /* ЛЕВАЯ ПАНЕЛЬ */
         .clicker-section {
             flex: 1;
             min-width: 320px;
@@ -112,7 +111,6 @@
             word-break: break-all;
         }
 
-        /* ЗОНА КЛИКА */
         .click-area {
             position: relative;
             width: 100%;
@@ -155,7 +153,6 @@
             transform: scale(0.9);
         }
 
-        /* Кнопка "Починить" */
         #repair-btn {
             display: none;
             position: absolute;
@@ -183,7 +180,6 @@
             100% { transform: scale(1); }
         }
 
-        /* Прогресс перегрева */
         .heat-bar-container {
             width: 200px;
             height: 10px;
@@ -204,7 +200,6 @@
             transition: width 0.2s;
         }
 
-        /* ПРАВАЯ ПАНЕЛЬ */
         .shop-section {
             flex: 1.5;
             min-width: 320px;
@@ -268,7 +263,6 @@
             cursor: not-allowed;
         }
 
-        /* --- КЕЙСЫ (КНОПКИ) --- */
         .chest-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -299,7 +293,6 @@
             box-shadow: none;
         }
 
-        /* Стили кейсов (цвета) */
         .c-silver { background: linear-gradient(#dcdde1, #7f8fa6); }
         .c-gold { background: linear-gradient(#fbc531, #e1b12c); color: white; }
         .c-diamond { background: linear-gradient(#00d2d3, #2e86de); color: white; }
@@ -318,7 +311,6 @@
             100% { background-position: 100% 50%; }
         }
 
-        /* --- МОДАЛЬНЫЕ ОКНА --- */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -345,7 +337,6 @@
             max-width: 400px;
         }
 
-        /* --- РУЛЕТКА --- */
         .roulette-box {
             width: 100%;
             max-width: 500px;
@@ -407,7 +398,6 @@
         .r-lose { border-bottom-color: var(--red); color: var(--red); background: #2e1a1a; }
         .r-jackpot { border-bottom-color: #fbc531; color: #fbc531; background: #3e3215; }
 
-        /* Анимация текста */
         .float-text {
             position: absolute;
             font-weight: bold;
@@ -422,9 +412,355 @@
             100% { opacity: 0; transform: translateY(-80px); }
         }
 
-        /* ====================== */
+        /* === OFFLINE MODAL === */
+        .offline-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0);
+            z-index: 6000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(0px);
+            padding: 20px;
+            box-sizing: border-box;
+            transition: background 0.6s, backdrop-filter 0.6s;
+        }
+        .offline-overlay.visible {
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(12px);
+        }
+        .offline-box {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            border: 2px solid var(--accent);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 0 60px rgba(251, 197, 49, 0.2);
+            transform: scale(0.5) translateY(50px);
+            opacity: 0;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s;
+        }
+        .offline-overlay.visible .offline-box {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+        .offline-icon {
+            font-size: 64px;
+            margin-bottom: 10px;
+            animation: offlineBounce 1s ease-in-out infinite;
+        }
+        @keyframes offlineBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .offline-title {
+            font-size: 1.8em;
+            font-weight: 900;
+            color: var(--accent);
+            margin-bottom: 5px;
+            text-shadow: 0 0 20px rgba(251, 197, 49, 0.3);
+        }
+        .offline-time {
+            font-size: 1em;
+            color: #7f8fa6;
+            margin-bottom: 20px;
+        }
+        .offline-earned-label {
+            font-size: 0.9em;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        .offline-earned-amount {
+            font-size: 2.5em;
+            font-weight: 900;
+            color: var(--green);
+            font-family: monospace;
+            text-shadow: 0 0 20px rgba(76, 209, 55, 0.5);
+            margin-bottom: 25px;
+        }
+        .offline-collect-btn {
+            background: linear-gradient(135deg, var(--accent), #e1b12c);
+            color: #1a1a2e;
+            border: none;
+            padding: 15px 50px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(251, 197, 49, 0.3);
+            animation: collectPulse 1.5s ease-in-out infinite;
+            transition: transform 0.1s;
+        }
+        .offline-collect-btn:active {
+            transform: scale(0.95);
+        }
+        @keyframes collectPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(251, 197, 49, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(251, 197, 49, 0.6); }
+        }
+        .offline-particles {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .offline-particle {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0;
+            animation: particleFloat 3s ease-in-out infinite;
+        }
+        @keyframes particleFloat {
+            0% { opacity: 0; transform: translateY(100%) rotate(0deg); }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.6; }
+            100% { opacity: 0; transform: translateY(-100vh) rotate(360deg); }
+        }
+
+        /* === TREND SYSTEM === */
+        .trend-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+        .trend-badge.up {
+            background: rgba(76, 209, 55, 0.2);
+            color: #4cd137;
+            border: 1px solid rgba(76, 209, 55, 0.3);
+        }
+        .trend-badge.down {
+            background: rgba(232, 65, 24, 0.2);
+            color: #e84118;
+            border: 1px solid rgba(232, 65, 24, 0.3);
+        }
+        .trend-badge.neutral {
+            background: rgba(127, 143, 166, 0.2);
+            color: #7f8fa6;
+            border: 1px solid rgba(127, 143, 166, 0.3);
+        }
+        .trend-timer {
+            font-size: 0.75em;
+            color: #7f8fa6;
+            float: right;
+            font-weight: normal;
+        }
+        .trend-notification {
+            position: fixed;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #2d3436, #353b48);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: bold;
+            font-size: 1em;
+            z-index: 9000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            transition: top 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-align: center;
+        }
+        .trend-notification.show {
+            top: 20px;
+        }
+
+        /* === PRESTIGE SYSTEM === */
+        .prestige-panel {
+            background: linear-gradient(135deg, #2d1f00 0%, #3e2f10 100%);
+            border: 2px solid var(--accent);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(251, 197, 49, 0.1);
+        }
+        .prestige-panel h2 {
+            color: var(--accent);
+            border-bottom-color: rgba(251, 197, 49, 0.3);
+        }
+        .prestige-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .prestige-stat {
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .prestige-stat-label {
+            font-size: 0.75em;
+            color: #7f8fa6;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .prestige-stat-value {
+            font-size: 1.4em;
+            font-weight: 900;
+            color: var(--accent);
+        }
+        .prestige-progress-bar {
+            width: 100%;
+            height: 16px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            border: 1px solid rgba(251, 197, 49, 0.2);
+            position: relative;
+        }
+        .prestige-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #fbc531, #e1b12c, #f39c12);
+            border-radius: 8px;
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .prestige-progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 200%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: prestigeShimmer 2s infinite;
+        }
+        @keyframes prestigeShimmer {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(50%); }
+        }
+        .prestige-progress-text {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            z-index: 2;
+        }
+        .prestige-next-info {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(251, 197, 49, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        .prestige-reward-preview {
+            display: inline-block;
+            background: rgba(251, 197, 49, 0.15);
+            border: 1px solid rgba(251, 197, 49, 0.3);
+            border-radius: 6px;
+            padding: 4px 10px;
+            margin-top: 5px;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .prestige-history {
+            max-height: 120px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        .prestige-history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            margin-bottom: 4px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+            font-size: 0.8em;
+        }
+        .prestige-history-item .lvl { color: var(--accent); font-weight: bold; }
+        .prestige-history-item .bonus { color: var(--green); }
+        .prestige-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 900;
+            cursor: pointer;
+            transition: 0.2s;
+            text-transform: uppercase;
+        }
+        .prestige-btn.available {
+            background: linear-gradient(135deg, #fbc531, #e1b12c);
+            color: #1a1a2e;
+            box-shadow: 0 0 20px rgba(251, 197, 49, 0.3);
+        }
+        .prestige-btn.available:hover {
+            box-shadow: 0 0 30px rgba(251, 197, 49, 0.5);
+            transform: scale(1.02);
+        }
+        .prestige-btn.available:active {
+            transform: scale(0.98);
+        }
+        .prestige-btn.unavailable {
+            background: #353b48;
+            color: #718093;
+            cursor: not-allowed;
+        }
+        .prestige-confirm-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 7000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+        }
+        .prestige-confirm-box {
+            background: linear-gradient(135deg, #2d1f00, #3e2f10);
+            border: 2px solid var(--accent);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .prestige-confirm-box h2 {
+            color: var(--accent);
+            border: none;
+            margin-bottom: 15px;
+        }
+        .prestige-confirm-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .prestige-confirm-btns button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .prestige-yes {
+            background: var(--accent);
+            color: #1a1a2e;
+        }
+        .prestige-no {
+            background: #353b48;
+            color: white;
+        }
+
         /* === ADMIN MENU CSS === */
-        /* ====================== */
         .admin-overlay {
             display: none;
             position: fixed;
@@ -633,7 +969,6 @@
             to { opacity: 0; }
         }
 
-        /* --- АДАПТАЦИЯ ДЛЯ ТЕЛЕФОНОВ --- */
         @media (max-width: 768px) {
             .main-layout {
                 flex-direction: column;
@@ -653,6 +988,7 @@
             .admin-container { max-width: 98%; }
             .admin-row { flex-direction: column; align-items: flex-start; }
             .admin-input { max-width: 100%; }
+            .prestige-info { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -662,6 +998,8 @@
     <div class="top-controls">
         <button class="control-btn" id="lang-btn" onclick="toggleLanguage()">Language: EN</button>
         <button class="control-btn" id="authors-ui-btn" onclick="openAuthors()">Authors</button>
+        <button class="control-btn" style="border-color:var(--accent); color:var(--accent);" onclick="LeaderboardUI.show('dollar_tycoon_modern')">RANKINGS</button>
+        <button class="control-btn" onclick="openPlayerSettings()">NAME</button>
     </div>
 
     <div class="main-layout">
@@ -673,6 +1011,11 @@
             <div style="display:flex; gap:15px; color:#7f8fa6; font-size: 0.9em;">
                 <div>⚡ <span id="dpc">1</span> <span id="lbl-dpc">$/click</span></div>
                 <div>⚙️ <span id="dps">0</span> <span id="lbl-dps">$/sec</span></div>
+            </div>
+
+            <!-- Prestige multiplier display -->
+            <div id="prestige-mult-display" style="margin-top:5px; font-size:0.85em; color:var(--accent); display:none;">
+                🌟 <span id="prestige-mult-text">x1.00</span>
             </div>
 
             <div class="click-area">
@@ -696,7 +1039,7 @@
 
             <!-- АВТО-МАЙНЕРЫ -->
             <div class="panel">
-                <h2 id="title-miners">⚙️ Graphic Cards</h2>
+                <h2 id="title-miners">⚙️ Graphic Cards <span class="trend-timer" id="trend-timer"></span></h2>
                 <div class="shop-grid" id="miners-list"></div>
             </div>
 
@@ -709,13 +1052,42 @@
             <!-- КАЗИНО -->
             <div class="panel">
                 <h2 id="title-casino">🎰 Casino (Cases)</h2>
-                <div class="chest-grid" id="chest-grid">
-                    <!-- Default cases rendered by JS -->
-                </div>
+                <div class="chest-grid" id="chest-grid"></div>
                 <div style="margin-top:10px; font-size:0.8em; color:#718093; text-align:center;" id="casino-desc">
                     💎 <b>RTP ~108%</b>. Generous casino. <br>
                     Frequent small wins. Loss chance only 30%.
                 </div>
+            </div>
+
+            <!-- ПРЕСТИЖ -->
+            <div class="prestige-panel" id="prestige-panel">
+                <h2 id="title-prestige">🌟 Prestige</h2>
+                <div class="prestige-info">
+                    <div class="prestige-stat">
+                        <div class="prestige-stat-label" id="lbl-prestige-level">Level</div>
+                        <div class="prestige-stat-value" id="prestige-level-val">0</div>
+                    </div>
+                    <div class="prestige-stat">
+                        <div class="prestige-stat-label" id="lbl-prestige-mult">Global Multiplier</div>
+                        <div class="prestige-stat-value" id="prestige-mult-val">x1.00</div>
+                    </div>
+                </div>
+
+                <!-- Progress bar to next prestige -->
+                <div class="prestige-progress-bar">
+                    <div class="prestige-progress-fill" id="prestige-progress-fill" style="width:0%"></div>
+                    <div class="prestige-progress-text" id="prestige-progress-text">$0 / $100K</div>
+                </div>
+
+                <!-- Next prestige info -->
+                <div class="prestige-next-info" id="prestige-next-info"></div>
+
+                <!-- History of unlocked prestiges -->
+                <div class="prestige-history" id="prestige-history"></div>
+
+                <button class="prestige-btn unavailable" id="prestige-btn" onclick="attemptPrestige()">
+                    <span id="prestige-btn-text">PRESTIGE RESET</span>
+                </button>
             </div>
         </div>
     </div>
@@ -747,9 +1119,41 @@
         </div>
     </div>
 
-    <!-- ======================== -->
+    <!-- МОДАЛЬНОЕ ОКНО: OFFLINE EARNINGS -->
+    <div id="modal-offline" class="offline-overlay">
+        <div class="offline-box" style="position:relative; overflow:hidden;">
+            <div class="offline-particles" id="offline-particles"></div>
+            <div class="offline-icon">💰</div>
+            <div class="offline-title" id="offline-title">Welcome Back!</div>
+            <div class="offline-time" id="offline-time">You were away for 0s</div>
+            <div class="offline-earned-label" id="offline-earned-label">Your miners earned:</div>
+            <div class="offline-earned-amount" id="offline-earned-amount">$0</div>
+            <button class="offline-collect-btn" id="offline-collect-btn" onclick="collectOffline()">COLLECT</button>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО: PRESTIGE CONFIRM -->
+    <div id="modal-prestige-confirm" class="prestige-confirm-overlay" onclick="closePrestigeConfirm()">
+        <div class="prestige-confirm-box" onclick="event.stopPropagation()">
+            <h2 id="prestige-confirm-title">⚠️ Prestige Reset?</h2>
+            <p id="prestige-confirm-desc" style="color:#aaa; font-size:0.9em;">
+                You will lose all your money, miners, and equipment.<br>
+                But you will gain a permanent bonus!
+            </p>
+            <div id="prestige-confirm-gain" style="color:var(--green); font-weight:bold; font-size:1.1em; margin:10px 0;"></div>
+            <div class="prestige-confirm-btns">
+                <button class="prestige-yes" onclick="doPrestige()">YES, PRESTIGE!</button>
+                <button class="prestige-no" onclick="closePrestigeConfirm()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TREND CHANGE NOTIFICATION -->
+    <div id="trend-notification" class="trend-notification">
+        📊 Market trends have changed!
+    </div>
+
     <!-- === ADMIN MENU HTML === -->
-    <!-- ======================== -->
     <div id="admin-overlay" class="admin-overlay">
         <div class="admin-container" onclick="event.stopPropagation()">
             <div class="admin-header">
@@ -758,7 +1162,6 @@
             </div>
             <div class="admin-body">
 
-                <!-- MONEY SECTION -->
                 <div class="admin-section">
                     <h3>💰 Money Control</h3>
                     <div class="admin-row">
@@ -772,7 +1175,6 @@
                     </div>
                 </div>
 
-                <!-- SPEED SECTION -->
                 <div class="admin-section">
                     <h3>⏱️ Speed / Time Control</h3>
                     <div class="admin-row">
@@ -785,7 +1187,6 @@
                     <div style="font-size:0.75em;color:#888;margin-top:4px;">Multiplies auto-income speed (0.25x — 20x)</div>
                 </div>
 
-                <!-- PRICE FREEZE -->
                 <div class="admin-section">
                     <h3>🔒 Price Control</h3>
                     <div class="admin-row">
@@ -795,7 +1196,6 @@
                     <div style="font-size:0.75em;color:#888;margin-top:4px;">When ON, miner costs won't increase after purchase</div>
                 </div>
 
-                <!-- CASE CONSTRUCTOR -->
                 <div class="admin-section">
                     <h3>🎰 Case Constructor</h3>
                     <div class="admin-row">
@@ -842,15 +1242,12 @@
                     <div class="admin-row">
                         <button class="admin-btn admin-btn-green" onclick="adminAddCase()">➕ Add Case</button>
                     </div>
-
-                    <!-- Custom Cases List -->
                     <div style="margin-top:10px;font-size:0.85em;color:#aaa;">Custom Cases:</div>
                     <div class="admin-case-list" id="admin-case-list">
                         <div style="color:#666;font-size:0.8em;">No custom cases yet</div>
                     </div>
                 </div>
 
-                <!-- SAVE / LOAD PROJECTS -->
                 <div class="admin-section">
                     <h3>💾 Save / Load Projects</h3>
                     <div class="admin-row">
@@ -868,8 +1265,9 @@
         </div>
     </div>
 
+    <script src="../../xp_player_identity.js"></script>
     <script>
-        /* --- ЯЗЫКОВАЯ СИСТЕМА (LANG SYSTEM) --- */
+        /* --- ЯЗЫКОВАЯ СИСТЕМА --- */
         let currentLang = 'en';
 
         const langData = {
@@ -903,6 +1301,27 @@
                 resRolled: "Rolled:",
                 resLoss: "Loss:",
                 noMoney: "Not enough money!",
+                offlineTitle: "Welcome Back!",
+                offlineTime: "You were away for",
+                offlineEarned: "Your miners earned:",
+                offlineCollect: "COLLECT",
+                trendChange: "📊 Market trends have changed!",
+                trendTimer: "Trend in:",
+                trendUp: "📈",
+                trendDown: "📉",
+                trendNeutral: "➡️",
+                titlePrestige: "🌟 Prestige",
+                prestigeLevel: "Level",
+                prestigeMult: "Global Multiplier",
+                prestigeBtn: "PRESTIGE RESET",
+                prestigeNextGoal: "Next prestige goal:",
+                prestigeReward: "Reward:",
+                prestigeEarnedThisRun: "Earned this run:",
+                prestigeConfirmTitle: "⚠️ Prestige Reset?",
+                prestigeConfirmDesc: "You will lose all your money, miners, and equipment.<br>But you will gain a permanent bonus!",
+                prestigeConfirmYes: "YES, PRESTIGE!",
+                prestigeConfirmNo: "CANCEL",
+                prestigeUnlocked: "Unlocked Prestiges:",
                 items: {
                     hands: "Hands", oldPc: "Old PC", mouse: "Gaming Mouse",
                     gtx1050: "GTX 1050", rtx3060: "RTX 3060", rtx4090: "RTX 4090",
@@ -941,6 +1360,27 @@
                 resRolled: "Выпало:",
                 resLoss: "Потеря:",
                 noMoney: "Не хватает денег!",
+                offlineTitle: "С возвращением!",
+                offlineTime: "Вас не было",
+                offlineEarned: "Ваши майнеры заработали:",
+                offlineCollect: "ЗАБРАТЬ",
+                trendChange: "📊 Тренды рынка изменились!",
+                trendTimer: "Тренд через:",
+                trendUp: "📈",
+                trendDown: "📉",
+                trendNeutral: "➡️",
+                titlePrestige: "🌟 Престиж",
+                prestigeLevel: "Уровень",
+                prestigeMult: "Глобальный множитель",
+                prestigeBtn: "СБРОС ПРЕСТИЖА",
+                prestigeNextGoal: "Цель следующего престижа:",
+                prestigeReward: "Награда:",
+                prestigeEarnedThisRun: "Заработано за запуск:",
+                prestigeConfirmTitle: "⚠️ Сброс Престижа?",
+                prestigeConfirmDesc: "Вы потеряете все деньги, майнеры и оборудование.<br>Но получите постоянный бонус!",
+                prestigeConfirmYes: "ДА, ПРЕСТИЖ!",
+                prestigeConfirmNo: "ОТМЕНА",
+                prestigeUnlocked: "Открытые престижи:",
                 items: {
                     hands: "Руки", oldPc: "Старый ПК", mouse: "Игровая Мышь",
                     gtx1050: "GTX 1050", rtx3060: "RTX 3060", rtx4090: "RTX 4090",
@@ -964,7 +1404,6 @@
             document.getElementById('lbl-dps').innerText = t.perSec;
             document.getElementById('lbl-heat').innerText = t.overheat;
             document.getElementById('lbl-cur-pickaxe').innerText = t.currentItem;
-            document.getElementById('title-miners').innerText = t.titleMiners;
             document.getElementById('title-upgrades').innerText = t.titleUpgrades;
             document.getElementById('title-casino').innerText = t.titleCasino;
             document.getElementById('casino-desc').innerHTML = t.casinoDesc;
@@ -973,6 +1412,14 @@
             document.getElementById('btn-close-auth').innerText = t.btnClose;
             document.getElementById('roulette-close').innerText = t.btnClaim;
             document.getElementById('repair-btn').innerHTML = t.repair;
+            document.getElementById('title-prestige').innerText = t.titlePrestige;
+            document.getElementById('lbl-prestige-level').innerText = t.prestigeLevel;
+            document.getElementById('lbl-prestige-mult').innerText = t.prestigeMult;
+            document.getElementById('prestige-btn-text').innerText = t.prestigeBtn;
+            document.getElementById('offline-collect-btn').innerText = t.offlineCollect;
+            document.getElementById('prestige-confirm-title').innerText = t.prestigeConfirmTitle;
+            document.getElementById('prestige-confirm-desc').innerHTML = t.prestigeConfirmDesc;
+
             if (!document.getElementById('click-btn').classList.contains('broken')) {
                 document.getElementById('click-btn').innerText = t.clickBtn;
             }
@@ -1000,7 +1447,6 @@
             { id: "datacenter", baseCost: 2000000, prod: 5000 }
         ];
 
-        /* --- DEFAULT CASES DATA --- */
         const defaultCases = [
             { name: "Silver",   price: 100,        cssClass: "c-silver" },
             { name: "Gold",     price: 1000,       cssClass: "c-gold" },
@@ -1016,17 +1462,101 @@
             { name: "INFINITY", price: 1000000000, cssClass: "c-infinity" }
         ];
 
+        /* ============================================ */
+        /* === PRESTIGE TIERS — DYNAMIC PROGRESSION === */
+        /* ============================================ */
+        // Первые 4 уровня заданы вручную, дальше генерируются автоматически
+        const manualPrestigeTiers = [
+            { goal: 100000,     bonusMult: 0.15,  emoji: "⭐",  nameEn: "Bronze Star",       nameRu: "Бронзовая Звезда" },
+            { goal: 1000000,    bonusMult: 0.25,  emoji: "🌟",  nameEn: "Silver Star",       nameRu: "Серебряная Звезда" },
+            { goal: 5000000,    bonusMult: 0.40,  emoji: "💫",  nameEn: "Gold Star",         nameRu: "Золотая Звезда" },
+            { goal: 50000000,   bonusMult: 0.60,  emoji: "🔥",  nameEn: "Diamond Flame",     nameRu: "Алмазное Пламя" }
+        ];
+
+        // Генерируем бесконечную прогрессию — каждый раз всё больше и всё вкуснее
+        const autoPrestigeEmojis = ["💎", "🌈", "🚀", "👑", "⚡", "🎯", "🏆", "💀", "🌀", "🔮", "🧬", "☄️", "🪐", "🌌", "🎆", "✨", "🛸", "🐉", "🦅", "👁️"];
+        const autoPrestigeNamesEn = [
+            "Platinum Core", "Cosmic Surge", "Neon Overlord", "Shadow King", "Thunder God",
+            "Void Master", "Star Eater", "Galaxy Brain", "Infinity Edge", "Omega Prime",
+            "Quantum Lord", "Nebula King", "Dark Matter", "Time Bender", "Reality Breaker",
+            "Universe Eater", "Dimension Lord", "Eternity Core", "Chaos Emperor", "God Particle"
+        ];
+        const autoPrestigeNamesRu = [
+            "Платиновое Ядро", "Космический Всплеск", "Неоновый Владыка", "Теневой Король", "Бог Грома",
+            "Мастер Пустоты", "Пожиратель Звёзд", "Галактический Разум", "Грань Бесконечности", "Омега Прайм",
+            "Квантовый Лорд", "Король Туманности", "Тёмная Материя", "Покоритель Времени", "Разрушитель Реальности",
+            "Пожиратель Вселенных", "Лорд Измерений", "Ядро Вечности", "Император Хаоса", "Частица Бога"
+        ];
+
+        function getPrestigeTier(level) {
+            // level is 0-based index: level 0 = first prestige
+            if (level < manualPrestigeTiers.length) {
+                return manualPrestigeTiers[level];
+            }
+            // Auto-generate for level >= 4
+            var autoIndex = level - manualPrestigeTiers.length;
+            // Goal: starts at 50M * 5 = 250M, then keeps multiplying
+            // Each auto tier: previous goal * (3 + random-looking but deterministic factor)
+            var prevGoal = manualPrestigeTiers[manualPrestigeTiers.length - 1].goal;
+            for (var i = 0; i <= autoIndex; i++) {
+                // Multiplier grows: 5, 6, 7, 8... making each step harder
+                var stepMult = 5 + i;
+                prevGoal = prevGoal * stepMult;
+            }
+            // Bonus mult grows: 0.6, 0.8, 1.0, 1.3, 1.7, 2.2, 2.8 ...
+            var prevBonus = manualPrestigeTiers[manualPrestigeTiers.length - 1].bonusMult;
+            var bonusMult = prevBonus + 0.2 * (autoIndex + 1) + 0.05 * autoIndex * autoIndex;
+            // Round bonus to 2 decimal places
+            bonusMult = Math.round(bonusMult * 100) / 100;
+
+            var emojiIdx = autoIndex % autoPrestigeEmojis.length;
+            var nameIdx = autoIndex % autoPrestigeNamesEn.length;
+
+            return {
+                goal: prevGoal,
+                bonusMult: bonusMult,
+                emoji: autoPrestigeEmojis[emojiIdx],
+                nameEn: autoPrestigeNamesEn[nameIdx],
+                nameRu: autoPrestigeNamesRu[nameIdx]
+            };
+        }
+
+        function getNextPrestigeTier() {
+            return getPrestigeTier(state.prestigeLevel);
+        }
+
+        function getTotalPrestigeMultiplier() {
+            // Sum of all bonuses from completed prestige levels
+            var total = 1.0;
+            for (var i = 0; i < state.prestigeLevel; i++) {
+                total += getPrestigeTier(i).bonusMult;
+            }
+            return total;
+        }
+
         /* --- СОСТОЯНИЕ --- */
         let state = {
             money: 0,
             pickaxeId: 0,
-            miners: minersData.map(m => ({ count: 0, cost: m.baseCost }))
+            miners: minersData.map(m => ({ count: 0, cost: m.baseCost })),
+            lastSaveTime: Date.now(),
+            prestigeLevel: 0,
+            totalEarned: 0
         };
 
         /* --- ADMIN STATE --- */
-        let customCases = [];     // Array of custom case objects
-        let speedMultiplier = 1;  // Auto-income speed multiplier
-        let pricesFrozen = false; // Freeze miner price increases
+        let customCases = [];
+        let speedMultiplier = 1;
+        let pricesFrozen = false;
+
+        /* --- TREND STATE --- */
+        let minerTrends = minersData.map(() => 1.0);
+        let nextTrendChangeTime = Date.now() + 120000;
+        let trendTimerInterval = null;
+
+        /* --- OFFLINE STATE --- */
+        let tabHiddenTime = null;
+        let pendingOfflineEarnings = 0;
 
         /* --- ЗВУКИ --- */
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1056,11 +1586,27 @@
                 osc.frequency.setValueAtTime(150, now);
                 osc.frequency.linearRampToValueAtTime(100, now + 0.3);
                 gainNode.gain.value = 0.1; osc.start(now); osc.stop(now + 0.3);
+            } else if (type === 'prestige') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.5);
+                gainNode.gain.value = 0.15;
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                osc.start(now); osc.stop(now + 0.8);
+            } else if (type === 'offline') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(500, now);
+                osc.frequency.linearRampToValueAtTime(700, now + 0.15);
+                osc.frequency.linearRampToValueAtTime(900, now + 0.3);
+                gainNode.gain.value = 0.1;
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                osc.start(now); osc.stop(now + 0.5);
             }
         }
 
-        /* --- ЛОГИКА СОХРАНЕНИЯ --- */
+        /* --- СОХРАНЕНИЕ --- */
         function saveGame() {
+            state.lastSaveTime = Date.now();
             localStorage.setItem('dollarStandoff', JSON.stringify(state));
             localStorage.setItem('dollarCustomCases', JSON.stringify(customCases));
         }
@@ -1072,6 +1618,9 @@
                     const parsed = JSON.parse(saved);
                     state = { ...state, ...parsed };
                     state.money = clampMoney(state.money);
+                    if (state.lastSaveTime === undefined) state.lastSaveTime = Date.now();
+                    if (state.prestigeLevel === undefined) state.prestigeLevel = 0;
+                    if (state.totalEarned === undefined) state.totalEarned = 0;
                     if (state.miners.length < minersData.length) {
                         for (let i = state.miners.length; i < minersData.length; i++) {
                             state.miners.push({ count: 0, cost: minersData[i].baseCost });
@@ -1085,7 +1634,6 @@
                     console.error("Save load error", e);
                 }
             }
-            // Load custom cases
             const savedCases = localStorage.getItem('dollarCustomCases');
             if (savedCases) {
                 try { customCases = JSON.parse(savedCases); } catch(e) { customCases = []; }
@@ -1111,7 +1659,6 @@
         function formatMoney(num) {
             num = clampMoney(num);
             if (num === 0) return '0';
-
             if (num >= 1e12) {
                 return toCommaDecimal(num.toExponential(2).replace('e+', 'E+').replace('e-', 'E-'));
             }
@@ -1122,9 +1669,24 @@
             return toCommaDecimal(trimZeros(num.toFixed(2)));
         }
 
-        function getClickPower() { return pickaxesData[state.pickaxeId].power; }
-        function getAutoIncome() {
+        function getPrestigeMultiplier() {
+            return getTotalPrestigeMultiplier();
+        }
+
+        function getClickPower() {
+            return pickaxesData[state.pickaxeId].power * getPrestigeMultiplier();
+        }
+
+        function getBaseAutoIncome() {
             return state.miners.reduce((acc, m, i) => acc + m.count * minersData[i].prod, 0);
+        }
+
+        function getAutoIncome() {
+            let total = 0;
+            for (let i = 0; i < state.miners.length; i++) {
+                total += state.miners[i].count * minersData[i].prod * minerTrends[i];
+            }
+            return total * getPrestigeMultiplier();
         }
 
         /* --- ЗАЩИТА --- */
@@ -1153,6 +1715,7 @@
             if (clickHeat >= HEAT_LIMIT) { breakButton(); return; }
             const amount = getClickPower();
             state.money = clampMoney(state.money + amount);
+            state.totalEarned = clampMoney(state.totalEarned + amount);
             playSound('click');
             const el = document.createElement('div');
             el.className = 'float-text';
@@ -1228,14 +1791,14 @@
             playSound('win');
         }
 
-        /* --- AUTO INCOME LOOP (with speed multiplier) --- */
+        /* --- AUTO INCOME LOOP --- */
         setInterval(() => {
             const inc = getAutoIncome() * speedMultiplier;
             if (inc > 0) {
                 state.money = clampMoney(state.money + inc);
+                state.totalEarned = clampMoney(state.totalEarned + inc);
                 updateUI();
             }
-            // Heat cooldown (natural)
             if (clickHeat > 0 && !isBroken) {
                 clickHeat = Math.max(0, clickHeat - 3);
                 updateHeatBar();
@@ -1266,12 +1829,13 @@
             }
         }
 
-        /* --- КАЗИНО --- */
+        /* =============================== */
+        /* === КАЗИНО (NEAR MISS) === */
+        /* =============================== */
         function generatePrize(cost, caseData) {
             const rand = Math.random() * 100;
             let multiplier = 0;
-            // Use custom percentages if provided, else defaults
-            var loseP = 30, smallP = 62, bigP = 7; // jackpot = remainder
+            var loseP = 30, smallP = 62, bigP = 7;
             if (caseData && caseData.loseChance !== undefined) {
                 loseP = caseData.loseChance;
                 smallP = caseData.smallWinChance;
@@ -1287,6 +1851,10 @@
                 multiplier = 5.0 + Math.random() * 10.0;
             }
             return clampMoney(cost * multiplier);
+        }
+
+        function generateJackpotPrize(cost) {
+            return clampMoney(cost * (5.0 + Math.random() * 10.0));
         }
 
         function tryOpenChest(cost, caseData) {
@@ -1321,14 +1889,20 @@
 
             const winIndex = 70;
             const finalPrize = generatePrize(cost, caseData);
+            const isLoss = finalPrize <= cost;
 
             for (let i = 0; i < 100; i++) {
                 let val;
                 if (i === winIndex) {
                     val = finalPrize;
+                } else if (isLoss && (i === winIndex - 1 || i === winIndex + 1) && Math.random() < 0.65) {
+                    val = generateJackpotPrize(cost);
+                } else if (isLoss && (i === winIndex - 2 || i === winIndex + 2) && Math.random() < 0.4) {
+                    val = generateJackpotPrize(cost);
                 } else {
                     val = generatePrize(cost, caseData);
                 }
+
                 const div = document.createElement('div');
                 div.className = 'roulette-item';
                 div.innerHTML = `<span>${formatMoney(val)}</span>`;
@@ -1340,7 +1914,12 @@
 
             const itemWidth = 78;
             const containerWidth = document.querySelector('.roulette-window').offsetWidth;
-            const randomOffset = Math.floor(Math.random() * 40) - 20;
+            let randomOffset;
+            if (isLoss && Math.random() < 0.5) {
+                randomOffset = Math.floor(Math.random() * 8) + 2;
+            } else {
+                randomOffset = Math.floor(Math.random() * 40) - 20;
+            }
             const targetPos = -((winIndex * itemWidth) - (containerWidth / 2) + (itemWidth / 2)) + randomOffset;
 
             setTimeout(() => {
@@ -1350,6 +1929,9 @@
 
             setTimeout(() => {
                 state.money = clampMoney(state.money + finalPrize);
+                if (finalPrize > cost) {
+                    state.totalEarned = clampMoney(state.totalEarned + (finalPrize - cost));
+                }
                 updateUI();
                 saveGame();
                 if (finalPrize > cost) {
@@ -1370,17 +1952,317 @@
         function openAuthors() { document.getElementById('modal-authors').style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        /* --- RENDER CHEST GRID (default + custom) --- */
+        /* =============================== */
+        /* === TREND SYSTEM === */
+        /* =============================== */
+        function generateTrends() {
+            minerTrends = minersData.map(() => {
+                const roll = Math.random();
+                if (roll < 0.30) {
+                    return 0.6 + Math.random() * 0.3;
+                } else if (roll > 0.70) {
+                    return 1.1 + Math.random() * 0.4;
+                } else {
+                    return 1.0;
+                }
+            });
+        }
+
+        function showTrendNotification() {
+            const t = langData[currentLang];
+            const notif = document.getElementById('trend-notification');
+            notif.innerText = t.trendChange;
+            notif.classList.add('show');
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 3000);
+        }
+
+        function startTrendSystem() {
+            generateTrends();
+            nextTrendChangeTime = Date.now() + 120000;
+
+            if (trendTimerInterval) clearInterval(trendTimerInterval);
+            trendTimerInterval = setInterval(() => {
+                const remaining = Math.max(0, nextTrendChangeTime - Date.now());
+                if (remaining <= 0) {
+                    generateTrends();
+                    nextTrendChangeTime = Date.now() + 120000;
+                    showTrendNotification();
+                    updateUI();
+                }
+                updateTrendTimer();
+            }, 1000);
+        }
+
+        function updateTrendTimer() {
+            const t = langData[currentLang];
+            const remaining = Math.max(0, Math.floor((nextTrendChangeTime - Date.now()) / 1000));
+            const mins = Math.floor(remaining / 60);
+            const secs = remaining % 60;
+            const timerEl = document.getElementById('trend-timer');
+            if (timerEl) {
+                timerEl.innerText = `${t.trendTimer} ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            }
+        }
+
+        function getTrendBadge(trendValue) {
+            const t = langData[currentLang];
+            if (trendValue > 1.01) {
+                const pct = Math.round((trendValue - 1) * 100);
+                return `<span class="trend-badge up">${t.trendUp} +${pct}%</span>`;
+            } else if (trendValue < 0.99) {
+                const pct = Math.round((1 - trendValue) * 100);
+                return `<span class="trend-badge down">${t.trendDown} -${pct}%</span>`;
+            } else {
+                return `<span class="trend-badge neutral">${t.trendNeutral}</span>`;
+            }
+        }
+
+        /* =============================== */
+        /* === OFFLINE PROGRESS === */
+        /* =============================== */
+        function formatDuration(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            let parts = [];
+            if (h > 0) parts.push(h + 'h');
+            if (m > 0) parts.push(m + 'm');
+            if (s > 0 || parts.length === 0) parts.push(s + 's');
+            return parts.join(' ');
+        }
+
+        function showOfflineModal(elapsedSeconds, earned) {
+            if (earned <= 0) return;
+            const t = langData[currentLang];
+            pendingOfflineEarnings = earned;
+
+            document.getElementById('offline-title').innerText = t.offlineTitle;
+            document.getElementById('offline-time').innerText = t.offlineTime + ' ' + formatDuration(elapsedSeconds);
+            document.getElementById('offline-earned-label').innerText = t.offlineEarned;
+            document.getElementById('offline-collect-btn').innerText = t.offlineCollect;
+
+            const particlesDiv = document.getElementById('offline-particles');
+            particlesDiv.innerHTML = '';
+            const symbols = ['💰', '💵', '💎', '🪙', '✨', '$'];
+            for (let i = 0; i < 15; i++) {
+                const p = document.createElement('div');
+                p.className = 'offline-particle';
+                p.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                p.style.left = (Math.random() * 100) + '%';
+                p.style.animationDelay = (Math.random() * 3) + 's';
+                p.style.animationDuration = (2 + Math.random() * 3) + 's';
+                particlesDiv.appendChild(p);
+            }
+
+            const modal = document.getElementById('modal-offline');
+            modal.style.display = 'flex';
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    modal.classList.add('visible');
+                });
+            });
+
+            playSound('offline');
+
+            const amountEl = document.getElementById('offline-earned-amount');
+            animateCounter(amountEl, earned, 2000);
+        }
+
+        function animateCounter(element, target, duration) {
+            const startTime = Date.now();
+            function update() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = target * eased;
+                element.innerText = '$' + formatMoney(current);
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    element.innerText = '$' + formatMoney(target);
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        function collectOffline() {
+            if (pendingOfflineEarnings > 0) {
+                state.money = clampMoney(state.money + pendingOfflineEarnings);
+                state.totalEarned = clampMoney(state.totalEarned + pendingOfflineEarnings);
+                pendingOfflineEarnings = 0;
+                updateUI();
+                saveGame();
+                playSound('win');
+            }
+            const modal = document.getElementById('modal-offline');
+            modal.classList.remove('visible');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 600);
+        }
+
+        function checkOfflineEarnings(savedTime) {
+            if (!savedTime) return;
+            const elapsed = (Date.now() - savedTime) / 1000;
+            const income = getBaseAutoIncome() * getPrestigeMultiplier();
+            if (elapsed >= 3 && income > 0) {
+                const earned = clampMoney(income * elapsed);
+                showOfflineModal(elapsed, earned);
+            }
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                tabHiddenTime = Date.now();
+                saveGame();
+            } else {
+                if (tabHiddenTime) {
+                    const elapsed = (Date.now() - tabHiddenTime) / 1000;
+                    tabHiddenTime = null;
+                    const income = getBaseAutoIncome() * getPrestigeMultiplier();
+                    if (elapsed >= 3 && income > 0) {
+                        const earned = clampMoney(income * elapsed);
+                        showOfflineModal(elapsed, earned);
+                    }
+                }
+            }
+        });
+
+        /* =============================== */
+        /* === PRESTIGE SYSTEM === */
+        /* =============================== */
+        function canPrestige() {
+            var next = getNextPrestigeTier();
+            return state.totalEarned >= next.goal;
+        }
+
+        function attemptPrestige() {
+            if (!canPrestige()) return;
+
+            const t = langData[currentLang];
+            const tier = getNextPrestigeTier();
+            const tierName = currentLang === 'ru' ? tier.nameRu : tier.nameEn;
+            const newMult = getTotalPrestigeMultiplier() + tier.bonusMult;
+
+            document.getElementById('prestige-confirm-title').innerText = t.prestigeConfirmTitle;
+            document.getElementById('prestige-confirm-desc').innerHTML = t.prestigeConfirmDesc;
+            document.getElementById('prestige-confirm-gain').innerHTML =
+                `${tier.emoji} <b>${tierName}</b><br>` +
+                `+${(tier.bonusMult * 100).toFixed(0)}% → x${newMult.toFixed(2)} ${t.prestigeMult.toLowerCase()}`;
+
+            const confirmBtns = document.querySelector('.prestige-confirm-btns');
+            confirmBtns.children[0].innerText = t.prestigeConfirmYes;
+            confirmBtns.children[1].innerText = t.prestigeConfirmNo;
+
+            document.getElementById('modal-prestige-confirm').style.display = 'flex';
+        }
+
+        function closePrestigeConfirm() {
+            document.getElementById('modal-prestige-confirm').style.display = 'none';
+        }
+
+        function doPrestige() {
+            if (!canPrestige()) { closePrestigeConfirm(); return; }
+
+            state.prestigeLevel++;
+
+            // Reset progress
+            state.money = 0;
+            state.pickaxeId = 0;
+            state.totalEarned = 0;
+            state.miners = minersData.map(m => ({ count: 0, cost: m.baseCost }));
+
+            closePrestigeConfirm();
+            playSound('prestige');
+            saveGame();
+            updateUI();
+
+            // Flash effect
+            document.body.style.transition = 'filter 0.3s';
+            document.body.style.filter = 'brightness(3)';
+            setTimeout(() => {
+                document.body.style.filter = 'brightness(1)';
+                setTimeout(() => {
+                    document.body.style.transition = '';
+                    document.body.style.filter = '';
+                }, 300);
+            }, 300);
+        }
+
+        function updatePrestigeUI() {
+            const t = langData[currentLang];
+            const mult = getPrestigeMultiplier();
+            const nextTier = getNextPrestigeTier();
+            const tierName = currentLang === 'ru' ? nextTier.nameRu : nextTier.nameEn;
+            const ready = canPrestige();
+
+            document.getElementById('prestige-level-val').innerText = state.prestigeLevel;
+            document.getElementById('prestige-mult-val').innerText = 'x' + mult.toFixed(2);
+
+            // Global multiplier display at top
+            const multDisplay = document.getElementById('prestige-mult-display');
+            if (state.prestigeLevel > 0) {
+                multDisplay.style.display = 'block';
+                document.getElementById('prestige-mult-text').innerText = 'Prestige x' + mult.toFixed(2);
+            } else {
+                multDisplay.style.display = 'none';
+            }
+
+            // Progress bar
+            var progress = Math.min((state.totalEarned / nextTier.goal) * 100, 100);
+            document.getElementById('prestige-progress-fill').style.width = progress + '%';
+            document.getElementById('prestige-progress-text').innerText =
+                '$' + formatMoney(state.totalEarned) + ' / $' + formatMoney(nextTier.goal);
+
+            // Next prestige info
+            var infoHtml = '';
+            infoHtml += '<div style="margin-bottom:6px;">' + t.prestigeNextGoal + '</div>';
+            infoHtml += '<div style="font-size:1.3em; font-weight:900; color:var(--accent); margin-bottom:6px;">';
+            infoHtml += nextTier.emoji + ' ' + tierName;
+            infoHtml += '</div>';
+            infoHtml += '<div style="font-size:0.85em; color:#aaa;">' + t.prestigeEarnedThisRun + ' <b style="color:var(--green);">$' + formatMoney(state.totalEarned) + '</b></div>';
+            infoHtml += '<div class="prestige-reward-preview">' + t.prestigeReward + ' +' + (nextTier.bonusMult * 100).toFixed(0) + '% (' + nextTier.emoji + ')</div>';
+            document.getElementById('prestige-next-info').innerHTML = infoHtml;
+
+            // History of completed prestiges
+            var historyHtml = '';
+            if (state.prestigeLevel > 0) {
+                historyHtml += '<div style="font-size:0.8em; color:#7f8fa6; margin-bottom:6px;">' + t.prestigeUnlocked + '</div>';
+                for (var i = 0; i < state.prestigeLevel; i++) {
+                    var doneTier = getPrestigeTier(i);
+                    var dName = currentLang === 'ru' ? doneTier.nameRu : doneTier.nameEn;
+                    historyHtml += '<div class="prestige-history-item">';
+                    historyHtml += '<span class="lvl">' + doneTier.emoji + ' Lv.' + (i + 1) + '</span>';
+                    historyHtml += '<span>' + dName + '</span>';
+                    historyHtml += '<span class="bonus">+' + (doneTier.bonusMult * 100).toFixed(0) + '%</span>';
+                    historyHtml += '</div>';
+                }
+            }
+            document.getElementById('prestige-history').innerHTML = historyHtml;
+
+            // Button state
+            const btn = document.getElementById('prestige-btn');
+            if (ready) {
+                btn.className = 'prestige-btn available';
+                btn.disabled = false;
+            } else {
+                btn.className = 'prestige-btn unavailable';
+                btn.disabled = true;
+            }
+        }
+
+        /* --- RENDER CHEST GRID --- */
         function renderChestGrid() {
             const grid = document.getElementById('chest-grid');
             var html = '';
-            // Default cases
             for (var i = 0; i < defaultCases.length; i++) {
                 var c = defaultCases[i];
                 html += '<button class="chest-btn ' + c.cssClass + '" onclick="tryOpenChest(' + c.price + ')">' +
                     c.name + '<br>$' + formatMoney(c.price) + '</button>';
             }
-            // Custom cases
             for (var j = 0; j < customCases.length; j++) {
                 var cc = customCases[j];
                 var style = 'background:linear-gradient(135deg,' + cc.color1 + ',' + cc.color2 + ');' +
@@ -1404,15 +2286,21 @@
             const currentName = t.items[currentPickaxeData.id];
             document.getElementById('current-pickaxe').innerText = currentName;
 
+            // Miners title with trend timer
+            const titleMiners = document.getElementById('title-miners');
+            titleMiners.innerHTML = t.titleMiners + ' <span class="trend-timer" id="trend-timer"></span>';
+            updateTrendTimer();
+
             // RENDER PICKAXES
             const pList = document.getElementById('pickaxe-list');
             pList.innerHTML = pickaxesData.map((p, i) => {
                 if (i === 0) return '';
                 const bought = i <= state.pickaxeId;
                 const pName = t.items[p.id];
+                const power = p.power * getPrestigeMultiplier();
                 return `
                 <div class="item-card ${bought ? 'purchased' : ''}">
-                    <div><b>${pName}</b><br><small>Power: ${formatMoney(p.power)}</small></div>
+                    <div><b>${pName}</b><br><small>Power: ${formatMoney(power)}</small></div>
                     <button class="btn-buy" onclick="buyPickaxe(${i})" ${bought || state.money < p.cost ? 'disabled' : ''}>
                         ${bought ? t.btnBought : '$' + formatMoney(p.cost)}
                     </button>
@@ -1424,24 +2312,25 @@
             mList.innerHTML = minersData.map((m, i) => {
                 const myM = state.miners[i] || { count: 0, cost: m.baseCost };
                 const mName = t.items[m.id];
+                const trendVal = minerTrends[i] || 1;
+                const effectiveProd = m.prod * trendVal * getPrestigeMultiplier();
+                const trendBadge = getTrendBadge(trendVal);
                 return `
                 <div class="item-card">
-                    <div><b>${mName}</b> (x${myM.count})<br><small>+${formatMoney(m.prod)}${t.perSec}</small></div>
+                    <div><b>${mName}</b> (x${myM.count}) ${trendBadge}<br><small>+${formatMoney(effectiveProd)}${t.perSec}</small></div>
                     <button class="btn-buy" onclick="buyMiner(${i})" ${state.money < myM.cost ? 'disabled' : ''}>
                         $${formatMoney(myM.cost)}
                     </button>
                 </div>`;
             }).join('');
 
-            // RENDER CHEST GRID
             renderChestGrid();
+            updatePrestigeUI();
         }
 
         /* =================================== */
         /* ========= ADMIN MENU JS ========== */
         /* =================================== */
-
-        // Alt+M to open admin
         document.addEventListener('keydown', function(e) {
             if (e.altKey && (e.key === 'm' || e.key === 'M' || e.key === 'ь' || e.key === 'Ь')) {
                 e.preventDefault();
@@ -1471,7 +2360,6 @@
             document.getElementById('admin-overlay').style.display = 'none';
         }
 
-        // Close on overlay click
         document.getElementById('admin-overlay').addEventListener('click', function(e) {
             if (e.target === this) closeAdmin();
         });
@@ -1485,11 +2373,11 @@
             setTimeout(function() { t.remove(); }, 2100);
         }
 
-        /* --- MONEY CONTROLS --- */
         function adminAddMoney() {
             var val = parseFloat(document.getElementById('admin-money-val').value);
             if (isNaN(val) || val <= 0) { adminToast('Enter a valid positive number', '#e74c3c'); return; }
             state.money = clampMoney(state.money + val);
+            state.totalEarned = clampMoney(state.totalEarned + val);
             updateUI(); saveGame();
             adminToast('+$' + formatMoney(val) + ' added!');
         }
@@ -1508,11 +2396,10 @@
             adminToast('Balance set to $' + formatMoney(val), '#f39c12');
         }
 
-        /* --- SPEED CONTROLS --- */
         var speedSteps = [0.25, 0.5, 1, 2, 3, 5, 10, 20];
         function adminChangeSpeed(dir) {
             var idx = speedSteps.indexOf(speedMultiplier);
-            if (idx === -1) idx = 2; // default 1x
+            if (idx === -1) idx = 2;
             idx += dir;
             if (idx < 0) idx = 0;
             if (idx >= speedSteps.length) idx = speedSteps.length - 1;
@@ -1528,7 +2415,6 @@
             adminToast('Speed reset to 1x', '#2980b9');
         }
 
-        /* --- PRICE FREEZE --- */
         function adminToggleFreeze() {
             pricesFrozen = !pricesFrozen;
             adminUpdateFreezeBtn();
@@ -1545,8 +2431,6 @@
             }
         }
 
-        /* --- CASE CONSTRUCTOR --- */
-        // Preview update
         var previewInputs = ['ac-name', 'ac-color1', 'ac-color2', 'ac-glow', 'ac-textcol'];
         previewInputs.forEach(function(id) {
             document.getElementById(id).addEventListener('input', adminUpdatePreview);
@@ -1636,7 +2520,6 @@
             list.innerHTML = html;
         }
 
-        /* --- SAVE / LOAD PROJECTS --- */
         function getProjects() {
             var raw = localStorage.getItem('dollarTycoonProjects');
             if (raw) {
@@ -1652,7 +2535,6 @@
             var name = document.getElementById('admin-proj-name').value.trim();
             if (!name) { adminToast('Enter a project name!', '#e74c3c'); return; }
             var projects = getProjects();
-            // Overwrite if same name exists
             var existing = -1;
             for (var i = 0; i < projects.length; i++) {
                 if (projects[i].name === name) { existing = i; break; }
@@ -1679,17 +2561,16 @@
             var projects = getProjects();
             if (idx < 0 || idx >= projects.length) return;
             var proj = projects[idx];
-            // Restore custom cases
             customCases = proj.customCases || [];
-            // Restore game state
             if (proj.gameState) {
                 state = { ...state, ...proj.gameState };
-                // Ensure miners array length
                 if (state.miners.length < minersData.length) {
                     for (var i = state.miners.length; i < minersData.length; i++) {
                         state.miners.push({ count: 0, cost: minersData[i].baseCost });
                     }
                 }
+                if (state.prestigeLevel === undefined) state.prestigeLevel = 0;
+                if (state.totalEarned === undefined) state.totalEarned = 0;
             }
             if (proj.speedMultiplier !== undefined) speedMultiplier = proj.speedMultiplier;
             if (proj.pricesFrozen !== undefined) pricesFrozen = proj.pricesFrozen;
@@ -1733,9 +2614,142 @@
             list.innerHTML = html;
         }
 
-        /* --- INIT --- */
+        /* === INIT === */
         loadGame();
+
+        // Check offline earnings from closed tab
+        (function() {
+            if (state.lastSaveTime) {
+                const savedTime = state.lastSaveTime;
+                setTimeout(() => {
+                    checkOfflineEarnings(savedTime);
+                }, 500);
+            }
+        })();
+
+        startTrendSystem();
         applyLanguage();
+
+        // --- LEADERBOARD ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAyatGz9z_EYXBAFrH2wrnX8snbDn1ESJk",
+            authDomain: "schoolrpg-leaderboard.firebaseapp.com",
+            projectId: "schoolrpg-leaderboard",
+            storageBucket: "schoolrpg-leaderboard.firebasestorage.app",
+            messagingSenderId: "942057524924",
+            appId: "1:942057524924:web:4720f94710edd210ec8ab9"
+        };
+
+        const LeaderboardSystem = {
+            isOnline: false, db: null, scoresCol: null, gameId: null,
+            async init(gameId) {
+                this.gameId = gameId;
+                this.isOnline = navigator.onLine;
+                if (this.isOnline) {
+                    try {
+                        if (!window.fbApp) {
+                            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+                            window.fbApp = initializeApp(firebaseConfig);
+                            const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                            window.fbDb = getFirestore(window.fbApp);
+                        }
+                        this.db = window.fbDb;
+                        const { collection } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                        this.scoresCol = collection(this.db, 'leaderboards', gameId, 'scores');
+                    } catch (e) { this.isOnline = false; }
+                }
+            },
+            async saveScore(name, score, desc = "") {
+                const entry = { name: name || XPPlayerProfile.getName(this.gameId, "Tycoon"), score: Number(score), desc: desc, timestamp: Date.now() };
+                if (this.isOnline && this.db) {
+                    try { const { addDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"); await addDoc(this.scoresCol, entry); }
+                    catch (e) { this.saveLocal(entry); }
+                } else this.saveLocal(entry);
+            },
+            saveLocal(entry) {
+                let scores = this.getLocalRaw().filter(s => s.name !== entry.name);
+                scores.push(entry);
+                scores.sort((a, b) => b.score - a.score);
+                localStorage.setItem(`lb_${this.gameId}`, JSON.stringify(scores.slice(0, 50)));
+            },
+            dedupeLatest(rows) {
+                const latestByName = new Map();
+                rows.forEach(r => {
+                    const prev = latestByName.get(r.name);
+                    if (!prev || (r.timestamp || 0) > (prev.timestamp || 0)) latestByName.set(r.name, r);
+                });
+                return Array.from(latestByName.values());
+            },
+            getLocalRaw() { try { return JSON.parse(localStorage.getItem(`lb_${this.gameId}`) || "[]"); } catch (e) { return []; } },
+            async getScores(limitCount = 10) {
+                if (this.isOnline && this.db) {
+                    try {
+                        const { getDocs, query, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                        const q = query(this.scoresCol, orderBy("score", "desc"), limit(limitCount));
+                        const snap = await getDocs(q);
+                        const rows = snap.docs.map(doc => doc.data());
+                        return this.dedupeLatest(rows).sort((a, b) => b.score - a.score).slice(0, limitCount);
+                    } catch (e) { return this.dedupeLatest(this.getLocalRaw()).sort((a, b) => b.score - a.score).slice(0, limitCount); }
+                }
+                return this.dedupeLatest(this.getLocalRaw()).sort((a, b) => b.score - a.score).slice(0, limitCount);
+            }
+        };
+
+        function openPlayerSettings() {
+            XPPlayerProfile.openSettings({
+                gameId: 'dollar_tycoon_modern',
+                defaultName: 'Tycoon',
+                title: 'Tycoon Settings',
+                subtitle: 'Change the leaderboard name and choose whether to ask again before saving a new record.',
+                showAskToggle: true
+            });
+        }
+
+        const LeaderboardUI = {
+            show(gameId) {
+                LeaderboardSystem.init(gameId).then(() => {
+                    let s = document.getElementById('lb-screen') || document.createElement('div');
+                    s.id = 'lb-screen';
+                    s.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;color:white;backdrop-filter:blur(10px);font-family:sans-serif;";
+                    document.body.appendChild(s);
+                    s.style.display = 'flex';
+                    s.innerHTML = `<div style="width:90%;max-width:420px;background:#1a1a1a;border:2px solid gold;border-radius:20px;padding:25px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                            <h2 style="margin:0;color:gold;">TYCOON RANKINGS</h2>
+                            <button onclick="document.getElementById('lb-screen').style.display='none'" style="background:none;border:none;color:white;font-size:24px;cursor:pointer;">✕</button>
+                        </div>
+                        <div style="display:grid;gap:8px;margin-bottom:16px;">
+                            <div style="font-size:14px;color:#bbb;">Current balance: <b style="color:gold;">$${Math.floor(state.money).toLocaleString()}</b></div>
+                            <button id="lb-save-current" style="padding:12px;border:none;border-radius:12px;background:gold;color:black;font-weight:bold;cursor:pointer;">SAVE CURRENT BALANCE</button>
+                        </div>
+                        <div id="lb-list" style="max-height:60vh;overflow-y:auto;">Loading...</div>
+                    </div>`;
+                    document.getElementById('lb-save-current').onclick = () => {
+                        XPPlayerProfile.requestRecordIdentity({
+                            gameId: 'dollar_tycoon_modern',
+                            defaultName: 'Tycoon',
+                            title: 'Save Record',
+                            subtitle: 'Your current balance will be saved to the leaderboard.',
+                            showAskToggle: true,
+                            onDone: (profile) => {
+                                LeaderboardSystem.saveScore(profile.name, state.money, 'Current balance');
+                                LeaderboardUI.show(gameId);
+                            }
+                        });
+                    };
+                    LeaderboardSystem.getScores(50).then(scores => {
+                        const list = document.getElementById('lb-list');
+                        if (!scores || scores.length === 0) { list.innerHTML = '<div style="text-align:center;padding:20px;opacity:0.5;">No records yet</div>'; return; }
+                        list.innerHTML = scores.map((score, i) => `
+                            <div style="display:flex;justify-content:space-between;gap:10px;padding:12px;margin-bottom:8px;background:rgba(255,215,0,0.05);border-radius:10px;border:1px solid rgba(255,215,0,0.1);">
+                                <div><div>${i + 1}. ${score.name}</div><div style="font-size:12px;color:#999;">${score.desc || 'Current balance'}</div></div>
+                                <b style="color:gold;">$${Math.floor(score.score).toLocaleString()}</b>
+                            </div>
+                        `).join('');
+                    });
+                });
+            }
+        };
 
     </script>
 </body>

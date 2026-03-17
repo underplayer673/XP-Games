@@ -11,9 +11,96 @@ let movesMade = 0;
 let currentLang = 'en';
 let playerElo = parseInt(localStorage.getItem('cell_elo') || '1200');
 
-const botElo = {
-    "Обезьяна": 400, "Novice": 800, "Tactician": 1200, "Master": 1600,
-    "LEGEND": 2000, "GRANDMASTER": 2400, "TERMINATOR": 2800
+const firebaseConfig = {
+    apiKey: "AIzaSyAyatGz9z_EYXBAFrH2wrnX8snbDn1ESJk",
+    authDomain: "schoolrpg-leaderboard.firebaseapp.com",
+    projectId: "schoolrpg-leaderboard",
+    storageBucket: "schoolrpg-leaderboard.firebasestorage.app",
+    messagingSenderId: "942057524924",
+    appId: "1:942057524924:web:4720f94710edd210ec8ab9"
+};
+
+const LeaderboardSystem = {
+    isOnline: false, db: null, scoresCol: null, gameId: 'cell_overload_modern',
+    async init() {
+        this.isOnline = navigator.onLine;
+        if (this.isOnline) {
+            try {
+                if (!window.fbApp) {
+                    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+                    window.fbApp = initializeApp(firebaseConfig);
+                    const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                    window.fbDb = getFirestore(window.fbApp);
+                }
+                this.db = window.fbDb;
+                const { collection } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                this.scoresCol = collection(this.db, 'leaderboards', this.gameId, 'scores');
+            } catch (e) { this.isOnline = false; }
+        }
+    },
+    async saveScore(name, score, desc = "") {
+        const entry = { name: name || localStorage.getItem('player_name') || "Player", score: Number(score), desc: desc, timestamp: Date.now() };
+        if (this.isOnline && this.db) {
+            try { const { addDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"); await addDoc(this.scoresCol, entry); }
+            catch (e) { this.saveLocal(entry); }
+        } else this.saveLocal(entry);
+    },
+    saveLocal(entry) {
+        let scores = this.getLocalRaw(); scores.push(entry);
+        scores.sort((a, b) => b.score - a.score);
+        localStorage.setItem(`lb_${this.gameId}`, JSON.stringify(scores.slice(0, 50)));
+    },
+    getLocalRaw() { try { return JSON.parse(localStorage.getItem(`lb_${this.gameId}`) || "[]"); } catch (e) { return []; } },
+    async getScores(limitCount = 10) {
+        if (this.isOnline && this.db) {
+            try {
+                const { getDocs, query, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                const q = query(this.scoresCol, orderBy("score", "desc"), limit(limitCount));
+                const snap = await getDocs(q); return snap.docs.map(doc => doc.data());
+            } catch (e) { return this.getLocalRaw().slice(0, limitCount); }
+        } else return this.getLocalRaw().slice(0, limitCount);
+    }
+};
+
+const LeaderboardUI = {
+    show() {
+        let s = document.getElementById('lb-screen') || document.createElement('div');
+        s.id = 'lb-screen';
+        s.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;color:white;backdrop-filter:blur(10px);font-family:'Rajdhani', sans-serif;";
+        document.body.appendChild(s); s.style.display = 'flex';
+        s.innerHTML = `<div style="width:90%;max-width:400px;background:#050510;border:2px solid #00f3ff;border-radius:15px;padding:25px;box-shadow:0 0 20px #00f3ff55;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <h2 style="margin:0;color:#00f3ff;font-family:'Orbitron', sans-serif;letter-spacing:2px;">TOP COMMANDERS</h2>
+                <button onclick="document.getElementById('lb-screen').style.display='none'" style="background:none;border:none;color:white;font-size:24px;cursor:pointer;">✕</button>
+            </div>
+            <div id="lb-list" style="max-height:60vh;overflow-y:auto;">Loading...</div>
+        </div>`;
+        LeaderboardSystem.getScores(50).then(scores => {
+            const list = document.getElementById('lb-list');
+            if (!scores || scores.length === 0) { list.innerHTML = '<div style="text-align:center;padding:20px;opacity:0.5;">No records yet</div>'; return; }
+            list.innerHTML = scores.map((s, i) => `
+                <div style="display:flex;justify-content:space-between;padding:12px;margin-bottom:8px;background:rgba(0,243,255,0.05);border-radius:10px;border:1px solid rgba(0,243,255,0.2);">
+                    <span>${i + 1}. ${s.name}</span> <b style="color:#00f3ff;">${Math.floor(s.score)} ELO</b>
+                </div>
+            `).join('');
+        });
+    },
+    showNamePrompt(callback) {
+        if (localStorage.getItem('player_name')) { if (callback) callback(localStorage.getItem('player_name')); return; }
+        let p = document.getElementById('lb-prompt') || document.createElement('div');
+        p.id = 'lb-prompt';
+        p.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:20000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(15px);";
+        document.body.appendChild(p); p.style.display = 'flex';
+        p.innerHTML = `<div style="width:85%;max-width:320px;background:#050510;border:2px solid #00f3ff;padding:30px;border-radius:15px;text-align:center;">
+            <h2 style="color:white;margin-top:0;font-family:'Orbitron', sans-serif;">COMMANDER NAME</h2>
+            <input type="text" id="lb-name-input" placeholder="Enter ID" style="width:100%;padding:12px;background:#111;border:1px solid #00f3ff;color:white;border-radius:8px;margin-bottom:20px;text-align:center;font-family:'Rajdhani', sans-serif;">
+            <button id="lb-confirm-btn" style="width:100%;padding:12px;background:#00f3ff;color:black;border:none;border-radius:8px;font-weight:bold;cursor:pointer;font-family:'Orbitron', sans-serif;">INITIALIZE</button>
+        </div>`;
+        document.getElementById('lb-confirm-btn').onclick = () => {
+            const n = document.getElementById('lb-name-input').value.trim();
+            if (n) { localStorage.setItem('player_name', n); document.getElementById('lb-prompt').style.display = 'none'; if (callback) callback(n); }
+        };
+    }
 };
 
 // Settings
@@ -162,6 +249,13 @@ function initDOMElements() {
     });
 
     updateUIStrings();
+    LeaderboardSystem.init();
+    setTimeout(() => LeaderboardUI.showNamePrompt(), 2000);
+
+    const lbBtn = document.createElement('button');
+    lbBtn.className = 'icon-btn'; lbBtn.innerHTML = '<span>🏆</span>';
+    lbBtn.onclick = () => LeaderboardUI.show();
+    document.querySelector('.settings-panel').prepend(lbBtn);
 
     // Prevent board from scrolling on mobile when trying to play
     if (boardEl) {
@@ -716,6 +810,7 @@ function updateElo(winner) {
     const gain = calculateEloGain(playerElo, aiDifficulty, won);
     playerElo += gain;
     localStorage.setItem('cell_elo', playerElo);
+    LeaderboardSystem.saveScore(null, playerElo, won ? "Victory" : "Defeat");
     return gain;
 }
 

@@ -16,6 +16,8 @@
         <!-- LANG BUTTON -->
         <button class="btn" id="lang-btn" onclick="toggleLanguage()"
             style="padding: 5px 10px; font-size: 12px; margin-right: 10px;">EN</button>
+        <button class="btn" onclick="LeaderboardUI.show()" style="padding: 5px 10px; font-size: 12px; margin-right: 10px;">🏆</button>
+        <button class="btn" onclick="openPlayerSettings()" style="padding: 5px 10px; font-size: 12px; margin-right: 10px;">NAME</button>
 
         <div class="stat-group">
             <div class="stat-label" id="lbl-money">Coins</div>
@@ -171,6 +173,8 @@
         </div>
     </div>
 
+    <script src="../../xp_player_identity.js"></script>
+    <script src="../../leaderboard_system.js"></script>
     <script src="script.js"></script>
 </body>
 

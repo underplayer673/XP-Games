@@ -1,4 +1,4 @@
-﻿/**
+/**
  * The Deepest Dunk - Mobile & High DPI Update
  */
 
@@ -37,7 +37,103 @@ const uiOverlay = {
     },
     btnRetry: document.getElementById('btn-retry'),
     btnChangeSkin: document.getElementById('btn-change-skin'),
-    btnMenu: document.getElementById('btn-menu')
+    btnMenu: document.getElementById('btn-menu'),
+    btnLB: null
+};
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAyatGz9z_EYXBAFrH2wrnX8snbDn1ESJk",
+    authDomain: "schoolrpg-leaderboard.firebaseapp.com",
+    projectId: "schoolrpg-leaderboard",
+    storageBucket: "schoolrpg-leaderboard.firebasestorage.app",
+    messagingSenderId: "942057524924",
+    appId: "1:942057524924:web:4720f94710edd210ec8ab9"
+};
+
+const LeaderboardSystem = {
+    isOnline: false, db: null, scoresCol: null, gameId: 'deepest_dunk_modern',
+    async init() {
+        this.isOnline = navigator.onLine;
+        if (this.isOnline) {
+            try {
+                if (!window.fbApp) {
+                    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+                    window.fbApp = initializeApp(firebaseConfig);
+                    const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                    window.fbDb = getFirestore(window.fbApp);
+                }
+                this.db = window.fbDb;
+                const { collection } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                this.scoresCol = collection(this.db, 'leaderboards', this.gameId, 'scores');
+            } catch (e) { this.isOnline = false; }
+        }
+    },
+    async saveScore(name, score, desc = "") {
+        const entry = {
+            name: name || (window.XPPlayerProfile ? XPPlayerProfile.getName('deepest_dunk_modern', 'Dunker') : (localStorage.getItem('player_name') || "Cookie")),
+            score: Number(score),
+            desc: desc,
+            timestamp: Date.now()
+        };
+        if (this.isOnline && this.db) {
+            try { const { addDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"); await addDoc(this.scoresCol, entry); }
+            catch (e) { this.saveLocal(entry); }
+        } else this.saveLocal(entry);
+    },
+    saveLocal(entry) {
+        let scores = this.getLocalRaw(); scores.push(entry);
+        scores.sort((a, b) => b.score - a.score);
+        localStorage.setItem(`lb_${this.gameId}`, JSON.stringify(scores.slice(0, 50)));
+    },
+    getLocalRaw() { try { return JSON.parse(localStorage.getItem(`lb_${this.gameId}`) || "[]"); } catch (e) { return []; } },
+    async getScores(limitCount = 10) {
+        if (this.isOnline && this.db) {
+            try {
+                const { getDocs, query, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                const q = query(this.scoresCol, orderBy("score", "desc"), limit(limitCount));
+                const snap = await getDocs(q); return snap.docs.map(doc => doc.data());
+            } catch (e) { return this.getLocalRaw().slice(0, limitCount); }
+        } else return this.getLocalRaw().slice(0, limitCount);
+    }
+};
+
+const LeaderboardUI = {
+    show() {
+        let s = document.getElementById('lb-screen') || document.createElement('div');
+        s.id = 'lb-screen';
+        s.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;color:white;backdrop-filter:blur(10px);font-family:inherit;";
+        document.body.appendChild(s); s.style.display = 'flex';
+        s.innerHTML = `<div style="width:90%;max-width:400px;background:#111;border:2px solid #5d4037;border-radius:20px;padding:25px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <h2 style="margin:0;color:#e2a35d;">DUNK HALL OF FAME</h2>
+                <button onclick="document.getElementById('lb-screen').style.display='none'" style="background:none;border:none;color:white;font-size:24px;cursor:pointer;">✕</button>
+            </div>
+            <div id="lb-list" style="max-height:60vh;overflow-y:auto;">Loading...</div>
+        </div>`;
+        LeaderboardSystem.getScores(50).then(scores => {
+            const list = document.getElementById('lb-list');
+            if (!scores || scores.length === 0) { list.innerHTML = '<div style="text-align:center;padding:20px;opacity:0.5;">No records yet</div>'; return; }
+            list.innerHTML = scores.map((s, i) => `
+                <div style="display:flex;justify-content:space-between;padding:12px;margin-bottom:8px;background:rgba(226,163,93,0.05);border-radius:10px;border:1px solid rgba(226,163,93,0.2);">
+                    <span>${i + 1}. ${s.name}</span> <b style="color:#e2a35d;">${Math.floor(s.score)}mm</b>
+                </div>
+            `).join('');
+        });
+    },
+    showNamePrompt(callback) {
+        if (window.XPPlayerProfile) {
+            XPPlayerProfile.requestRecordIdentity({
+                gameId: 'deepest_dunk_modern',
+                defaultName: 'Dunker',
+                title: 'Save Record',
+                subtitle: 'Your record will include the cookie and depth.',
+                onDone: (profile) => callback(profile.name)
+            });
+            return;
+        }
+        const fallback = localStorage.getItem('player_name') || 'Cookie';
+        if (callback) callback(fallback);
+    }
 };
 
 // --- Game State ---
@@ -382,6 +478,20 @@ function init() {
 
     bindClick(document.getElementById('btn-achievements'), showAchievements);
     bindClick(document.getElementById('btn-replays'), showReplays);
+
+    const lbBtn = document.createElement('button');
+    lbBtn.className = 'ui-btn'; lbBtn.innerText = '🏆';
+    lbBtn.style.marginLeft = '10px';
+    document.getElementById('top-controls').appendChild(lbBtn);
+    bindClick(lbBtn, () => LeaderboardUI.show());
+
+    const nameBtn = document.createElement('button');
+    nameBtn.className = 'ui-btn'; nameBtn.innerText = 'NAME';
+    nameBtn.style.marginLeft = '10px';
+    document.getElementById('top-controls').appendChild(nameBtn);
+    bindClick(nameBtn, openPlayerSettings);
+    LeaderboardSystem.init();
+
     document.querySelectorAll('.close-x').forEach(btn => bindClick(btn, () => {
         document.querySelectorAll('.overlay-screen').forEach(s => s.classList.add('hidden'));
         uiOverlay.start.classList.remove('hidden');
@@ -468,6 +578,16 @@ function setupAudio(enable) {
     if (enable) { state.audio.musicEnabled = true; state.audio.sfxEnabled = true; state.audio.isMasterMuted = false; }
     else { state.audio.isMasterMuted = true; updateMasterBtnIcon(); }
     syncAudioUI(); audio.updateVolumes();
+}
+
+function openPlayerSettings() {
+    if (!window.XPPlayerProfile) return;
+    XPPlayerProfile.openSettings({
+        gameId: 'deepest_dunk_modern',
+        defaultName: 'Dunker',
+        title: 'Player Name',
+        subtitle: 'Change the leaderboard name and choose whether to ask again before saving a new record.'
+    });
 }
 
 function syncAudioUI() {
@@ -840,7 +960,13 @@ function updateProgression(depth) {
     if (depth >= 5000 && !state.victoryTriggered) triggerVictory();
 }
 
-function triggerVictory() { state.victoryTriggered = true; state.isChampion = true; localStorage.setItem('dunk_isChampion', 'true'); uiOverlay.victory.classList.remove('hidden'); state.timeScale = 0.2; setTimeout(() => { state.timeScale = 1; }, 3000); }
+function triggerVictory() {
+    state.victoryTriggered = true; state.isChampion = true;
+    localStorage.setItem('dunk_isChampion', 'true');
+    uiOverlay.victory.classList.remove('hidden'); state.timeScale = 0.2;
+    setTimeout(() => { state.timeScale = 1; }, 3000);
+    LeaderboardSystem.saveScore(null, 5000, `Winner | ${getCookieLabel()}`);
+}
 function handleCollision(ent, idx) {
     const nowMs = getNowMs();
     const angle = Math.atan2(ent.y - player.y, ent.x - player.x);
@@ -956,8 +1082,18 @@ function gameOver(reason) {
     checkAchievements();
     saveHighScore(mm);
     displayHighScores();
+    LeaderboardSystem.saveScore(null, mm, `${getCookieLabel()} | Dunked`);
     document.getElementById('high-scores').classList.remove('hidden');
     audio.pauseMusic();
+}
+
+function getCookieLabel() {
+    const c = COOKIES[state.selectedCookie];
+    if (!c) return state.selectedCookie || 'Cookie';
+    if (c.name && typeof c.name === 'object') {
+        return c.name[state.lang] || c.name.en || c.id || state.selectedCookie || 'Cookie';
+    }
+    return c.name || c.id || state.selectedCookie || 'Cookie';
 }
 
 function checkAchievements() {
